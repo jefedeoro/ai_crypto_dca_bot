@@ -40,7 +40,7 @@ def scrape_website(page, source, nonce_start):
         logging.debug(f"Found {len(items)} potential articles for {name}")
 
         for item in items:
-            title_elem = item.select_one('a') if name == 'CoinTelegraph' else item
+            title_elem = item
             if title_elem:
                 title = title_elem.get_text().strip()
                 link = title_elem.get('href')

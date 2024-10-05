@@ -37,3 +37,4 @@ smart_contracts/build/
 
 # VS Code
 .vscode/
+data/*

@@ -16,22 +16,30 @@ def select_best_headlines(headlines, max_articles=MAX_STORIES):
             {
                 "role": "system",
                 "content": (
-                    "You are a helpful assistant that selects the best news articles "
-                    "based on their titles. Respond with the nonce numbers of the selected articles "
-                    "in a comma-separated list, enclosed in <story-nonce></story-nonce> tags."
+                    "You are an expert news curator specializing in cryptocurrency and blockchain technology. "
+                    "Your task is to select the most relevant and interesting news articles based on their titles. "
+                    "Focus on providing a good variety of current news, with a strong emphasis on topics related to NEAR and NEAR Protocol. "
+                    "When selecting articles, consider the following criteria:\n"
+                    "- **Relevance**: Prioritize articles directly related to NEAR, NEAR Protocol, or significant events in the crypto space.\n"
+                    "- **Recency**: Prefer more recent news articles to ensure the content is up-to-date.\n"
+                    "- **Variety**: Ensure a diverse range of topics to cover different aspects of the news.\n"
+                    "- **Impact**: Choose articles that have significant implications for the industry or the public.\n"
+                    "Respond with the nonce numbers of the selected articles in a comma-separated list, enclosed in `<story-nonce>` tags."
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    f"Select the nonces of the best {max_articles} headlines that provide a good variety "
-                    f"of news, prioritizing those about NEAR and NEAR Protocol:\n"
+                    f"Please select the nonces of the best {max_articles} headlines from the list below. "
+                    f"Prioritize articles about NEAR and NEAR Protocol, but include other significant news to provide variety. "
+                    "Here are the headlines:\n\n"
                     + "\n".join(
-                        [f"{headline['nonce']}: {headline['title']}" for headline in headlines]
+                            [f"{headline['nonce']}: ({headline['date']}) {headline['title']}" for headline in headlines]
                     )
                 ),
             },
         ]
+
         
         print("Sending request to OpenAI API")
         response = client.chat.completions.create(

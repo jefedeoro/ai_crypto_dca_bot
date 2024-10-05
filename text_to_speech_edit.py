@@ -65,13 +65,32 @@ def text_to_speech(input_path, output_path):
         with open(input_path, 'r') as f:
             script = json.load(f)
 
+        logging.info(f"Loaded script with {len(script)} segments")
+
         audio_segments = []
 
-        for segment in script:
-            voice_id = VOICE_IDS[segment['voice_id']]
-            text = segment['text']
+        for i, segment in enumerate(script):
+            logging.debug(f"Processing segment {i+1}/{len(script)}")
+            if 'voice_id' not in segment:
+                logging.error(f"Segment {i+1} is missing 'voice_id' field. Skipping this segment.")
+                continue
             
-            audio_data = generate_audio(text, voice_id, use_speaker_boost=True)
+            voice_id = segment['voice_id']
+            logging.debug(f"Segment {i+1} voice_id: {voice_id}")
+            
+            if voice_id not in VOICE_IDS:
+                logging.error(f"Invalid voice_id: {voice_id} in segment {i+1}. Skipping this segment.")
+                continue
+            
+            elevenlabs_voice_id = VOICE_IDS[voice_id]
+            if not elevenlabs_voice_id:
+                logging.error(f"ElevenLabs voice ID not set for {voice_id}. Skipping this segment.")
+                continue
+            
+            text = segment['text']
+            logging.debug(f"Generating audio for segment {i+1} with text: {text[:50]}...")
+            
+            audio_data = generate_audio(text, elevenlabs_voice_id, use_speaker_boost=True)
             if audio_data:
                 audio_segment = AudioSegment.from_mp3(audio_data)
                 audio_segments.append(audio_segment)
@@ -79,8 +98,15 @@ def text_to_speech(input_path, output_path):
                 # Add random silence between 50ms and 300ms
                 silence_duration = random.randint(50, 300)
                 audio_segments.append(add_silence(silence_duration))
+            else:
+                logging.error(f"Failed to generate audio for segment {i+1}. Skipping this segment.")
+
+        if not audio_segments:
+            logging.error("No audio segments were generated. Aborting text-to-speech conversion.")
+            return False
 
         # Combine all audio segments
+        logging.info("Combining audio segments")
         final_audio = sum(audio_segments)
 
         # Add silence at the start and end
@@ -89,6 +115,7 @@ def text_to_speech(input_path, output_path):
         final_audio = start_silence + final_audio + end_silence
 
         # Export the final audio
+        logging.info(f"Exporting final audio to {output_path}")
         final_audio.export(output_path, format="mp3")
 
         logging.info(f"Audio file saved as {output_path}")
@@ -103,18 +130,3 @@ def text_to_speech(input_path, output_path):
     except Exception as e:
         logging.error(f"Unexpected error in text-to-speech conversion: {str(e)}")
         return False
-
-if __name__ == '__main__':
-    result_folder = os.getenv('TG_NEWS_RESULT_FOLDER')
-    if result_folder is None:
-        logging.warning("TG_NEWS_RESULT_FOLDER environment variable not set. Using default path.")
-        result_folder = 'data'
-    
-    input_path = os.path.join(result_folder, "enhanced_script.json")
-    output_path = os.path.join(result_folder, "output_audio.mp3")
-    
-    success = text_to_speech(input_path, output_path)
-    if success:
-        logging.info("Text-to-speech conversion completed successfully")
-    else:
-        logging.error("Text-to-speech conversion failed")
