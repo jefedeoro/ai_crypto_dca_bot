@@ -1,0 +1,15 @@
+{
+    "name": "dca_contract",
+    "version": "1.0.0",
+    "description": "DCA smart contract on NEAR Protocol",
+    "main": "index.js",
+    "scripts": {
+        "build": "near-sdk-js build src/contract.ts build/contract.wasm"
+    },
+    "dependencies": {
+        "near-sdk-js": "^2.0.0"
+    },
+    "devDependencies": {
+        "typescript": "^4.5.4"
+    }
+}

@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Introduction",
+    "content": [
+      {
+        "speaker": "man",
+        "text": "Welcome to the crypto news update."
+      }
+    ]
+  },
+  {
+    "title": "News Item 1",
+    "content": [
+      {
+        "speaker": "woman1",
+        "text": "Bitcoin price has reached a new all-time high."
+      },
+      {
+        "speaker": "woman2",
+        "text": "Experts predict further growth in the coming months."
+      }
+    ]
+  }
+]

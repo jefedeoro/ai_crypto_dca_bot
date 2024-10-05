@@ -1,0 +1,120 @@
+import requests
+import os
+import json
+import logging
+import random
+from pydub import AudioSegment
+from io import BytesIO
+from config import Config
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+API_KEY = Config.ELEVENLABS_API_KEY
+VOICE_IDS = {
+    'man1': Config.ELEVENLABS_VOICE_ID_MAN1,
+    'man2': Config.ELEVENLABS_VOICE_ID_MAN2,
+    'woman1': Config.ELEVENLABS_VOICE_ID_WOMAN1,
+    'woman2': Config.ELEVENLABS_VOICE_ID_WOMAN2
+}
+
+def generate_audio(text, voice_id, use_speaker_boost=True):
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": API_KEY
+    }
+    data = {
+        "text": text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.25,
+            "similarity_boost": 0.25,
+            "use_speaker_boost": use_speaker_boost
+        }
+    }
+
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
+        return BytesIO(response.content)
+    else:
+        logging.error(f"Error generating audio: {response.status_code} - {response.text}")
+        return None
+
+def add_silence(duration_ms):
+    return AudioSegment.silent(duration=duration_ms)
+
+def text_to_speech(input_path, output_path):
+    logging.info(f"Starting text-to-speech conversion. Input: {input_path}, Output: {output_path}")
+
+    if not API_KEY:
+        logging.error("ELEVENLABS_API_KEY is not set. Skipping text-to-speech conversion.")
+        return False
+
+    missing_voices = [k for k, v in VOICE_IDS.items() if not v]
+    if missing_voices:
+        logging.error(f"Missing voice IDs for: {', '.join(missing_voices)}. Skipping text-to-speech conversion.")
+        return False
+
+    try:
+        with open(input_path, 'r') as f:
+            script = json.load(f)
+
+        audio_segments = []
+
+        for segment in script:
+            voice_id = VOICE_IDS[segment['voice_id']]
+            text = segment['text']
+            
+            audio_data = generate_audio(text, voice_id, use_speaker_boost=True)
+            if audio_data:
+                audio_segment = AudioSegment.from_mp3(audio_data)
+                audio_segments.append(audio_segment)
+                
+                # Add random silence between 50ms and 300ms
+                silence_duration = random.randint(50, 300)
+                audio_segments.append(add_silence(silence_duration))
+
+        # Combine all audio segments
+        final_audio = sum(audio_segments)
+
+        # Add silence at the start and end
+        start_silence = add_silence(random.randint(50, 300))
+        end_silence = add_silence(random.randint(50, 300))
+        final_audio = start_silence + final_audio + end_silence
+
+        # Export the final audio
+        final_audio.export(output_path, format="mp3")
+
+        logging.info(f"Audio file saved as {output_path}")
+        return True
+
+    except json.JSONDecodeError as e:
+        logging.error(f"Error decoding JSON from input file: {str(e)}")
+        return False
+    except IOError as e:
+        logging.error(f"Error reading input file or writing output file: {str(e)}")
+        return False
+    except Exception as e:
+        logging.error(f"Unexpected error in text-to-speech conversion: {str(e)}")
+        return False
+
+if __name__ == '__main__':
+    result_folder = os.getenv('TG_NEWS_RESULT_FOLDER')
+    if result_folder is None:
+        logging.warning("TG_NEWS_RESULT_FOLDER environment variable not set. Using default path.")
+        result_folder = 'data'
+    
+    input_path = os.path.join(result_folder, "enhanced_script.json")
+    output_path = os.path.join(result_folder, "output_audio.mp3")
+    
+    success = text_to_speech(input_path, output_path)
+    if success:
+        logging.info("Text-to-speech conversion completed successfully")
+    else:
+        logging.error("Text-to-speech conversion failed")

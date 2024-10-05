@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+instance/
+.pytest_cache/
+.coverage
+*.cover
+*.py,cover
+.hypothesis/
+*.log
+
+# Flask
+*.db
+*.sqlite3
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# NEAR SDK JS
+smart_contracts/build/
+*.wasm
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/

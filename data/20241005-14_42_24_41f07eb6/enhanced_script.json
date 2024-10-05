@@ -1,0 +1,38 @@
+[
+  {
+    "text": "Welcome to the TG-DCA update for October 5th, 2024. I'm your host, Alex, and it's 7:44 PM UTC. Let's dive right into the latest crypto news, shall we?",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Our first topic of discussion revolves around Bitcoin. We've got an interesting story here titled 'Bitcoin Futures Liquidation Forms Local Price Bottom \u2014 A Return To $65,000 Inevitable?' The price of Bitcoin hasn\u2019t quite started the month as anticipated, falling to around the $60,000 mark on Thursday. Beth, could you provide a more technical perspective on this?",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Sure, Alex. In the latest market update, Bitcoin has experienced quite a ride, starting October around the $60,000 mark amid geopolitical tensions, specifically the recent missile strikes from Iran into Israel. However, Bitcoin enthusiasts should note that the price has bounced back to around $62,000, hinting at a potential recovery. This shift is tied to a decrease in selling pressure, which has been a significant factor in the recent price movements. Over 4,000 long positions were liquidated on October 1st, marking the second-largest liquidation event of the year. It's a bit of a double-edged sword, these liquidations can often indicate a market bottom while also signifying losses for many traders. The question now is: can increased buying strength from investors help propel Bitcoin back towards the $65,000 mark?",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "That's an interesting point, Beth. Based on the current sentiment, there seems to be cautious optimism. October has historically been a positive month for Bitcoin. So, the question is: could we see a surge back to previous highs? We'll certainly keep an eye on this.",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Moving on, our next story is titled: 'Meme Coin Trader Misses A $25 Million Payout After Selling HIPPO On Sui Network Early.' Crypto activity is dynamic, and with over two million tokens, it's tough to know which ones will take off. Alex, can you summarize this for us?",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Absolutely, Dana. It's a wild story about a meme coin trader who recently missed out on a $25 million payout due to an early exit. Over on the Sui Network, a new meme coin, Sudeng (HIPPO), launched and quickly skyrocketed in value. The trader sold 1.8 billion HIPPO tokens for around $11,000, but just a short 36 hours later, those tokens would have been worth over $25 million! It brings to mind the unpredictable nature of meme coins. There's also a notable concentration of tokens, with one address holding 76% of the total supply. This raises concerns about liquidity and potential price drops. So, the crypto space is always evolving, and while taking profits is tempting, sometimes holding on could lead to life-changing gains. What's your take on the risks and rewards with these meme coins, Dana?",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Our next story is titled: 'Pickspot Chooses peaq As Its Layer 1 To Solve Africa\u2019s Last-Mile Delivery Challenge.' Layer-1 blockchain for DePIN and Machine RWAs, peaq, is expanding its ecosystem as part of a collaboration with Pickspot. Beth, could you shed some light on this?",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Sure, Dana. The layer-1 blockchain peaq has partnered with Pickspot to tackle Africa's last-mile delivery challenges. With Africa's eCommerce sector projected to reach over $46 billion by 2025, there's an urgent need for efficient logistics solutions. Pickspot aims to create a network of community-owned smart parcel lockers, minted as NFTs, allowing Pickspot agents to earn crypto rewards. They chose peaq as its blockchain partner due to its decentralized infrastructure, which is ideal for the logistics ecosystem. It's a community-driven approach to logistics and represents a significant leap forward for logistics in Africa. It's definitely a topic worth diving into for crypto enthusiasts, showcasing blockchain technology's real-world applications.",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "Absolutely, Beth. It's exciting to see how blockchain technology can have tangible impacts on real-world communities, especially in critical sectors like logistics. This collaboration between Pickspot and peaq could bring about new economic opportunities for local residents, and we'll certainly keep an eye on how this evolves.",
+    "voice_id": "man2"
+  }
+]
