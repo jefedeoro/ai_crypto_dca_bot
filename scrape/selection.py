@@ -9,9 +9,18 @@ def select_best_headlines(headlines, max_articles=MAX_STORIES):
     """Use OpenAI API to select the best headlines."""
     print(f"Starting headline selection process. Total headlines: {len(headlines)}")
     try:
-        logging.info("Selecting best headlines using GPT-4o-mini")
-        print("Preparing request for GPT-4o-mini")
+        logging.info("Selecting best headlines using GPT-4")
+        print("Preparing request for GPT-4")
         
+        # Pre-filter the headlines to limit the number sent to the assistant
+        near_headlines = [headline for headline in headlines if 'near' in headline['title'].lower()]
+        other_headlines = [headline for headline in headlines if 'near' not in headline['title'].lower()]
+        
+        max_total_headlines = 50  # Adjust as needed to stay within token limits
+        max_other_headlines = max_total_headlines - len(near_headlines)
+        selected_headlines = near_headlines + other_headlines[:max_other_headlines]
+        
+        # Build the messages
         messages = [
             {
                 "role": "system",
@@ -24,7 +33,8 @@ def select_best_headlines(headlines, max_articles=MAX_STORIES):
                     "- **Recency**: Prefer more recent news articles to ensure the content is up-to-date.\n"
                     "- **Variety**: Ensure a diverse range of topics to cover different aspects of the news.\n"
                     "- **Impact**: Choose articles that have significant implications for the industry or the public.\n"
-                    "Respond with the nonce numbers of the selected articles in a comma-separated list, enclosed in `<story-nonce>` tags."
+                    "Respond with the nonce numbers of the selected articles in a comma-separated list, enclosed in `<story-nonce>` tags. "
+                    "**Do not include any other text or explanation.**"
                 ),
             },
             {
@@ -34,16 +44,15 @@ def select_best_headlines(headlines, max_articles=MAX_STORIES):
                     f"Prioritize articles about NEAR and NEAR Protocol, but include other significant news to provide variety. "
                     "Here are the headlines:\n\n"
                     + "\n".join(
-                            [f"{headline['nonce']}: ({headline['date']}) {headline['title']}" for headline in headlines]
+                            [f"{headline['nonce']}: {headline['title']}" for headline in selected_headlines]
                     )
                 ),
             },
         ]
 
-        
         print("Sending request to OpenAI API")
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o-mini",  # Ensure the model name is correct
             messages=messages,
             temperature=0.7,
         )
@@ -56,10 +65,13 @@ def select_best_headlines(headlines, max_articles=MAX_STORIES):
         match = re.search(r'<story-nonce>(.*?)</story-nonce>', content, re.DOTALL)
         if match:
             nonce_list = match.group(1).strip()
-            selected_nonces = [nonce.strip() for nonce in nonce_list.split(',') if nonce.strip().isdigit()]
+            # Split on commas and newlines to handle any formatting
+            selected_nonces = [nonce.strip() for nonce in re.split(r'[,\n]', nonce_list) if nonce.strip()]
+            logging.info(f"Assistant selected nonces: {selected_nonces}")
         else:
             print("No <story-nonce> tags found in the response. Using fallback selection.")
-            selected_nonces = [headline['nonce'] for headline in headlines[:max_articles]]
+            logging.warning(f"No <story-nonce> tags found in the response. Response was: {content}")
+            selected_nonces = [headline['nonce'] for headline in selected_headlines[:max_articles]]
         
         print(f"Processed selected nonces: {selected_nonces}")
         
