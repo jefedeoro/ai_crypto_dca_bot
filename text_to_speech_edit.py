@@ -27,24 +27,24 @@ VOICE_IDS = {
 # Adjustable parameters for voice processing
 VOICE_PROCESSING_SETTINGS = {
     'man1': {
-        'gain_adjustment_db': 0.0,  # Adjust gain in dB
-        'high_pass_cutoff_freq': 50,  # Set to a frequency in Hz to apply high-pass filter
+        'gain_adjustment_db': 4.20,  # Adjust gain in dB
+        'high_pass_cutoff_freq': None,  # Set to a frequency in Hz to apply high-pass filter
         'low_pass_cutoff_freq': None,   # Set to a frequency in Hz to apply low-pass filter
     },
     'man2': {
-        'gain_adjustment_db': -0.69,
-        'high_pass_cutoff_freq': 150,  # Apply high-pass filter at 200 Hz to reduce bass
-        'low_pass_cutoff_freq': 6900,
+        'gain_adjustment_db': -0.420,
+        'high_pass_cutoff_freq': 115,  # Apply high-pass filter at 200 Hz to reduce bass
+        'low_pass_cutoff_freq': None,
     },
     'woman1': {
-        'gain_adjustment_db': -2.5,  # Increase volume by 1 dB (~5% increase)
-        'high_pass_cutoff_freq': 340,
-        'low_pass_cutoff_freq': 7000,
+        'gain_adjustment_db': 2.5,  # Increase volume by 1 dB (~5% increase)
+        'high_pass_cutoff_freq': None,
+        'low_pass_cutoff_freq': 19000,
     },
     'woman2': {
-        'gain_adjustment_db': 2,
-        'high_pass_cutoff_freq': 500,
-        'low_pass_cutoff_freq': 15000,  # Apply low-pass filter at 5000 Hz to soften high frequencies
+        'gain_adjustment_db': 7,
+        'high_pass_cutoff_freq': None,
+        'low_pass_cutoff_freq': None,  # Apply low-pass filter at 5000 Hz to soften high frequencies
     },
 }
 
@@ -59,8 +59,8 @@ def generate_audio(text, voice_id, use_speaker_boost=True):
         "text": text,
         "model_id": "eleven_multilingual_v2",
         "voice_settings": {
-            "stability": 0.25,
-            "similarity_boost": 0.25,
+            "stability": 0.3,
+            "similarity_boost": 0.3,
             "use_speaker_boost": use_speaker_boost
         }
     }
@@ -75,7 +75,7 @@ def generate_audio(text, voice_id, use_speaker_boost=True):
 def add_silence(duration_ms):
     return AudioSegment.silent(duration=duration_ms)
 
-def normalize_audio_segment(audio_segment, target_dBFS=-6.0):
+def normalize_audio_segment(audio_segment, target_dBFS=-3.0):
     """
     Normalizes an AudioSegment to the target dBFS.
     """
@@ -129,7 +129,7 @@ def text_to_speech(input_path, output_path):
 
                 # Apply voice-specific processing
                 settings = VOICE_PROCESSING_SETTINGS.get(voice_id, {})
-                gain_adjustment_db = settings.get('gain_adjustment_db', 0.0)
+                gain_adjustment_db = settings.get('gain_adjustment_db')
                 high_pass_cutoff_freq = settings.get('high_pass_cutoff_freq')
                 low_pass_cutoff_freq = settings.get('low_pass_cutoff_freq')
 
@@ -149,9 +149,9 @@ def text_to_speech(input_path, output_path):
                     audio_segment = audio_segment.low_pass_filter(low_pass_cutoff_freq)
 
                 # Decide whether to normalize individually
-                if voice_id != 'woman2':
+                # if voice_id != 'woman2':
                     # Normalize the audio segment to -6.0 dBFS
-                    audio_segment = normalize_audio_segment(audio_segment, target_dBFS=-6.0)
+                    # audio_segment = normalize_audio_segment(audio_segment, target_dBFS=-6.0)
                 else:
                     logging.debug("Skipping individual normalization for 'woman2'")
 
@@ -172,8 +172,8 @@ def text_to_speech(input_path, output_path):
         final_audio = sum(audio_segments)
 
         # Add silence at the start and end
-        start_silence = add_silence(random.randint(50, 300))
-        end_silence = add_silence(random.randint(50, 300))
+        start_silence = add_silence(random.randint(15, 270))
+        end_silence = add_silence(random.randint(33, 250))
         final_audio = start_silence + final_audio + end_silence
 
         # Normalize the final combined audio to -3.0 dBFS
