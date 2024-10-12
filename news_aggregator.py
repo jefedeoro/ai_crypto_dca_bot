@@ -1,11 +1,12 @@
 import os
 import logging
 import json
-import feedparser
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from scrape.scraping import scrape_headlines, select_and_scrape_stories
 from scrape.config import RESULT_FOLDER
 from scrape.utils import setup_logging
+from playwright.sync_api import sync_playwright
 import schedule
 import time
 
@@ -15,52 +16,65 @@ load_dotenv()
 # Set up logging
 setup_logging()
 
-def scrape_near_week_rss(feed_url, output_path):
+def scrape_near_week_newsletters(output_path):
     try:
-        # Parse the RSS feed
-        feed = feedparser.parse(feed_url)
-        
-        # Debugging: Log feed information
-        logging.debug(f"Feed keys: {feed.keys()}")
-        logging.debug(f"Number of entries: {len(feed.entries)}")
-        
-        if feed.bozo:
-            logging.error(f"Feed parsing error: {feed.bozo_exception}")
-            return  # Exit the function if feed parsing failed
-        
-        # Get the most recent article
-        if feed.entries:
-            latest_entry = feed.entries[0]
-            logging.debug(f"Latest entry keys: {latest_entry.keys()}")
-            article = {
-                "title": latest_entry.get('title', 'No Title'),
-                "link": latest_entry.get('link', ''),
-                "published": latest_entry.get('published', ''),
-                "summary": latest_entry.get('summary', ''),
-                "content": latest_entry.get('content', '')
-            }
-            
-            # Save the latest article to the output path
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+
+            # Navigate to NEAR Week page
+            url = "https://nearweek.com"
+            page.goto(url)
+
+            # Wait for the newsletter elements to load (adjust based on actual structure)
+            page.wait_for_selector('.newsletter-item', timeout=30000)
+
+            # Get the page content
+            html_content = page.content()
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            # Select the newsletters (adjust based on actual structure)
+            newsletters = soup.select('.newsletter-item a')
+
+            if not newsletters:
+                logging.warning("No newsletters found.")
+                return
+
+            # Extract relevant data
+            newsletters_data = []
+            for newsletter in newsletters:
+                title = newsletter.get_text().strip()
+                link = newsletter.get('href')
+
+                if not link.startswith('http'):
+                    link = f"{url.rstrip('/')}/{link.lstrip('/')}"
+
+                newsletters_data.append({
+                    'title': title,
+                    'link': link
+                })
+
+            # Save the scraped newsletters to JSON
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             with open(output_path, 'w') as f:
-                json.dump(article, f, indent=4)
-            
-            logging.info(f"Latest NEAR Week article saved to: {output_path}")
-        else:
-            logging.warning("No articles found in NEAR Week RSS feed.")
-    except Exception as e:
-        logging.error(f"Error scraping NEAR Week RSS feed: {str(e)}", exc_info=True)
+                json.dump(newsletters_data, f, indent=4)
 
+            logging.info(f"Scraped {len(newsletters_data)} newsletters from NEAR Week.")
+
+        browser.close()
+    except Exception as e:
+        logging.error(f"Error scraping NEAR Week: {str(e)}", exc_info=True)
+        
 def run_news_aggregation(output_path):
     try:
         print(f"Starting news aggregation process. Output path: {output_path}")
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
         # Scrape NEAR Week RSS feed
-        near_week_feed_url = "https://nearweek.com/feed"  # Updated URL
+        near_week_feed_url = "https://nearweek.com"  # Updated URL
         rss_output_path = os.path.join(os.path.dirname(output_path), "near_week.json")
         print(f"Scraping NEAR Week RSS feed. Saving to: {rss_output_path}")
-        scrape_near_week_rss(near_week_feed_url, rss_output_path)
+        scrape_near_week_newsletters(near_week_feed_url, rss_output_path)
 
         # Scrape headlines
         headlines_path = os.path.join(os.path.dirname(output_path), "headlines.json")

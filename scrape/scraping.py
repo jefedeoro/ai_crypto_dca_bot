@@ -4,46 +4,81 @@ import logging
 import random
 import json
 import time
+import feedparser
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 from .config import NEWS_SOURCES, KEYWORDS, MAX_STORIES
 from .selection import select_best_headlines
 
-def scrape_website(page, source, nonce_start):
-    """Scrape headlines from a single news source."""
-    url = source['url']
-    name = source['name']
+def scrape_rss_feed(url, name, nonce_start):
+    """Scrape headlines from an RSS feed."""
     try:
-        print(f"Scraping {name} from {url}")
-        logging.info(f"Navigating to {url}")
-        page.goto(url, wait_until="networkidle", timeout=30000)  # 30 seconds timeout
-        logging.info(f"Page loaded for {name}")
-        page.wait_for_timeout(random.randint(1000, 3000))  # Random delay
-        content = page.content()
-        logging.debug(f"Content length for {name}: {len(content)}")
-        soup = BeautifulSoup(content, 'html.parser')
+        print(f"Scraping RSS feed for {name} from {url}")
+        logging.info(f"Fetching RSS feed from {url}")
+        
+        feed = feedparser.parse(url)
         headlines = []
         nonce = nonce_start
 
-        # Parsing logic based on the news source
-        if  name == 'NewsBTC':
-            items = soup.select('.fw-carousel__items.fw-carousel__items--desktop-carousel a')
-        elif name == 'CryptoNews':
-            items = soup.select('.aside-news-list a')
-        elif name == 'TheBlock':
-            items = soup.select('.popularRail.d-print-none a')
-        else:
-            items = []
+        for entry in feed.entries:
+            title = entry.title
+            link = entry.link
+            if title and link:
+                print(f"Checking headline: {title}")
+                headlines.append({
+                    'nonce': f"{nonce:05d}",
+                    'title': title,
+                    'link': link,
+                    'source': name
+                })
+                nonce += 1
+                print(f"Added headline: {title}")
 
-        print(f"Found {len(items)} potential articles for {name}")
-        logging.debug(f"Found {len(items)} potential articles for {name}")
+        print(f"Collected {len(headlines)} headlines from {name}")
+        logging.info(f"Collected {len(headlines)} headlines from {name}")
+        return headlines, nonce
+    except Exception as e:
+        print(f"Error scraping RSS feed for {name}: {str(e)}")
+        logging.error(f"Error scraping RSS feed for {name}: {str(e)}", exc_info=True)
+        return [], nonce_start
 
-        for item in items:
-            title_elem = item
-            if title_elem:
-                title = title_elem.get_text().strip()
-                link = title_elem.get('href')
+def scrape_website(page, source, nonce_start, max_retries=3):
+    """Scrape headlines from a single news source."""
+    url = source['url']
+    name = source['name']
+    
+    # Use RSS feed for NEARWeek
+    if name == 'NEARWeek':
+        return scrape_rss_feed(url, name, nonce_start)
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"Scraping {name} from {url} (Attempt {attempt + 1})")
+            logging.info(f"Navigating to {url} (Attempt {attempt + 1})")
+            page.goto(url, wait_until="networkidle", timeout=30000)  # 2 minutes timeout
+            logging.info(f"Page loaded for {name}")
+            
+            page.wait_for_timeout(random.randint(5000, 10000))  # Increased random delay
+            logging.info("Completed waiting after load")
+            
+            headlines = []
+            nonce = nonce_start
+
+            content = page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            if name == 'NewsBTC':
+                items = soup.select('.fw-carousel__items.fw-carousel__items--desktop-carousel a')
+            elif name == 'CryptoNews':
+                items = soup.select('.aside-news-list a')
+            elif name == 'TheBlock':
+                items = soup.select('.popularRail.d-print-none a')
+            else:
+                items = []
+
+            for item in items:
+                title = item.get_text().strip()
+                link = item.get('href')
                 if link and title:
                     if not link.startswith('http'):
                         link = f'{url.rstrip("/")}/{link.lstrip("/")}'
@@ -56,22 +91,83 @@ def scrape_website(page, source, nonce_start):
                     })
                     nonce += 1
                     print(f"Added headline: {title}")
-                else:
-                    print(f"Skipped item (no title or link)")
-            else:
-                print(f"Skipped item (no title element)")
 
-        print(f"Collected {len(headlines)} headlines from {name}")
-        logging.info(f"Collected {len(headlines)} headlines from {name}")
-        return headlines, nonce
+            print(f"Collected {len(headlines)} headlines from {name}")
+            logging.info(f"Collected {len(headlines)} headlines from {name}")
+            return headlines, nonce
+        except PlaywrightTimeoutError:
+            print(f"Timeout error scraping {name} (Attempt {attempt + 1})")
+            logging.error(f"Timeout error scraping {name} (Attempt {attempt + 1})")
+            if attempt == max_retries - 1:
+                return [], nonce_start
+        except Exception as e:
+            print(f"Error scraping {name}: {str(e)} (Attempt {attempt + 1})")
+            logging.error(f"Error scraping {name}: {str(e)} (Attempt {attempt + 1})", exc_info=True)
+            if attempt == max_retries - 1:
+                return [], nonce_start
+
+def scrape_article(page, article):
+    try:
+        link = article['link']
+        print(f"Scraping article: {link}")
+        logging.info(f"Navigating to article: {link}")
+        page.goto(link, wait_until="networkidle", timeout=60000)  # 60 seconds timeout
+        page.wait_for_timeout(random.randint(3000, 5000))  # Increased random delay
+
+        # Parsing logic based on the news source
+        selectors = {
+            'NEARWeek': {
+                'content': 'article',
+                'author': '.author-name',
+                'date': '.post-date'
+            },
+            'NewsBTC': {
+                'content': '.content-inner',
+                'author': '.author-name',
+                'date': '.post-date'
+            },
+            'CryptoNews': {
+                'content': '.article-single__content.category_contents_details',
+                'author': '.article-single__author-name',
+                'date': '.article-single__date'
+            },
+            'TheBlock': {
+                'content': '.article',
+                'author': '.article__author-name',
+                'date': '.article__date'
+            }
+        }
+
+        source_selectors = selectors.get(article['source'], {})
+        
+        content_elem = page.query_selector(source_selectors.get('content'))
+        author_elem = page.query_selector(source_selectors.get('author'))
+        date_elem = page.query_selector(source_selectors.get('date'))
+
+        if content_elem:
+            article['article'] = content_elem.inner_text().strip()
+            article['author'] = author_elem.inner_text().strip() if author_elem else "Unknown"
+            article['date'] = date_elem.inner_text().strip() if date_elem else "Unknown"
+            
+            print(f"Added full article: {article['title']}")
+            logging.debug(f"Added full article: {article['title']}")
+            logging.debug(f"Author: {article['author']}, Date: {article['date']}")
+            return True
+        else:
+            print(f"No article content found for: {article['title']}")
+            logging.warning(f"No article content found for: {article['title']}")
+            logging.debug(f"Content selector: {source_selectors.get('content')}")
+            logging.debug(f"Author selector: {source_selectors.get('author')}")
+            logging.debug(f"Date selector: {source_selectors.get('date')}")
+            return False
     except PlaywrightTimeoutError:
-        print(f"Timeout error scraping {name}")
-        logging.error(f"Timeout error scraping {name}")
-        return [], nonce_start
+        print(f"Timeout error scraping article: {article['link']}")
+        logging.error(f"Timeout error scraping article: {article['link']}")
+        return False
     except Exception as e:
-        print(f"Error scraping {name}: {str(e)}")
-        logging.error(f"Error scraping {name}: {str(e)}", exc_info=True)
-        return [], nonce_start
+        print(f"Error scraping article {article['link']}: {str(e)}")
+        logging.error(f"Error scraping article {article['link']}: {str(e)}", exc_info=True)
+        return False
 
 def scrape_headlines(output_path):
     """Scrape headlines from all news sources."""
@@ -102,65 +198,6 @@ def scrape_headlines(output_path):
     except IOError as e:
         print(f"Error saving headlines to {output_path}: {str(e)}")
         logging.error(f"Error saving headlines to {output_path}: {str(e)}")
-
-def scrape_article(page, article):
-    try:
-        link = article['link']
-        print(f"Scraping article: {link}")
-        logging.info(f"Navigating to article: {link}")
-        page.goto(link, wait_until="networkidle", timeout=30000)  # 30 seconds timeout
-        page.wait_for_timeout(random.randint(1000, 3000))
-        article_content = BeautifulSoup(page.content(), 'html.parser')
-
-        # Parsing logic based on the news source
-        selectors = {
-            'NewsBTC': {
-                'content': '.content-inner',
-                'author': '.author-name',
-                'date': '.post-date'
-            },
-            'CryptoNews': {
-                'content': '.article-single__content.category_contents_details',
-                'author': '.article-single__author-name',
-                'date': '.article-single__date'
-            },
-            'TheBlock': {
-                'content': '.article',
-                'author': '.article__author-name',
-                'date': '.article__date'
-            }
-        }
-
-        source_selectors = selectors.get(article['source'], {})
-        
-        article_text = article_content.select_one(source_selectors.get('content'))
-        author = article_content.select_one(source_selectors.get('author'))
-        date = article_content.select_one(source_selectors.get('date'))
-
-        if article_text:
-            article['article'] = article_text.get_text(strip=True)
-            article['author'] = author.get_text(strip=True) if author else "Unknown"
-            article['date'] = date.get_text(strip=True) if date else "Unknown"
-            
-            print(f"Added full article: {article['title']}")
-            logging.debug(f"Added full article: {article['title']}")
-            logging.debug(f"Author: {article['author']}, Date: {article['date']}")
-            return True
-        else:
-            print(f"No article content found for: {article['title']}")
-            logging.warning(f"No article content found for: {article['title']}")
-            logging.debug(f"Content selector: {source_selectors.get('content')}")
-            logging.debug(f"Author selector: {source_selectors.get('author')}")
-            logging.debug(f"Date selector: {source_selectors.get('date')}")
-            return False
-    except PlaywrightTimeoutError:
-        print(f"Timeout error scraping article: {article['link']}")
-        logging.error(f"Timeout error scraping article: {article['link']}")
-        return False
-    except Exception as e:
-        print(f"Error scraping article {article['link']}: {str(e)}")
-        logging.error(f"Error scraping article {article['link']}: {str(e)}", exc_info=True)
-        return False
 
 def select_and_scrape_stories(headlines_path, selected_path, output_path):
     """Select the best headlines and scrape their full articles."""
