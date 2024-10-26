@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Podcast Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dca.css') }}">
+    {% block styles %}{% endblock %}
+</head>
+<body class="light-theme">
+    {% include 'nav.html' %}
+    
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+    
+    <div id="main-container" class="main-container">
+        <main>
+            {% block content %}
+            <!-- Content from child templates will be injected here -->
+            {% endblock %}
+        </main>
+    </div>
+    
+    <!-- Global Scripts -->
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    {% block scripts %}
+    <!-- Page-specific scripts will be injected here -->
+    {% endblock %}
+</body>
+</html>

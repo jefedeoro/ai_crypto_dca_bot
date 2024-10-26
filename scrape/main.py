@@ -8,6 +8,8 @@ from .config import RESULT_FOLDER
 from .scraping import scrape_headlines, select_and_scrape_stories
 import schedule
 import time
+from scrape.podcast_api import app as podcast_app  # Use absolute import
+
 
 def scheduled_task():
     headlines_path = os.path.join(RESULT_FOLDER, "headlines.json")
@@ -35,3 +37,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    podcast_app.run(debug=True)

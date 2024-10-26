@@ -1,0 +1,81 @@
+:root {
+    --nav-bg: #f8f9fa;
+    --nav-shadow: rgba(0,0,0,0.1);
+    --nav-title: #007bff;
+    --nav-subtitle: #6c757d;
+    --nav-link: #343a40;
+    --nav-link-hover: #007bff;
+    --nav-button: #007bff;
+    --nav-button-hover: #0056b3;
+}
+
+[data-theme="dark"] {
+    --nav-bg: #2a2a2a;
+    --nav-shadow: rgba(0,0,0,0.3);
+    --nav-title: #4a90e2;
+    --nav-subtitle: #a0a0a0;
+    --nav-link: #e0e0e0;
+    --nav-link-hover: #4a90e2;
+    --nav-button: #4a90e2;
+    --nav-button-hover: #357abd;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--nav-bg);
+    box-shadow: 0 2px 4px var(--nav-shadow);
+}
+
+.nav-branding {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.nav-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--nav-title);
+    margin: 0;
+}
+
+.nav-subtitle {
+    font-size: 0.9rem;
+    color: var(--nav-subtitle);
+    margin: 0;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--nav-link);
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--nav-link-hover);
+}
+
+.login-btn {
+    padding: 0.5rem 1.5rem;
+    background-color: var(--nav-button);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.login-btn:hover {
+    background-color: var(--nav-button-hover);
+}

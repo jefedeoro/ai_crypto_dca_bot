@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}DCA Simulator - Podcast Platform{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Dollar Cost Averaging (DCA) Simulator</h1>
+    
+    <!-- DCA Setup Card -->
+    <div class="dca-card mb-5">
+        <div class="dca-card-header">
+            <h2>Set Up New DCA Investment</h2>
+        </div>
+        <div class="dca-card-body">
+            <form id="dca-setup-form">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="total_amount" class="dca-form-label">Total Investment Amount ($):</label>
+                        <input type="number" class="dca-form-control" id="total_amount" name="total_amount" min="0" step="0.01" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="interval" class="dca-form-label">Investment Interval:</label>
+                        <select class="dca-form-select" id="interval" name="interval" required>
+                            <option value="" selected disabled>Select Interval</option>
+                            <!-- value in seconds -->
+                            <option value="60">1 Minute</option>
+                            <option value="1800">30 Minutes</option>
+                            <option value="3600">1 Hour</option>
+                            <option value="10800">3 Hours</option>
+                            <option value="21600">6 Hours</option>
+                            <option value="43200">12 Hours</option>
+                            <option value="86400">1 Day</option>
+                            <option value="604800">1 Week</option>
+                            <option value="2592000">1 Month</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="dca-form-label">End Date:</label>
+                        <input type="date" class="dca-form-control" id="end_date" name="end_date" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="trading-pair" class="dca-form-label">Select Trading Pair:</label>
+                        <select class="dca-form-select" id="trading-pair" required>
+                            <option value="" disabled selected>Select a token</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="dca-btn dca-btn-primary">Start DCA Investment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Investment Dashboard -->
+    <div class="dca-card mb-5">
+        <div class="dca-card-header d-flex justify-content-between align-items-center">
+            <h2>Active DCA Investments</h2>
+            <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">Refresh Dashboard</button>
+        </div>
+        <div class="dca-card-body">
+            <table class="dca-table dca-table-striped" id="investment-dashboard">
+                <thead>
+                    <tr>
+                        <th scope="col">Investment ID</th>
+                        <th scope="col">Total Amount ($)</th>
+                        <th scope="col">Interval</th>
+                        <th scope="col">Next Investment Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Investment rows will be dynamically populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Token Cash-Out Section -->
+    <div class="dca-card">
+        <div class="dca-card-header">
+            <h2>Cash Out Tokens</h2>
+        </div>
+        <div class="dca-card-body">
+            <form id="cashout-form">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="token_select" class="dca-form-label">Select Token:</label>
+                        <select class="dca-form-select" id="token_select" name="token_select" required>
+                            <option value="" selected disabled>Select Token</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cashout_amount" class="dca-form-label">Amount to Cash Out:</label>
+                        <input type="number" class="dca-form-control" id="cashout_amount" name="cashout_amount" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <button type="submit" class="dca-btn dca-btn-danger">Cash Out</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Chart.js from CDN if needed for future enhancements -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dca.js') }}"></script>
+{% endblock %}

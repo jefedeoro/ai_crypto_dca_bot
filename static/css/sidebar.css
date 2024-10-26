@@ -1,0 +1,108 @@
+:root {
+    --sidebar-bg: #f8f9fa;
+    --sidebar-shadow: rgba(0, 0, 0, 0.1);
+    --card-bg: white;
+    --card-border: #ddd;
+    --date-text: #666;
+    --button-bg: #007bff;
+    --button-hover: #0056b3;
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #2a2a2a;
+    --sidebar-shadow: rgba(0, 0, 0, 0.3);
+    --card-bg: #333333;
+    --card-border: #404040;
+    --date-text: #a0a0a0;
+    --button-bg: #4a90e2;
+    --button-hover: #357abd;
+}
+
+.toggle-btn {
+    position: fixed;
+    top: 90px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 1001;
+}
+
+.sidebar {
+    position: fixed;
+    left: -250px;
+    top: 10;
+    margin-top: 40px;
+    width: 250px;
+    height: 100%;
+    background-color: var(--sidebar-bg);
+    transition: left 0.3s ease;
+    padding: 20px;
+    box-shadow: 2px 0 5px var(--sidebar-shadow);
+    z-index: 1000;
+    direction: rtl;
+    overflow-y: auto;
+}
+
+.sidebar > * {
+    direction: ltr;
+}
+
+.sidebar-title {
+    text-align: right;
+    margin-right: 10px;
+    margin-top: 10px;
+    padding-left: 40px;
+}
+
+.podcast-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.podcast-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.podcast-date {
+    font-size: 0.9em;
+    color: var(--date-text);
+    margin-bottom: 5px;
+}
+
+.podcast-title {
+    font-size: 0.95em;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.open-btn {
+    width: 100%;
+    padding: 6px;
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.open-btn:hover {
+    background-color: var(--button-hover);
+}
+
+.main-container {
+    margin-left: 2rem;
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+}
+
+.main-container.sidebar-open {
+    margin-left: calc(250px + 2rem);
+}

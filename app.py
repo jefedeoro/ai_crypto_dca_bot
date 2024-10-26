@@ -3,6 +3,9 @@ from flask import Flask, jsonify, render_template
 import os
 import main
 import json
+from routes.podcast_api import podcast_api
+from routes.sidebar import sidebar_api
+from routes.dca_routes import dca_bp
 
 # Flask app setup
 app = Flask(__name__)
@@ -17,6 +20,10 @@ def get_latest_result_folder():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/podcasts')
+def podcasts():
+    return render_template('podcasts.html')
 
 @app.route('/api/news', methods=['GET'])
 def get_news():
@@ -54,12 +61,10 @@ def fetch_new_stories():
     except Exception as e:
         return jsonify({"status": "error", "message": f"Error fetching new stories: {str(e)}"})
 
+# Register the blueprints
+app.register_blueprint(podcast_api)
+app.register_blueprint(sidebar_api)
+app.register_blueprint(dca_bp) 
+
 if __name__ == '__main__':
-    # Telegram bot and NEAR integration can be added here in the future
-    # import telegram_bot
-    # telegram_bot.setup_webhook(app)
-    
-    # import near_integration
-    # near_integration.initialize_near()
-    
     app.run(debug=True)

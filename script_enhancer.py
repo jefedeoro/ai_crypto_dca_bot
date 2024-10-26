@@ -114,7 +114,7 @@ def process_segment(segment_type, content, previous_dialogue, article_titles=Non
 
 def get_system_prompt(segment_type):
     # Update system prompt based on segment type
-    base_prompt = """You are an AI assistant that transforms scripted content into natural, flowing conversations between four crypto enthusiasts discussing current news topics. Your goal is to create a realistic and engaging podcast-style dialogue that feels spontaneous and unscripted.
+    base_prompt = """You are an AI assistant that transforms scripted content into natural, flowing conversations between four crypto enthusiasts discussing current news topics on the program "Crypto Current". Your goal is to create a realistic and engaging podcast-style dialogue that feels spontaneous and unscripted.
 
 Instructions:
 
@@ -159,6 +159,8 @@ Instructions:
 - If there is insufficient context or content to discuss, output `<skip></skip>` and nothing else.
 
 3. **Output Format:**
+
+- Prices just use 2 decimal places (e.g., $3.50).
 
 - Output the result as a valid JSON array of objects.
 
