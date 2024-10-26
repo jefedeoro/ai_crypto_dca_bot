@@ -6,6 +6,8 @@
     --date-text: #666;
     --button-bg: #007bff;
     --button-hover: #0056b3;
+    --selected-card-bg: #e3f2fd;
+    --selected-card-border: #2196f3;
 }
 
 [data-theme="dark"] {
@@ -16,6 +18,8 @@
     --date-text: #a0a0a0;
     --button-bg: #4a90e2;
     --button-hover: #357abd;
+    --selected-card-bg: #1a3f5f;
+    --selected-card-border: #4a90e2;
 }
 
 .toggle-btn {
@@ -68,6 +72,12 @@
     border: 1px solid var(--card-border);
     border-radius: 4px;
     padding: 10px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.podcast-card.selected {
+    background: var(--selected-card-bg);
+    border-color: var(--selected-card-border);
 }
 
 .podcast-date {

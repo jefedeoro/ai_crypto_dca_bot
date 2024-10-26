@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const recentPodcast = document.getElementById('recent-podcast');
     const articlesList = document.getElementById('articles-list');
-    const podcastAudio = document.getElementById('podcast-audio');
     const loadingSpinner = document.getElementById('loading-spinner');
+    const navbarAudio = document.querySelector('nav audio source#podcast-audio');
 
     /**
      * Show loading spinner and hide content
@@ -49,11 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (data.status === 'success') {
-                // Set audio source and load the audio
-                if (data.podcast.audio_url) {
-                    podcastAudio.src = sanitizeURL(data.podcast.audio_url);
-                    const audioElement = podcastAudio.parentElement;
-                    audioElement.load(); // Force reload of audio element
+                // Update navbar audio player
+                if (data.podcast.audio_url && navbarAudio) {
+                    const sanitizedUrl = sanitizeURL(data.podcast.audio_url);
+                    navbarAudio.src = sanitizedUrl;
+                    navbarAudio.parentElement.load();
+                    localStorage.setItem('currentPodcastUrl', sanitizedUrl);
                 }
 
                 // Display all articles
@@ -92,13 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         temp.href = url;
         return temp.href;
     };
-
-    // Add audio error handling
-    const audioElement = podcastAudio.parentElement;
-    audioElement.addEventListener('error', (e) => {
-        console.error('Error loading audio:', e);
-        audioElement.innerHTML = 'Error loading audio file.';
-    });
 
     // Check URL parameters for folder
     const urlParams = new URLSearchParams(window.location.search);

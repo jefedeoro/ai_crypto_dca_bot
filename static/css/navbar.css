@@ -79,3 +79,15 @@
 .login-btn:hover {
     background-color: var(--nav-button-hover);
 }
+
+.wallet-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--nav-link);
+    font-size: 0.9rem;
+}
+
+#account-id {
+    font-family: monospace;
+}

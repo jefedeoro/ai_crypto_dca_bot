@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dca.css') }}">
+    <link href="https://unpkg.com/@near-wallet-selector/modal-ui/styles.css" rel="stylesheet" />
     {% block styles %}{% endblock %}
 </head>
 <body class="light-theme">
@@ -24,10 +25,19 @@
         </main>
     </div>
     
+    <!-- NEAR Wallet Dependencies -->
+    <script src="https://unpkg.com/@near-wallet-selector/core@8.1.4/dist/wallet-selector-core.js"></script>
+    <script src="https://unpkg.com/@near-wallet-selector/modal-ui@8.1.4/dist/wallet-selector-modal-ui.js"></script>
+    <script src="https://unpkg.com/@near-wallet-selector/near-wallet@8.1.4/dist/near-wallet.js"></script>
+    <script src="https://unpkg.com/@near-wallet-selector/my-near-wallet@8.1.4/dist/my-near-wallet.js"></script>
+    <script src="https://unpkg.com/@near-wallet-selector/sender@8.1.4/dist/sender.js"></script>
+    
     <!-- Global Scripts -->
+    <script src="{{ url_for('static', filename='js/audioPlayer.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/near-wallet.js') }}"></script>
     {% block scripts %}
     <!-- Page-specific scripts will be injected here -->
     {% endblock %}

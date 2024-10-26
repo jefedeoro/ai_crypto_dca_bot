@@ -155,3 +155,101 @@ button:hover {
 .theme-toggle:hover {
     transform: scale(1.1);
 }
+
+/* Landing Page Styles */
+.hero-section {
+    padding: 4rem 0;
+    background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1));
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--button-bg);
+    color: var(--header-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.features-section .dca-card {
+    transition: transform 0.3s ease;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.features-section .dca-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.list-unstyled li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.cta-section {
+    padding: 3rem 0;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.display-4 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.lead {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    opacity: 0.9;
+}
+
+.dca-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.dca-btn-primary {
+    background-color: var(--button-bg);
+    color: var(--header-text);
+    border: none;
+}
+
+.dca-btn-primary:hover {
+    background-color: var(--button-hover);
+    transform: translateY(-2px);
+}
+
+.dca-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.dca-card-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dca-card-body {
+    padding: 1rem 0;
+}

@@ -1,13 +1,21 @@
 <nav class="navbar">
     <div class="nav-branding">
         <h1 class="nav-title">Crypto Current</h1>
-        <p class="nav-subtitle">podcasts and dollar cost averaging platform</p>
+        <p class="nav-subtitle">Automated DCA Investment Platform</p>
     </div>
     <div class="nav-links">
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">☀️</button>
         <a href="/" class="nav-link">Home</a>
-        <li class="nav-item"><a href="{{ url_for('dca.dca') }}" class="nav-link">DCA Simulator</a></li>
+        <a href="{{ url_for('dca.dca') }}" class="nav-link">Dashboard</a>
         <a href="/podcasts" class="nav-link">Podcasts</a>
-        <button class="login-btn">Login</button>
+        <button id="wallet-btn" class="login-btn">Connect Wallet</button>
+        <div id="wallet-info" class="wallet-info" style="display: none;">
+            <span id="account-id"></span>
+        </div>
+        <div id="audio-player" class="audio-player">
+            <audio id="podcast-audio" controls>
+                Your browser does not support the audio element.
+            </audio>
+        </div>
     </div>
 </nav>

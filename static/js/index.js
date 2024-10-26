@@ -1,5 +1,7 @@
 // static/index.js
 
+// News functionality temporarily disabled
+/*
 document.addEventListener('DOMContentLoaded', () => {
     const newsContainer = document.getElementById('news-container');
     const loadingSpinner = document.getElementById('loading-spinner');
@@ -8,9 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const audioStatus = document.getElementById('audio-status');
     const updateTime = document.getElementById('update-time');
 
-    /**
-     * Fetch and display the latest news from the backend API.
-     */
     const fetchNews = async () => {
         showLoadingSpinner(true);
         try {
@@ -35,9 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Handle fetching new stories via the backend API.
-     */
     const fetchNewStories = async () => {
         showLoadingSpinner(true);
         try {
@@ -49,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(data.message);
                 audioStatus.textContent = data.audio_available ? 'Audio available.' : 'Audio not available.';
                 updateTime.textContent = `Last update: ${new Date().toLocaleString()}`;
-                fetchNews(); // Refresh news after fetching new stories
+                fetchNews();
             } else {
                 alert(data.message);
             }
@@ -61,29 +57,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Show or hide the loading spinner.
-     * @param {boolean} show - Whether to show the spinner.
-     */
     const showLoadingSpinner = (show) => {
         loadingSpinner.classList.toggle('hidden', !show);
     };
 
-    /**
-     * Sanitize HTML to prevent XSS attacks.
-     * @param {string} str - The string to sanitize.
-     * @returns {string} - The sanitized string.
-     */
     const sanitizeHTML = (str) => {
         const temp = document.createElement('div');
         temp.textContent = str;
         return temp.innerHTML;
     };
 
-    // Event Listeners
     refreshBtn.addEventListener('click', fetchNews);
     fetchNewStoriesBtn.addEventListener('click', fetchNewStories);
 
-    // Initial Fetch
     fetchNews();
+});
+*/
+
+// Initialize any current index page functionality here if needed
+document.addEventListener('DOMContentLoaded', () => {
+    // Add any new index page JavaScript here
 });

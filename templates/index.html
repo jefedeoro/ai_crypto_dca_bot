@@ -1,25 +1,89 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Latest News{% endblock %}
+{% block title %}DCA Bot - Automated Crypto Investment{% endblock %}
 
 {% block content %}
-    <div id="loading-spinner" class="hidden">Loading...</div>
-    <div id="news-container"></div>
-    <p id="audio-status"></p>
-    <p id="update-time"></p>
+<div class="container my-5">
+    <div class="hero-section text-center mb-5">
+        <h1 class="display-4 mb-4">Automated Crypto Dollar Cost Averaging</h1>
+        <p class="lead mb-4">Simplify your crypto investment strategy with automated Dollar Cost Averaging (DCA)</p>
+        <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Start Investing</a>
+    </div>
 
-    <div id="main-area">
-        <div id="button-container">
-            <button id="refresh-btn">Refresh</button>
-            <button id="fetch-new-stories-btn">Fetch New Stories</button>
-        </div>
-        <h1>Most Recent Podcast</h1>
-        <div id="recent-podcast">
-            <!-- Content for the most recent podcast will be loaded here -->
+    <div class="features-section mb-5">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="dca-card h-100">
+                    <div class="dca-card-body">
+                        <h3>What is DCA?</h3>
+                        <p>Dollar Cost Averaging is an investment strategy where you invest a fixed amount at regular intervals, regardless of market conditions. This helps reduce the impact of market volatility on your investments.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="dca-card h-100">
+                    <div class="dca-card-body">
+                        <h3>How It Works</h3>
+                        <ul class="list-unstyled">
+                            <li>✓ Set your total investment amount</li>
+                            <li>✓ Choose your investment interval</li>
+                            <li>✓ Select your preferred trading pairs</li>
+                            <li>✓ Let our bot handle the rest</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="dca-card h-100">
+                    <div class="dca-card-body">
+                        <h3>Key Benefits</h3>
+                        <ul class="list-unstyled">
+                            <li>✓ Reduce emotional trading</li>
+                            <li>✓ Automated investments</li>
+                            <li>✓ Lower risk through averaging</li>
+                            <li>✓ Easy portfolio management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-{% endblock %}
 
-{% block scripts %}
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <div class="getting-started-section mb-5">
+        <div class="dca-card">
+            <div class="dca-card-header">
+                <h2>Getting Started</h2>
+            </div>
+            <div class="dca-card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-circle mb-2">1</div>
+                        <h4>Create Account</h4>
+                        <p>Sign up and connect your wallet</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-circle mb-2">2</div>
+                        <h4>Set Parameters</h4>
+                        <p>Choose amount, interval, and tokens</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-circle mb-2">3</div>
+                        <h4>Start DCA</h4>
+                        <p>Activate your automated investment</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-4">
+                        <div class="step-circle mb-2">4</div>
+                        <h4>Monitor</h4>
+                        <p>Track your investments progress</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section text-center">
+        <h2 class="mb-4">Ready to Start Your DCA Journey?</h2>
+        <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Get Started Now</a>
+    </div>
+</div>
 {% endblock %}
