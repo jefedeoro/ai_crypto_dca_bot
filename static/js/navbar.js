@@ -1,5 +1,9 @@
+console.log('Loading navbar.js...');
+
 // Theme toggle functionality
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded in navbar.js');
+    
     const themeToggle = document.getElementById('themeToggle');
     const html = document.documentElement;
     
@@ -16,4 +20,29 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', newTheme);
         themeToggle.innerHTML = newTheme === 'light' ? '☀️' : '🌙';
     });
+
+    // Add wallet button click handler with polling for modal
+    const walletBtn = document.getElementById('wallet-btn');
+    console.log('Wallet button element:', walletBtn);
+    
+    if (walletBtn) {
+        console.log('Adding click listener to wallet button');
+        walletBtn.onclick = async () => {
+            console.log('Wallet button clicked');
+            // Poll for modal availability
+            for (let i = 0; i < 50; i++) {
+                console.log('Checking for modal...', { modal: window.modal, selector: window.selector });
+                if (window.modal) {
+                    console.log('Modal found, showing...');
+                    window.modal.show();
+                    return;
+                }
+                console.log('Modal not available, waiting...');
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+            console.error('Modal not available after waiting');
+        };
+    }
 });
+
+console.log('navbar.js loaded');

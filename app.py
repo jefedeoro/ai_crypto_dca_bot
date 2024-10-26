@@ -1,14 +1,14 @@
-# app.py
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template, jsonify, request, send_from_directory
 import os
 import main
 import json
 from routes.podcast_api import podcast_api
 from routes.sidebar import sidebar_api
 from routes.dca_routes import dca_bp
+from routes.near import near_bp
 
-# Flask app setup
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')  # Added secret key for sessions
 
 def get_latest_result_folder():
     data_dir = 'data'
@@ -20,6 +20,10 @@ def get_latest_result_folder():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/mockData/<path:filename>')
+def serve_mock_data(filename):
+    return send_from_directory('mockData', filename)
 
 @app.route('/podcasts')
 def podcasts():
@@ -64,7 +68,8 @@ def fetch_new_stories():
 # Register the blueprints
 app.register_blueprint(podcast_api)
 app.register_blueprint(sidebar_api)
-app.register_blueprint(dca_bp) 
+app.register_blueprint(dca_bp)
+app.register_blueprint(near_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)

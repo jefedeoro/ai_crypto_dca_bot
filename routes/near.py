@@ -1,67 +1,101 @@
 from flask import Blueprint, request, jsonify, session
-from pynear import Near
+import sys
 import os
+from pathlib import Path
+from functools import wraps
 
-# Initialize NEAR connection using environment variables
-near = Near(rpc_url=os.getenv("NEAR_RPC_URL"), network_id=os.getenv("NETWORK_ID"))
+# Add local py-near package to Python path
+py_near_path = str(Path(__file__).parent.parent / 'py-near' / 'src')
+if py_near_path not in sys.path:
+    sys.path.insert(0, py_near_path)
+
+from py_near.account import Account
+from py_near.dapps.core import NEAR
+import asyncio
 
 # Initialize blueprint
 near_bp = Blueprint("near", __name__)
 
+def async_route(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+    return wrapped
+
+# Initialize NEAR account using environment variables
+def get_near_account():
+    return Account(
+        account_id=os.getenv("ACCOUNT_ID"),
+        private_key=os.getenv("PRIVATE_KEY"),
+        rpc_addr=os.getenv("NEAR_RPC_URL", "https://rpc.mainnet.near.org")
+    )
+
 @near_bp.route("/balance/<account_id>", methods=["GET"])
-def get_balance(account_id):
+@async_route
+async def get_balance(account_id):
     try:
-        account = near.get_account(account_id)
-        balance = account.get_balance()
-        return jsonify({"account_id": account_id, "balance": balance}), 200
+        acc = get_near_account()
+        await acc.startup()
+        balance = await acc.get_balance(account_id)
+        return jsonify({"account_id": account_id, "balance": balance / NEAR}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @near_bp.route("/transfer", methods=["POST"])
-def transfer_tokens():
+@async_route
+async def transfer_tokens():
     data = request.get_json()
     recipient = data.get("recipient")
     amount = data.get("amount")
 
     try:
-        sender = near.get_account(os.getenv("ACCOUNT_ID"))
-        tx_hash = sender.send_tokens(recipient, amount, private_key=os.getenv("PRIVATE_KEY"))
-        return jsonify({"transaction_hash": tx_hash}), 200
+        acc = get_near_account()
+        await acc.startup()
+        tx = await acc.send_money(recipient, int(float(amount) * NEAR))
+        return jsonify({"transaction_hash": tx.transaction.hash}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @near_bp.route("/call_chain_function", methods=["POST"])
-def call_chain_function():
+@async_route
+async def call_chain_function():
     data = request.get_json()
-    account_id = data.get("account_id")
+    contract_id = data.get("contract_id")
     method_name = data.get("method_name")
-    params = data.get("params", {})
+    args = data.get("args", {})
     gas = data.get("gas", 30000000000000)  # Default gas
-    deposit = data.get("deposit", 0)  # Default deposit
+    amount = data.get("amount", 0)  # Default deposit
 
     try:
-        account = near.get_account(account_id)
-        result = account.function_call(
+        acc = get_near_account()
+        await acc.startup()
+        result = await acc.function_call(
+            contract_id=contract_id,
             method_name=method_name,
-            params=params,
+            args=args,
             gas=gas,
-            deposit=deposit,
-            private_key=os.getenv("PRIVATE_KEY")
+            amount=amount
         )
-        return jsonify({"transaction_hash": result}), 200
+        return jsonify({"transaction_hash": result.transaction.hash}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @near_bp.route("/view_chain_function", methods=["POST"])
-def view_chain_function():
+@async_route
+async def view_chain_function():
     data = request.get_json()
-    account_id = data.get("account_id")
+    contract_id = data.get("contract_id")
     method_name = data.get("method_name")
-    params = data.get("params", {})
+    args = data.get("args", {})
 
     try:
-        account = near.get_account(account_id)
-        result = account.view_function(method_name=method_name, params=params)
+        acc = get_near_account()
+        await acc.startup()
+        result = await acc.view_function(
+            contract_id=contract_id,
+            method_name=method_name,
+            args=args
+        )
         return jsonify({"result": result}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
