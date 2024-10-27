@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Contract configuration
+CONTRACT_ID = os.getenv('NEAR_CONTRACT_ID', 'dca-bot.testnet')
+
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -31,3 +34,6 @@ class Config:
 
 # Log the configuration when the module is imported
 Config.log_config()
+
+# Export CONTRACT_ID for use in other modules
+__all__ = ['CONTRACT_ID']

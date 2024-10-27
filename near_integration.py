@@ -2,9 +2,9 @@
 
 import os
 import subprocess
+from config import CONTRACT_ID
 
 NEAR_NETWORK = os.getenv('NEAR_NETWORK', 'testnet')
-NEAR_CONTRACT_ID = os.getenv('NEAR_CONTRACT_ID', 'dca_contract.testnet')
 
 def check_near_cli():
     try:
@@ -33,11 +33,11 @@ def set_dca_investment(account_id, crypto, amount, frequency):
         'amount': amount,
         'frequency': frequency
     }
-    command = f"near call {NEAR_CONTRACT_ID} set_investment '{args}' --accountId {account_id} --network {NEAR_NETWORK}"
+    command = f"near call {CONTRACT_ID} set_investment '{args}' --accountId {account_id} --network {NEAR_NETWORK}"
     return run_near_cli_command(command)
 
 def get_dca_investment(account_id):
-    command = f"near view {NEAR_CONTRACT_ID} get_investment '{{'account_id': '{account_id}'}}' --network {NEAR_NETWORK}"
+    command = f"near view {CONTRACT_ID} get_investment '{{'account_id': '{account_id}'}}' --network {NEAR_NETWORK}"
     return run_near_cli_command(command)
 
 # This function can be called to initialize NEAR integration

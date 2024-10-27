@@ -8,7 +8,7 @@ from .config import RESULT_FOLDER
 from .scraping import scrape_headlines, select_and_scrape_stories
 import schedule
 import time
-from scrape.podcast_api import app as podcast_app  # Use absolute import
+from routes.podcast_api import app as podcast_app  # Use absolute import
 
 
 def scheduled_task():

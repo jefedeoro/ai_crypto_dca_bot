@@ -4,11 +4,11 @@ from flask import Blueprint, request, jsonify
 import subprocess
 import json
 import os
+from config import CONTRACT_ID
 
 dca_bp = Blueprint('dca', __name__)
 
 NEAR_NETWORK = os.getenv('NEAR_NETWORK', 'testnet')
-NEAR_CONTRACT_ID = os.getenv('NEAR_CONTRACT_ID', 'dca_contract.testnet')
 
 def run_near_cli_command(command):
     try:
@@ -38,7 +38,7 @@ def set_dca():
     })
 
     # Construct the NEAR CLI command
-    command = f"near call {NEAR_CONTRACT_ID} set_investment '{args}' --accountId {account_id} --network {NEAR_NETWORK}"
+    command = f"near call {CONTRACT_ID} set_investment '{args}' --accountId {account_id} --network {NEAR_NETWORK}"
 
     # Execute the command
     result = run_near_cli_command(command)
@@ -53,7 +53,7 @@ def get_dca():
     account_id = request.args.get('account_id')
 
     # Construct the NEAR CLI command
-    command = f"near view {NEAR_CONTRACT_ID} get_investment '{{'account_id': '{account_id}'}}' --network {NEAR_NETWORK}"
+    command = f"near view {CONTRACT_ID} get_investment '{{'account_id': '{account_id}'}}' --network {NEAR_NETWORK}"
 
     # Execute the command
     result = run_near_cli_command(command)

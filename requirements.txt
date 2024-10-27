@@ -10,3 +10,8 @@ python-dotenv
 playwright
 pydub
 py-near
+base58
+ed25519
+httpx
+py-near-primitives
+pydantic
