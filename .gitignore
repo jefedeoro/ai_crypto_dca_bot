@@ -38,3 +38,11 @@ smart_contracts/build/
 # VS Code
 .vscode/
 data/*
+
+venv
+build
+dist
+.idea
+tests
+py_near.egg-info
+poetry.lock

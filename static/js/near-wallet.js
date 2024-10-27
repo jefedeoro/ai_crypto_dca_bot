@@ -9,7 +9,7 @@ const selector = await setupWalletSelector({
 });
 
 const modal = setupModal(selector, {
-    contractId: "dev-1699555568609-19215591738535"
+    contractId: "dca.poolv1.testnet",
 });
 
 window.selector = selector;
