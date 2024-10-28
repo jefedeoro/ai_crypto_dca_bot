@@ -1,41 +1,31 @@
 # routes/dca_routes.py
+import base64
+import requests
 from flask import Blueprint, render_template, request, jsonify
 import json
 import os
-from near_integration import (
-    run_near_cli_command,
-    NEAR_NETWORK
-)
 from config import CONTRACT_ID
 
 # Blueprint named 'dca' for cleaner endpoint naming
 dca_bp = Blueprint('dca', __name__)
-
+NEAR_NETWORK = os.getenv('NEAR_NETWORK', 'testnet') 
 @dca_bp.route('/dca')
 def dca():
     return render_template('dca.html')
 
 @dca_bp.route('/api/dca/register', methods=['POST'])
 def register_user():
-    """Register a new DCA user with specified amount and interval"""
+    """Register a new DCA user"""
     try:
         data = request.json
-        amount_per_swap = data.get('amount_per_swap')
-        swap_interval = data.get('swap_interval')
+        account_id = data.get('AccountId')  # Updated to AccountId
+        gas = data.get('gas', "300000000000000")  # Default 300 TGas if not provided
         
-        if not amount_per_swap or not swap_interval:
-            return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
 
-        command = f"near call {CONTRACT_ID} register_user '{{\
-            \"amount_per_swap\": \"{amount_per_swap}\", \
-            \"swap_interval\": {swap_interval}}}' \
-            --accountId {request.headers.get('X-Near-Account-Id')} \
-            --network {NEAR_NETWORK}"
-
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to register user'}), 500
+        # Logic to register user using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'User registration initiated'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -43,11 +33,12 @@ def register_user():
 def topup():
     """Add funds to DCA contract"""
     try:
-        command = f"near call {CONTRACT_ID} topup --accountId {request.headers.get('X-Near-Account-Id')} --network {NEAR_NETWORK}"
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to topup'}), 500
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        # Logic to top up using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'Topup initiated'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -55,21 +46,18 @@ def topup():
 def withdraw_near():
     """Withdraw NEAR from DCA contract"""
     try:
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
         data = request.json
         amount = data.get('amount')
         
         if not amount:
             return jsonify({'status': 'error', 'message': 'Missing amount parameter'}), 400
 
-        command = f"near call {CONTRACT_ID} withdraw_near '{{\
-            \"amount\": \"{amount}\"}}' \
-            --accountId {request.headers.get('X-Near-Account-Id')} \
-            --network {NEAR_NETWORK}"
-
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to withdraw NEAR'}), 500
+        # Logic to withdraw NEAR using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'Withdrawal initiated'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -77,21 +65,18 @@ def withdraw_near():
 def withdraw_ft():
     """Withdraw fungible tokens from DCA contract"""
     try:
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
         data = request.json
         amount = data.get('amount')
         
         if not amount:
             return jsonify({'status': 'error', 'message': 'Missing amount parameter'}), 400
 
-        command = f"near call {CONTRACT_ID} withdraw_ft '{{\
-            \"amount\": \"{amount}\"}}' \
-            --accountId {request.headers.get('X-Near-Account-Id')} \
-            --network {NEAR_NETWORK}"
-
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to withdraw tokens'}), 500
+        # Logic to withdraw fungible tokens using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'Token withdrawal initiated'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -99,11 +84,12 @@ def withdraw_ft():
 def pause():
     """Pause DCA swaps"""
     try:
-        command = f"near call {CONTRACT_ID} pause --accountId {request.headers.get('X-Near-Account-Id')} --network {NEAR_NETWORK}"
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to pause DCA'}), 500
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        # Logic to pause DCA using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'DCA paused'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -111,11 +97,12 @@ def pause():
 def resume():
     """Resume DCA swaps"""
     try:
-        command = f"near call {CONTRACT_ID} resume --accountId {request.headers.get('X-Near-Account-Id')} --network {NEAR_NETWORK}"
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to resume DCA'}), 500
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        # Logic to resume DCA using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'DCA resumed'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -123,38 +110,107 @@ def resume():
 def remove_user():
     """Remove user from DCA contract and withdraw all tokens"""
     try:
-        command = f"near call {CONTRACT_ID} remove_user --accountId {request.headers.get('X-Near-Account-Id')} --network {NEAR_NETWORK}"
-        result = run_near_cli_command(command)
-        if result:
-            return jsonify({'status': 'success', 'result': result})
-        return jsonify({'status': 'error', 'message': 'Failed to remove user'}), 500
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        # Logic to remove user using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'User removed'}), 200
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@dca_bp.route('/api/dca/status', methods=['GET'])
+@dca_bp.route('/api/dca/status', methods=['GET']) 
 def get_status():
     """Get user's DCA status and investment details"""
     try:
-        command = f"near view {CONTRACT_ID} get_user_info '{{\
-            \"account_id\": \"{request.headers.get('X-Near-Account-Id')}\"}}' \
-            --network {NEAR_NETWORK}"
-            
-        result = run_near_cli_command(command)
-        if result:
-            try:
-                investment_data = json.loads(result)
-                return jsonify({
-                    'status': 'success',
-                    'investments': [{
-                        'id': investment_data.get('id', 'N/A'),
-                        'amount': investment_data.get('amount_per_swap', '0'),
-                        'interval': investment_data.get('swap_interval', '0'),
-                        'nextSwap': investment_data.get('next_swap_time', '0'),
-                        'status': 'paused' if investment_data.get('is_paused', False) else 'active'
-                    }] if investment_data else []
-                })
-            except json.JSONDecodeError:
-                return jsonify({'status': 'error', 'message': 'Failed to parse investment data'}), 500
-        return jsonify({'status': 'error', 'message': 'Failed to get status'}), 500
+        account_id = request.headers.get('X-Near-Account-Id')
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        # Retrieve the investment data for the account ID
+        investment_data = get_investments(account_id)
+
+        if investment_data:
+            return jsonify({'status': 'success', 'investments': investment_data}), 200
+        else:
+            return jsonify({'status': 'error', 'message': 'No investments found'}), 404
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+def get_investments(account_id):
+    """
+    Fetch investment data for a given account_id from the smart contract.
+    Simulating fetching data from the NEAR contract.
+    """
+    try:
+        # Example of fetching investment data (replace with actual NEAR contract query)
+        # This function should interact with the contract to fetch real data
+        response = fetch_contract_data(CONTRACT_ID, account_id)
+        if response:
+            # Parse response into expected format (adjust according to actual data structure)
+            investment_data = []
+            for investment in response:
+                # Adding 'amount' to each investment entry
+                investment_data.append({
+                    "amount_per_swap": investment.get("amount_per_swap"),
+                    "swap_interval": investment.get("swap_interval"),
+                    "last_swap_timestamp": investment.get("last_swap_timestamp"),
+                    "pause": investment.get("pause"),
+                    "amount": investment.get("amount")  # Include the amount from the smart contract
+                })
+            return investment_data
+        else:
+            return None
+    except Exception as e:
+        print(f"Error fetching investments: {e}")
+        return None
+
+def fetch_contract_data(contract_id, account_id):
+    """
+    Function to fetch actual data from the NEAR contract using NEAR RPC API.
+    """
+    try:
+        # Define the request payload for the RPC view call
+        payload = {
+            "jsonrpc": "2.0",
+            "id": "dontcare",
+            "method": "query",
+            "params": {
+                "request_type": "call_function",
+                "account_id": contract_id,
+                "method_name": "get_user",
+                "args_base64": base64.b64encode(json.dumps({"user": account_id}).encode("utf-8")).decode("utf-8"),
+                "finality": "final"
+            }
+        }
+
+        # Make a POST request to NEAR RPC endpoint
+        response = requests.post(NEAR_RPC_ENDPOINT, json=payload)
+        response.raise_for_status()
+
+        # Parse the response
+        result = response.json()
+        if 'error' in result:
+            raise Exception(result['error']['message'])
+
+        # Decode the result
+        if 'result' in result and 'result' in result['result']:
+            encoded_result = result['result']['result']
+            decoded_data = base64.b64decode(encoded_result).decode('utf-8')
+            user_data = json.loads(decoded_data)
+
+            # Return user investment data in expected format
+            return [
+                {
+                    "amount_per_swap": user_data.get("amount_per_swap"),
+                    "swap_interval": user_data.get("swap_interval"),
+                    "last_swap_timestamp": user_data.get("last_swap_timestamp"),
+                    "pause": user_data.get("pause"),
+                    "amount": user_data.get("amount")
+                }
+            ]
+        else:
+            return None
+    except Exception as e:
+        print(f"Error fetching contract data: {e}")
+        return None

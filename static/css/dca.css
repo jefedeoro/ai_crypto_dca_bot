@@ -207,7 +207,8 @@ body[data-theme="dark"] .dca-table th, body[data-theme="dark"] .dca-table td {
 }
 
 .text-muted {
-    color: var(--dca-secondary-color) !important;
+    color: #e0e0e0 !important;
+    font-size: small;
 }
 
 .text-danger {

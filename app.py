@@ -6,6 +6,7 @@ from routes.podcast_api import podcast_api
 from routes.sidebar import sidebar_api
 from routes.dca_routes import dca_bp
 from routes.near import near_bp
+from routes.base64Converter import base64_bp
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')  # Added secret key for sessions
@@ -70,6 +71,7 @@ app.register_blueprint(podcast_api)
 app.register_blueprint(sidebar_api)
 app.register_blueprint(dca_bp)
 app.register_blueprint(near_bp)
+app.register_blueprint(base64_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)

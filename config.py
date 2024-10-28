@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Contract configuration
-CONTRACT_ID = os.getenv('NEAR_CONTRACT_ID', 'dca-bot.testnet')
+CONTRACT_ID = 'test.dca-near.testnet'
+NEAR_RPC_ENDPOINT = os.getenv('NEAR_RPC_URL')  # Use NEAR_RPC_URL from .env
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,5 +36,5 @@ class Config:
 # Log the configuration when the module is imported
 Config.log_config()
 
-# Export CONTRACT_ID for use in other modules
-__all__ = ['CONTRACT_ID']
+# Export CONTRACT_ID and NEAR_RPC_ENDPOINT for use in other modules
+__all__ = ['CONTRACT_ID', 'NEAR_RPC_ENDPOINT']

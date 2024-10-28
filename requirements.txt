@@ -1,5 +1,7 @@
 Flask
+borsh
 python-telegram-bot==13.15
+flask-cors
 requests
 beautifulsoup4
 feedparser

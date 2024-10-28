@@ -1,0 +1,188 @@
+/* Registration Component Styles */
+:root {
+    /* Light theme variables - inheriting from main theme */
+    --register-card-bg: var(--bg-secondary);
+    --register-text-color: var(--text-primary);
+    --register-border-color: var(--border-color);
+    --register-shadow: var(--shadow);
+    --register-highlight: var(--highlight-border);
+    --telegram-btn-bg: #0088cc;
+    --telegram-btn-hover: #006699;
+    --register-btn-bg: var(--button-bg);
+    --register-btn-hover: var(--button-hover);
+}
+
+[data-theme="dark"] {
+    /* Dark theme variables */
+    --register-card-bg: var(--bg-secondary);
+    --register-text-color: var(--text-primary);
+    --register-border-color: var(--border-color);
+    --register-shadow: var(--shadow);
+    --register-highlight: var(--highlight-border);
+    --telegram-btn-bg: #4fc3f7;  /* Much brighter blue */
+    --telegram-btn-hover: #81d4fa;  /* Even brighter on hover */
+    --register-btn-bg: #4a90e2;
+    --register-btn-hover: #81d4fa;
+}
+
+.dca-registration-card {
+    background: var(--register-card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px var(--register-shadow);
+    border: 1px solid var(--register-border-color);
+    color: var(--register-text-color);
+}
+
+.registration-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.registration-content h2 {
+    color: var(--register-text-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.registration-content p {
+    color: var(--register-text-color);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.telegram-section {
+    margin: 20px 0;
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border-radius: 8px;
+    border: 1px solid var(--register-border-color);
+}
+
+.telegram-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.telegram-qr {
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--register-shadow);
+    max-width: 5dvw;
+    max-height: 5dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.telegram-qr img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+}
+
+.btn-telegram {
+    background: var(--telegram-btn-bg);
+    color: #000 !important;  /* Dark text for better contrast with light button */
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-telegram[data-theme="dark"] {
+    color: #4fc3f7 !important;  /* White text for better contrast with dark button */
+}
+
+.btn-telegram:hover {
+    background: var(--telegram-btn-hover);
+    color: #000 !important;
+    text-decoration: none !important;
+    transform: translateY(-2px);
+}
+
+.btn-telegram i {
+    font-size: 20px;
+}
+
+#registerButton {
+    background: var(--register-btn-bg);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    max-width: 300px;
+    margin: 1rem auto;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+#registerButton:hover {
+    background: var(--register-btn-hover);
+    transform: translateY(-2px);
+}
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.disabled::after {
+    content: attr(title);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    display: none;
+}
+
+.disabled:hover::after {
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .telegram-info {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .telegram-qr {
+        max-width: 15dvw;
+        max-height: 15dvh;
+        margin: 0 auto;
+    }
+
+    .btn-telegram {
+        width: 100%;
+        justify-content: center;
+    }
+}
