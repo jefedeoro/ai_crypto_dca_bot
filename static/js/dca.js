@@ -462,7 +462,23 @@ window.removeUser = async function() {
 }
 
 function formatNearAmount(yoctoNear) {
-    return (BigInt(yoctoNear) / BigInt(10 ** 24)).toString();
+    try {
+        // Convert to BigInt and divide
+        const nearValue = BigInt(yoctoNear) / BigInt(10 ** 20); // Keep 4 extra decimal places
+        const nearString = nearValue.toString();
+        
+        // Add decimal point 4 places from the end
+        const length = nearString.length;
+        if (length <= 4) {
+            // Pad with zeros if needed
+            return "0." + nearString.padStart(4, '0');
+        } else {
+            return nearString.slice(0, -4) + "." + nearString.slice(-4);
+        }
+    } catch (error) {
+        console.error("Error formatting NEAR amount:", error);
+        return "0";
+    }
 }
 
 // Utility Function to format intervals
