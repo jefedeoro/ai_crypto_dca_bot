@@ -165,6 +165,25 @@ def get_investments(account_id):
         print(f"Error fetching investments: {e}")
         return None
 
+@dca_bp.route('/api/dca/change-interval', methods=['POST'])
+def change_interval():
+    """Change DCA swap interval"""
+    try:
+        account_id = request.headers.get('X-Near-Account-Id')  # Assuming account_id is passed in the headers
+        if not account_id:
+            return jsonify({'status': 'error', 'message': 'Missing account ID'}), 400
+
+        data = request.json
+        swap_interval = data.get('swap_interval')
+        
+        if not swap_interval:
+            return jsonify({'status': 'error', 'message': 'Missing swap_interval parameter'}), 400
+
+        # Logic to change interval using near-api-js will be handled in the frontend
+        return jsonify({'status': 'success', 'message': 'Interval change initiated'}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
 def fetch_contract_data(contract_id, account_id):
     """
     Function to fetch actual data from the NEAR contract using NEAR RPC API.

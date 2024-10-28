@@ -2,6 +2,41 @@
 
 import { getNearWalletBalance, getNearContractBalance } from './near-wallet.js';
 
+// Change swap interval
+window.changeSwapInterval = async function() {
+    try {
+        // Get wallet
+        const wallet = await window.selector.wallet();
+        if (!wallet) {
+            alert("Please connect your wallet first");
+            return;
+        }
+
+        console.log("Sending change interval transaction...");
+        await wallet.signAndSendTransaction({
+            receiverId: "test.dca-near.testnet",
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: "change_swap_interval",
+                        args: { swap_interval: document.getElementById('new_interval').value },
+                        gas: "100000000000000",
+                        deposit: "1" // Required for payable functions
+                    }
+                }
+            ]
+        });
+
+        console.log("Interval change successful");
+        alert("Swap interval updated successfully.");
+        refreshDashboard();
+    } catch (error) {
+        console.error("Error changing interval:", error);
+        alert("An error occurred while updating interval: " + error.message);
+    }
+};
+
 // Helper function to get the active account ID dynamically from Wallet Selector
 async function getAccountId() {
     const wallet = await window.selector.wallet();
@@ -218,22 +253,23 @@ async function refreshDashboard() {
                     <td>${formatNearAmount(userData.amount_per_swap)}</td>
                     <td>${formatInterval(BigInt(userData.swap_interval))}</td>
                     <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
-                    <td>${formatNearAmount(userData.amount)} NEAR</td>
-                    <td>
-                        Swaps: ${numSwaps}<br>
-                        Total: ${formatNearAmount(userData.total_swapped)} NEAR
-                    </td>
+                    <td>${formatNearAmount(userData.amount)}</td>
+                    <td>${formatNearAmount(userData.total_swapped)}</td>
                     <td>
                         <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
                             ${userData.pause ? 'Paused' : 'Active'}
                         </div>
+                    </td>
+                    <td>
                         <div class="action-buttons">
-                            <button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm" ${userData.pause ? 'disabled' : ''}>
-                                <i class="fas fa-pause-circle"></i> Pause
-                            </button>
-                            <button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm" ${!userData.pause ? 'disabled' : ''}>
-                                <i class="fas fa-play-circle"></i> Resume
-                            </button>
+                            ${userData.pause ? 
+                                `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
+                                    <i class="fas fa-play-circle"></i> Resume
+                                </button>` :
+                                `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                    <i class="fas fa-pause-circle"></i> Pause
+                                </button>`
+                            }
                         </div>
                     </td>
                 </tr>
@@ -509,21 +545,85 @@ async function updateNearBalances() {
     const contractId = "test.dca-near.testnet";
 
     if (!accountId) {
-        document.getElementById('wallet-balance').textContent = 'Not connected';
+        document.querySelectorAll('.wallet-balance').forEach(el => {
+            el.textContent = 'Not connected';
+        });
         document.getElementById('contract-balance').textContent = 'Not connected';
+        document.getElementById('near-contract-balance').textContent = 'Not connected';
+        document.getElementById('usdt-contract-balance').textContent = 'Not connected';
         return;
     }
 
     try {
         // Fetch and display wallet balance
         const walletBalance = await getNearWalletBalance(accountId);
-        document.getElementById('wallet-balance').textContent = formatNearAmount(walletBalance);
+        const formattedBalance = formatNearAmount(walletBalance);
+        document.querySelectorAll('.wallet-balance').forEach(el => {
+            el.textContent = formattedBalance;
+        });
 
-        // Fetch and display contract balance
+        // Fetch and display contract pool balance
         const contractBalance = await getNearContractBalance(contractId);
         document.getElementById('contract-balance').textContent = formatNearAmount(contractBalance);
+        
+        // Get user's NEAR balance from contract and USDT balance
+        const userData = await getUserData();
+        if (userData) {
+            document.getElementById('near-contract-balance').textContent = formatNearAmount(userData.amount);
+            document.getElementById('usdt-contract-balance').textContent = formatNearAmount(userData.total_swapped);
+        }
     } catch (error) {
-        console.error('Error fetching NEAR balances:', error);
+        console.error('Error fetching balances:', error);
+    }
+}
+
+// Helper function to get user data
+async function getUserData() {
+    try {
+        const accountId = await getAccountId();
+        if (!accountId) return null;
+
+        const encodeResponse = await fetch('/api/base64/encode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user: accountId })
+        });
+        const encodeResult = await encodeResponse.json();
+        if (encodeResult.error) {
+            throw new Error(encodeResult.error);
+        }
+
+        const response = await fetch('https://rpc.testnet.near.org', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: generateNonce(),
+                method: 'query',
+                params: {
+                    request_type: 'call_function',
+                    finality: 'final',
+                    account_id: 'test.dca-near.testnet',
+                    method_name: 'get_user',
+                    args_base64: encodeResult.result
+                }
+            })
+        });
+        
+        const result = await response.json();
+        if (result.error || !result.result || !result.result.result) {
+            return null;
+        }
+
+        const jsonString = String.fromCharCode.apply(null, result.result.result);
+        return JSON.parse(jsonString);
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return null;
     }
 }
 
@@ -570,3 +670,4 @@ window.withdrawUSDT = async function() {
 document.addEventListener("DOMContentLoaded", updateNearBalances);
 
 window.refreshDashboard = refreshDashboard;
+

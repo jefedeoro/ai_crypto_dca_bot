@@ -10,7 +10,8 @@
 {% block content %}
 <div class="container my-5">
     <h1 class="mb-4">NEAR Dollar Cost Averaging (DCA)</h1>
-    
+    <p class="text-muted mb-4">Contract Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
+    <div id="dcaRegistration"></div>
     <!-- DCA Setup Section -->
     <div class="dca-card mb-5">
         <div class="dca-card-header">
@@ -50,6 +51,7 @@
                         <small class="form-text text-muted">How often to perform the swap</small>
                     </div>
                 </div>
+                <p class="text-muted mb-3">Wallet Balance: <span class="wallet-balance">Loading...</span> NEAR</p>
                 <button type="submit" class="dca-btn dca-btn-primary">Start DCA Investment</button>
             </form>
         </div>
@@ -71,6 +73,8 @@
                             <th>Amount per Swap</th>
                             <th>Interval</th>
                             <th>Next Swap</th>
+                            <th>NEAR Balance</th>
+                            <th>USDT Swapped</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -90,16 +94,16 @@
             <div class="dca-card h-100">
                 <div class="dca-card-header">
                     <h2>Manage NEAR</h2>
-                    <p class="text-muted">
-                        Wallet Balance: <span id="wallet-balance">Loading...</span> NEAR |
-                        Contract Balance: <span id="contract-balance">Loading...</span> NEAR
-                    </p>
                 </div>
                 <div class="dca-card-body">
                     <form id="near-management-form">
                         <div class="mb-3">
                             <label for="near_amount" class="dca-form-label">NEAR Amount:</label>
                             <input type="number" class="dca-form-control" id="near_amount" min="0" step="0.1" required>
+                            <div class="balance-container">
+                                <div class="balance-item text-muted">Wallet Balance: <span class="wallet-balance">Loading...</span> NEAR</div>
+                                <div class="balance-item text-muted">NEAR in Contract: <span id="near-contract-balance">Loading...</span> NEAR</div>
+                            </div>
                         </div>
                         <div class="d-flex gap-2">
                             <button type="button" onclick="topUp()" class="dca-btn dca-btn-success flex-grow-1">
@@ -113,7 +117,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
         <!-- USDT Management Section -->
         <div class="col-md-6 mb-4">
@@ -126,6 +129,7 @@
                         <div class="mb-3">
                             <label for="usdt_amount" class="dca-form-label">USDT Amount:</label>
                             <input type="number" class="dca-form-control" id="usdt_amount" min="0" step="0.01" required>
+                            <p class="text-muted mt-2 mb-3">USDT in Contract: <span id="usdt-contract-balance">Loading...</span> USDT</p>
                         </div>
                         <button type="button" onclick="withdrawFT()" class="dca-btn dca-btn-warning w-100">
                             <i class="fas fa-minus-circle"></i> Withdraw USDT
@@ -176,4 +180,5 @@
 <!-- Application Scripts -->
 <script src="{{ url_for('static', filename='js/near-wallet.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/dca-registration.js') }}" type="module"></script>
 {% endblock %}

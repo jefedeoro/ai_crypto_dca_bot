@@ -211,6 +211,20 @@ body[data-theme="dark"] .dca-table th, body[data-theme="dark"] .dca-table td {
     font-size: small;
 }
 
+/* New balance display styles */
+.balance-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--dca-spacing-lg);
+    margin-top: var(--dca-spacing-sm);
+    margin-bottom: var(--dca-spacing-sm);
+}
+
+.balance-item {
+    white-space: nowrap;
+}
+
 .text-danger {
     color: var(--dca-danger-color) !important;
 }
