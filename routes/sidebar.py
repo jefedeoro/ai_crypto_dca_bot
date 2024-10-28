@@ -22,6 +22,12 @@ def get_sidebar_podcasts():
     
     for folder in result_folders:
         folder_path = os.path.join(RESULT_FOLDER, folder)
+        hidden_path = os.path.join(folder_path, '.hidden')
+        
+        # Skip hidden podcasts
+        if os.path.exists(hidden_path):
+            continue
+            
         summarized_news = load_json_file(folder_path, 'summarized_news.json')
         if summarized_news and os.path.exists(os.path.join(folder_path, 'output_audio.mp3')):
             # Extract date and time from folder name

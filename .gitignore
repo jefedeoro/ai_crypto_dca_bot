@@ -46,3 +46,4 @@ dist
 tests
 py_near.egg-info
 poetry.lock
+ignore/*
