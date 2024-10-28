@@ -12,6 +12,12 @@ window.changeSwapInterval = async function() {
             return;
         }
 
+        const newInterval = document.getElementById('new_interval').value;
+        if (!newInterval) {
+            alert("Please select a new interval");
+            return;
+        }
+
         console.log("Sending change interval transaction...");
         await wallet.signAndSendTransaction({
             receiverId: "test.dca-near.testnet",
@@ -20,7 +26,7 @@ window.changeSwapInterval = async function() {
                     type: "FunctionCall",
                     params: {
                         methodName: "change_swap_interval",
-                        args: { swap_interval: document.getElementById('new_interval').value },
+                        args: { swap_interval: parseInt(newInterval) },
                         gas: "100000000000000",
                         deposit: "1" // Required for payable functions
                     }
