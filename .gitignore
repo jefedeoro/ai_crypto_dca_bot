@@ -47,3 +47,8 @@ tests
 py_near.egg-info
 poetry.lock
 ignore/*
+
+
+contracts/near-dca/target
+contracts/near-dca/out
+logs
