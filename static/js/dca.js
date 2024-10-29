@@ -253,7 +253,7 @@ async function refreshDashboard() {
                 ? Math.floor((Date.now() * 1_000_000 - userData.last_swap_timestamp) / userData.swap_interval) + 1 
                 : 0;
 
-            // Display the user data
+            // Update desktop view
             dashboardBody.innerHTML = `
                 <tr>
                     <td>${formatNearAmount(userData.amount_per_swap)}</td>
@@ -276,10 +276,69 @@ async function refreshDashboard() {
                                     <i class="fas fa-pause-circle"></i> Pause
                                 </button>`
                             }
+                            <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
             `;
+
+            // Update mobile view
+            const mobileView = document.querySelector('.mobile-view');
+            if (mobileView) {
+                mobileView.innerHTML = `
+                    <div class="pool-card">
+                        <div class="pool-header">Pool #1</div>
+                        <div class="dashboard-grid">
+                            <div class="dashboard-item">
+                                <p class="item-label">Amount per Swap</p>
+                                <div class="item-value">${formatNearAmount(userData.amount_per_swap)}</div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">Interval</p>
+                                <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">Next Swap</p>
+                                <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">NEAR Balance</p>
+                                <div class="item-value">${formatNearAmount(userData.amount)}</div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">USDT Swapped</p>
+                                <div class="item-value">${formatNearAmount(userData.total_swapped)}</div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">Status</p>
+                                <div class="item-value">
+                                    <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
+                                        ${userData.pause ? 'Paused' : 'Active'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-item">
+                                <p class="item-label">Actions</p>
+                                <div class="item-value">
+                                    ${userData.pause ? 
+                                        `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
+                                            <i class="fas fa-play-circle"></i> Resume
+                                        </button>` :
+                                        `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                            <i class="fas fa-pause-circle"></i> Pause
+                                        </button>`
+                                    }
+                                    <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             await updateNearBalances();
         } catch (error) {
@@ -314,6 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (accountId) {
         console.log("DCA.js: Account found, refreshing dashboard");
         refreshDashboard();
+    }
+
+    // Add event listener for refresh dashboard button
+    const refreshButton = document.getElementById('refresh-dashboard-btn');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', refreshDashboard);
     }
 });
 
@@ -676,4 +741,3 @@ window.withdrawUSDT = async function() {
 document.addEventListener("DOMContentLoaded", updateNearBalances);
 
 window.refreshDashboard = refreshDashboard;
-
