@@ -2,88 +2,207 @@
 
 {% block title %}DCA Bot - Automated Crypto Investment{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="hero-section text-center mb-5">
-        <h1 class="display-4 mb-4">Automated Crypto Dollar Cost Averaging</h1>
-        <p class="lead mb-4">Simplify your crypto investment strategy with automated Dollar Cost Averaging (DCA)</p>
-        <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Start Investing</a>
-    </div>
-
-    <div class="features-section mb-5">
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="dca-card h-100">
-                    <div class="dca-card-body">
-                        <h3>What is DCA?</h3>
-                        <p>Dollar Cost Averaging is an investment strategy where you invest a fixed amount at regular intervals, regardless of market conditions. This helps reduce the impact of market volatility on your investments.</p>
+<div class="hero-wrapper">
+    <div class="index-container">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Automated Crypto Dollar Cost Averaging</h1>
+                <p class="hero-lead">Simplify your crypto investment strategy with automated DCA and stay informed with daily market insights</p>
+                <div class="hero-cta">
+                    <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Start Investing</a>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">24/7</span>
+                            <span class="stat-label">Automated Trading</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">Daily</span>
+                            <span class="stat-label">Market Updates</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="dca-card h-100">
-                    <div class="dca-card-body">
-                        <h3>How It Works</h3>
-                        <ul class="list-unstyled">
-                            <li>✓ Set your total investment amount</li>
-                            <li>✓ Choose your investment interval</li>
-                            <li>✓ Select your preferred trading pairs</li>
-                            <li>✓ Let our bot handle the rest</li>
-                        </ul>
+            <div class="hero-visual">
+                <div class="floating-cards">
+                    <div class="float-card card-1">
+                        <div class="card-icon">📈</div>
+                        <div class="card-text">Smart Investment</div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="dca-card h-100">
-                    <div class="dca-card-body">
-                        <h3>Key Benefits</h3>
-                        <ul class="list-unstyled">
-                            <li>✓ Reduce emotional trading</li>
-                            <li>✓ Automated investments</li>
-                            <li>✓ Lower risk through averaging</li>
-                            <li>✓ Easy portfolio management</li>
-                        </ul>
+                    <div class="float-card card-2">
+                        <div class="card-icon">🎙️</div>
+                        <div class="card-text">Daily Insights</div>
+                    </div>
+                    <div class="float-card card-3">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-text">Automated Trading</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="getting-started-section mb-5">
-        <div class="dca-card">
-            <div class="dca-card-header">
-                <h2>Getting Started</h2>
+<div class="features-wrapper">
+    <div class="index-container">
+        <div class="section-header">
+            <h2>Why Choose Our Platform?</h2>
+            <p class="section-subtitle">Automated investing with real-time market insights</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="icon">📊</span>
+                </div>
+                <div class="feature-content">
+                    <h3>Smart DCA Strategy</h3>
+                    <p>Dollar Cost Averaging reduces the impact of market volatility by investing fixed amounts at regular intervals, helping you build a robust portfolio over time.</p>
+                </div>
             </div>
-            <div class="dca-card-body">
-                <div class="row">
-                    <div class="col-md-3 text-center mb-4">
-                        <div class="step-circle mb-2">1</div>
-                        <h4>Create Account</h4>
-                        <p>Sign up and connect your wallet</p>
-                    </div>
-                    <div class="col-md-3 text-center mb-4">
-                        <div class="step-circle mb-2">2</div>
-                        <h4>Set Parameters</h4>
-                        <p>Choose amount, interval, and tokens</p>
-                    </div>
-                    <div class="col-md-3 text-center mb-4">
-                        <div class="step-circle mb-2">3</div>
-                        <h4>Start DCA</h4>
-                        <p>Activate your automated investment</p>
-                    </div>
-                    <div class="col-md-3 text-center mb-4">
-                        <div class="step-circle mb-2">4</div>
-                        <h4>Monitor</h4>
-                        <p>Track your investments progress</p>
-                    </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="icon">🎙️</span>
+                </div>
+                <div class="feature-content">
+                    <h3>Daily Market Updates</h3>
+                    <p>Stay informed with our AI-generated daily crypto news podcasts, covering market trends, analysis, and key developments in the crypto space.</p>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <span class="icon">🤖</span>
+                </div>
+                <div class="feature-content">
+                    <h3>Automated Trading</h3>
+                    <p>Our bot handles all trades automatically, following your preset parameters while you stay updated through daily market insights.</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="cta-section text-center">
-        <h2 class="mb-4">Ready to Start Your DCA Journey?</h2>
-        <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Get Started Now</a>
+<div class="podcast-wrapper">
+    <div class="index-container">
+        <div class="section-header">
+            <h2>Daily Crypto Insights</h2>
+            <p class="section-subtitle">AI-powered market analysis and news updates</p>
+        </div>
+        
+        <div class="podcast-grid">
+            <div class="podcast-card">
+                <div class="podcast-header">
+                    <div class="podcast-icon">🎙️</div>
+                    <div class="podcast-info">
+                        <h4 class="podcast-title">Daily Market Briefing</h4>
+                        <div class="podcast-meta">Updated daily • 5-10 min</div>
+                    </div>
+                </div>
+                <p>Get concise summaries of the day's most important crypto market movements and news.</p>
+            </div>
+            
+            <div class="podcast-card">
+                <div class="podcast-header">
+                    <div class="podcast-icon">📊</div>
+                    <div class="podcast-info">
+                        <h4 class="podcast-title">Technical Analysis</h4>
+                        <div class="podcast-meta">Updated daily • 5-10 min</div>
+                    </div>
+                </div>
+                <p>AI-driven analysis of market trends, support levels, and trading volumes.</p>
+            </div>
+            
+            <div class="podcast-card">
+                <div class="podcast-header">
+                    <div class="podcast-icon">📰</div>
+                    <div class="podcast-info">
+                        <h4 class="podcast-title">News & Updates</h4>
+                        <div class="podcast-meta">Updated daily • 5-10 min</div>
+                    </div>
+                </div>
+                <p>Stay informed about the latest developments in the crypto ecosystem.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="process-wrapper">
+    <div class="index-container">
+        <div class="section-header">
+            <h2>Getting Started</h2>
+            <p class="section-subtitle">Four simple steps to automated investing</p>
+        </div>
+        
+        <div class="process-timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="step-circle">1</div>
+                    <h4>Create Account</h4>
+                    <p>Sign up and connect your wallet</p>
+                </div>
+                <div class="timeline-line"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="step-circle">2</div>
+                    <h4>Set Parameters</h4>
+                    <p>Choose amount, interval, and tokens</p>
+                </div>
+                <div class="timeline-line"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="step-circle">3</div>
+                    <h4>Start DCA</h4>
+                    <p>Activate your automated investment</p>
+                </div>
+                <div class="timeline-line"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="step-circle">4</div>
+                    <h4>Stay Informed</h4>
+                    <p>Track progress & listen to daily updates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-wrapper">
+    <div class="index-container">
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2>Ready to Start Your Journey?</h2>
+                <p class="cta-text">Join thousands of investors who are already using our platform for automated DCA and daily market insights</p>
+                <a href="{{ url_for('dca.dca') }}" class="dca-btn dca-btn-primary btn-lg">Get Started Now</a>
+            </div>
+            <div class="cta-visual">
+                <div class="trust-indicators">
+                    <div class="trust-item">
+                        <span class="trust-icon">🔒</span>
+                        <span class="trust-text">Secure & Reliable</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">🎙️</span>
+                        <span class="trust-text">Daily Updates</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon">⚡</span>
+                        <span class="trust-text">Fast Setup</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

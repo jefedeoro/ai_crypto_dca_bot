@@ -8,12 +8,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container my-5">
+<div class="container">
     <h1 class="mb-4">NEAR Dollar Cost Averaging (DCA)</h1>
     <p class="text-muted mb-4">Contract Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
     <div id="dcaRegistration"></div>
     <!-- DCA Setup Section -->
-    <div class="dca-card mb-5">
+    <div class="dca-card mb-4">
         <div class="dca-card-header">
             <h2>Set Up NEAR DCA Investment</h2>
             <p class="text-muted">Automatically swap NEAR to USDT at regular intervals</p>
@@ -57,36 +57,95 @@
         </div>
     </div>
 
-    <!-- Investment Dashboard Section -->
-    <div class="dca-card mb-5">
-        <div class="dca-card-header d-flex justify-content-between align-items-center">
-            <h2>Active DCA Investment</h2>
-            <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
+<!-- Investment Dashboard Section -->
+<div class="dca-card investment-dashboard mb-4">
+    <div class="dca-card-header d-flex justify-content-between align-items-center">
+        <h2>Active DCA Investment</h2>
+        <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+    </div>
+    <div class="dca-card-body">
+        <!-- Desktop Table View -->
+        <div class="table-responsive desktop-view">
+            <table class="dca-table" id="investment-dashboard">
+                <thead>
+                    <tr>
+                        <th>Amount per Swap</th>
+                        <th>Interval</th>
+                        <th>Next Swap</th>
+                        <th>NEAR Balance</th>
+                        <th>USDT Swapped</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0.4000</td>
+                        <td>15 minutes</td>
+                        <td>10/28/2024, 4:37:01 PM</td>
+                        <td>3.1999</td>
+                        <td>0.7960</td>
+                        <td>Active</td>
+                        <td>
+                            <button class="dca-btn dca-btn-warning">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="dca-btn dca-btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="dca-card-body">
-            <div class="table-responsive">
-                <table class="dca-table" id="investment-dashboard">
-                    <thead>
-                        <tr>
-                            <th>Amount per Swap</th>
-                            <th>Interval</th>
-                            <th>Next Swap</th>
-                            <th>NEAR Balance</th>
-                            <th>USDT Swapped</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Investment details will be dynamically populated here -->
-                    </tbody>
-                </table>
+
+        <!-- Mobile Card View -->
+        <div class="mobile-view">
+            <div class="pool-card">
+                <div class="pool-header">Pool #1</div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-item">
+                        <p class="item-label">Amount per Swap</p>
+                        <div class="item-value">0.4000</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">Interval</p>
+                        <div class="item-value">15 minutes</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">Next Swap</p>
+                        <div class="item-value">10/28/2024, 4:37:01 PM</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">NEAR Balance</p>
+                        <div class="item-value">3.1999</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">USDT Swapped</p>
+                        <div class="item-value">0.7960</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">Status</p>
+                        <div class="item-value">Active</div>
+                    </div>
+                    <div class="dashboard-item">
+                        <p class="item-label">Actions</p>
+                        <div class="item-value">
+                            <button class="dca-btn dca-btn-warning">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="dca-btn dca-btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
+        
     <!-- Token Management Section -->
     <div class="row">
         <!-- NEAR Management Section -->
@@ -141,7 +200,7 @@
     </div>
 
     <!-- Control and Removal Section -->
-    <div class="dca-card mt-4">
+    <div class="dca-card">
         <div class="dca-card-header">
             <h2>Manage Investment</h2>
         </div>

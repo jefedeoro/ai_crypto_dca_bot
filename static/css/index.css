@@ -1,0 +1,253 @@
+/* Index-specific container */
+.index-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+/* Hero Section */
+.hero-wrapper {
+    position: relative;
+    padding: 2rem 0 1.5rem;
+    width: 100%;
+    background: transparent;
+}
+
+.hero-section {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Floating Cards */
+.floating-cards {
+    position: relative;
+    width: 100%;
+    height: 300px; /* Increased height for more space */
+}
+
+.float-card {
+    position: absolute;
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: float 6s ease-in-out infinite;
+    width: 120px;
+}
+
+/* Adjusted positions for better spacing */
+.card-1 { 
+    top: 5%; 
+    right: 15%; 
+    animation-delay: 0s;
+    z-index: 3;
+}
+
+.card-2 { 
+    top: 40%; 
+    left: -20%; 
+    animation-delay: -2s;
+    z-index: 2;
+}
+
+.card-3 { 
+    bottom: -5%; 
+    right: 25%; 
+    animation-delay: -4s;
+    z-index: 1;
+}
+
+
+/* Section Wrappers */
+.features-wrapper,
+.podcast-wrapper,
+.process-wrapper,
+.cta-wrapper {
+    padding: 2rem 0;
+    width: 100%;
+}
+
+/* Grid Layouts */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+.podcast-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    width: 100%;
+    margin: 1.5rem auto 0;
+    max-width: 900px;
+}
+
+/* Timeline */
+.process-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    width: 100%;
+    margin: 2rem auto 0;
+    max-width: 900px;
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.timeline-line {
+    position: absolute;
+    top: 1.5rem;
+    left: calc(50% + 1.5rem);
+    width: calc(100% - 3rem);
+    height: 2px;
+    background: linear-gradient(90deg, var(--button-gradient-from), var(--button-gradient-to));
+}
+
+.timeline-content {
+    position: relative;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--button-gradient-from);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-weight: bold;
+}
+
+/* Stats Display */
+.hero-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--button-gradient-from);
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    opacity: 0.8;
+}
+
+/* Trust Indicators */
+.trust-indicators {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+@keyframes float {
+    0% { 
+        transform: translateY(0) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-15px) rotate(2deg); 
+    }
+    100% { 
+        transform: translateY(0) rotate(0deg); 
+    }
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 1.5rem;
+    }
+    
+    .hero-stats {
+        justify-content: center;
+    }
+
+    .podcast-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .process-timeline {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .timeline-line {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Previous mobile styles remain unchanged */
+    .floating-cards {
+        height: 250px; /* Adjusted for mobile */
+    }
+
+    .float-card {
+        width: 100px;
+    }
+
+    /* Adjusted mobile positions */
+    .card-1 { 
+        top: 15%; 
+        right: 10%; 
+    }
+
+    .card-2 { 
+        top: 45%; 
+        left: 15%; 
+    }
+
+    .card-3 { 
+        bottom: 20%; 
+        right: 20%; 
+    }
+}
