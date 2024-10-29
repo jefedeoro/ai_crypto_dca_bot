@@ -22,10 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Show sidebar by default
-    sidebar.style.left = '0px';
-    toggleSidebarBtn.textContent = '⬅️';
-    mainContainer.classList.add('sidebar-open');
+    // Initialize sidebar as closed
+    sidebar.style.left = '-250px';
+    toggleSidebarBtn.textContent = '➡️';
+    // No sidebar-open class by default
 
     // Load podcasts
     function loadPodcasts() {
