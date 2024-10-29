@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Introduction",
+    "content": [
+      {
+        "speaker": "man1",
+        "text": "TG-DCA update for October 05, 2024, 08:58 PM UTC."
+      }
+    ]
+  },
+  {
+    "title": "News Group: Ethereum",
+    "content": [
+      {
+        "speaker": "woman1",
+        "text": "Our next story is titled: Ethereum ICO Participant Offloads 6,000 ETH As Bearish Sentiment Intensifies \n\t\t\t\t\t\tAccording to data from CoinMarketCap, the price of Ethereum slipped by 10.23% over the last seven days in line with..., written by Unknown on Unknown."
+      },
+      {
+        "speaker": "man2",
+        "text": "Here's a summary: In a recent article, it was reported that Ethereum's price has dropped by over 10% in just a week, reflecting a bearish sentiment that\u2019s sweeping through the market. This downturn is largely attributed to escalating geopolitical tensions and a wave of liquidations of long positions. Although there was a slight rebound of 3.21% recently, investors are feeling uneasy about a complete recovery. One key development is the activity from an early Ethereum ICO participant, who has offloaded a significant amount of ETH, raising concerns about further price declines.\n\nThe wallet known as \u201c0xBF4,\u201d linked to an early investor who acquired 150,000 ETH back in 2014, has recently moved 6,000 ETH worth about $14.11 million to the Kraken exchange. This is part of a larger trend where this whale has sold 40,000 ETH in just two weeks. Such large sell-offs are often interpreted as signs of waning confidence in Ethereum\u2019s long-term prospects, potentially triggering panic among smaller investors. Additionally, analysts noted that in a single day, 108,000 ETH was transferred to exchanges, which adds to the bearish sentiment. With Ethereum currently hovering around $2,399, discussions could revolve around whether the market can stabilize or if we might see prices dip further, possibly as low as $1,600."
+      }
+    ]
+  },
+  {
+    "title": "News Group: Bitcoin",
+    "content": [
+      {
+        "speaker": "woman2",
+        "text": "Our next story is titled: Bitcoin Futures Liquidation Forms Local Price Bottom \u2014 A Return To $65,000 Inevitable? \n\t\t\t\t\t\tThe price of Bitcoin hasn\u2019t quite started the month as widely expected, falling to around the $60,000 mark on Thursday,..., written by Unknown on Unknown."
+      },
+      {
+        "speaker": "man1",
+        "text": "Here's a summary: Hey everyone! So, the latest buzz in the crypto world revolves around Bitcoin's recent price movements. As of October 3rd, Bitcoin dipped to around $60,000, largely influenced by geopolitical tensions in the Middle East. However, it seems like there's a silver lining, as the cryptocurrency bounced back above $62,000 by the end of the week. This recovery appears to be linked to a decrease in selling pressure, which could be a good sign for Bitcoin enthusiasts.\n\nInterestingly, an analyst known as Caueconomy from CryptoQuant highlighted that over 4,000 long positions in Bitcoin futures were liquidated on October 1st, marking one of the largest liquidation events of the year. While liquidations typically indicate heavy selling and losses, they might also pave the way for a market turnaround. The analyst suggests that these liquidation events often help form local price bottoms, indicating that we could be on the cusp of a rebound. But for Bitcoin to fully recover and possibly reach that $65,000 mark again, there needs to be a significant uptick in buying pressure. \n\nWith Bitcoin currently trading around $62,000, it\u2019s fascinating to think about what might come next. Will investors jump back in strong enough to push the price higher? Or will the market see more volatility? Let's dive deeper into these dynamics and what they could mean for the future of Bitcoin!"
+      }
+    ]
+  }
+]

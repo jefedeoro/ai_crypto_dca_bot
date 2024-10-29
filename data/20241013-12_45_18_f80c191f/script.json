@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Introduction",
+    "content": [
+      {
+        "speaker": "man1",
+        "text": "TG-DCA update for October 13, 2024, 05:47 PM UTC."
+      }
+    ]
+  },
+  {
+    "title": "News Group: Analyst",
+    "content": [
+      {
+        "speaker": "woman1",
+        "text": "Our next story is titled: Analyst Warns Of Bitcoin Market Shift: Are We Near A Major Sell-Off? \n\t\t\t\t\t\tBitcoin has recently seen quite an interesting trend in its key metrics suggesting a significant movement ahead, according to a..., written by Unknown on Unknown."
+      },
+      {
+        "speaker": "man2",
+        "text": "Here's a summary: In a recent analysis by CryptoQuant analyst Amr Taha, there's growing concern over a potential shift in the Bitcoin market that could signal a major sell-off. Taha outlines some intriguing trends, particularly focusing on the behavior of short-term holders (STHs) versus long-term holders (LTHs). He notes a sharp decline in realized capitalization for long-term holders, which plummeted from $19 billion to a negative $5 billion, suggesting they may be cashing out amid waning confidence in future price increases. Conversely, short-term holders are becoming more active, with their realized capitalization rising significantly, indicating they might be betting on price volatility in the near term.\n\nAnother key metric Taha highlights is the Korea Premium Index, which is currently showing a negative value. This indicates that Bitcoin is trading for less in South Korea compared to other markets, hinting at reduced buying pressure from Korean investors. Historically, Korean traders have had a significant influence on Bitcoin prices, so this trend adds another layer of uncertainty to the current market landscape. \n\nFinally, Taha's examination of Bitcoin\u2019s net realized profit and loss (NRPL) reveals it's nearing a critical $4 billion threshold. This level has historically marked pivotal moments in Bitcoin's trading activity, signaling either a surge in profits or a wave of losses. The proximity to this threshold could suggest that we might be on the brink of another significant market movement, making it a hot topic for crypto enthusiasts to discuss. It will be interesting to see how these dynamics play out and whether they indeed lead to a major market shift."
+      }
+    ]
+  }
+]

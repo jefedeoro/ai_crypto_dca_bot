@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Introduction",
+    "content": [
+      {
+        "speaker": "man1",
+        "text": "TG-DCA update for October 05, 2024, 09:53 PM UTC."
+      }
+    ]
+  },
+  {
+    "title": "News Group: Ethereum",
+    "content": [
+      {
+        "speaker": "woman1",
+        "text": "Our next story is titled: Ethereum ICO Participant Offloads 6,000 ETH As Bearish Sentiment Intensifies \n\t\t\t\t\t\tAccording to data from CoinMarketCap, the price of Ethereum slipped by 10.23% over the last seven days in line with..., written by Unknown on Unknown."
+      },
+      {
+        "speaker": "man2",
+        "text": "Here's a summary: Hey everyone! So, we've got some interesting news from the Ethereum front that\u2019s stirring up quite a bit of chatter. Over the past week, Ethereum's price has dropped by more than 10%, which many are attributing to a combination of geopolitical tensions and a wave of liquidations in long positions. Even though there was a slight rebound of about 3.21% recently, bearish sentiment is looming large in the market. One notable event fuelling this anxiety is the actions of an early Ethereum ICO participant who just offloaded 6,000 ETH worth around $14.11 million to the Kraken exchange.\n\nThis seller, identified by the wallet address \u201c0xBF4\u201d, has been on a bit of a selling spree, having already sold 19,000 ETH just days earlier. In total, this address has moved 40,000 ETH since September 22, which raises eyebrows as massive sales by whales often signal a lack of confidence in the asset\u2019s future. With over 108,000 ETH recently being transferred to exchanges, it seems like there's a heightened urgency among investors, potentially triggering a panic among smaller holders. The market is currently watching closely, especially since analysts suggest that Ethereum could drop to around $2,200 or even plunge as low as $1,600 if these bearish trends continue. \n\nWith Ethereum currently trading around $2,399 and holding its position as the second-largest cryptocurrency, this situation could lead to some heated discussions about market psychology and strategies for navigating these turbulent waters. What do you all think? Is it time to buy the dip, or should we be cautious with our investments?"
+      }
+    ]
+  },
+  {
+    "title": "News Group: Bitcoin",
+    "content": [
+      {
+        "speaker": "woman2",
+        "text": "Our next story is titled: Bitcoin Futures Liquidation Forms Local Price Bottom \u2014 A Return To $65,000 Inevitable? \n\t\t\t\t\t\tThe price of Bitcoin hasn\u2019t quite started the month as widely expected, falling to around the $60,000 mark on Thursday,..., written by Unknown on Unknown."
+      },
+      {
+        "speaker": "man1",
+        "text": "Here's a summary: Hey everyone! So, there's been some interesting movement in the Bitcoin market lately. As of October 3rd, Bitcoin's price dipped to around $60,000, driven largely by geopolitical tensions, particularly after Iran's missile strikes into Israel. However, it seems like Bitcoin is staging a bit of a comeback, bouncing back above $62,000 by the end of that week. This recovery appears to be linked to a decrease in selling pressure, which is good news for holders.\n\nIn a recent analysis from CryptoQuant, an analyst known as Caueconomy pointed out some significant events in the Bitcoin futures market. Over 4,000 long positions were liquidated on October 1st, marking one of the largest liquidation events this year. While liquidations can sound negative\u2014indicating losses for traders\u2014they may also indicate a shift in market sentiment, potentially forming a local price bottom. The analyst suggests that if buying strength increases, we could see Bitcoin making its way back to the $65,000 mark in the not-so-distant future. \n\nIt's definitely a topic worth diving into! We can discuss the implications of these liquidations, how geopolitical events affect crypto prices, and whether we think Bitcoin can maintain this upward momentum. What do you guys think?"
+      }
+    ]
+  }
+]

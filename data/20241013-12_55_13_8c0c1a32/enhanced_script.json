@@ -1,0 +1,98 @@
+[
+  {
+    "text": "Hello everyone, and welcome back to our Crypto Chat! I'm your host, Alex. Today, we're going to have a lively discussion about some interesting topics in the world of crypto.",
+    "voice_id": "man2"
+  },
+  {
+    "text": "And I'm Beth, ready to dive into the tech specifics. Can't wait to get started, Alex!",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Charlie here, folks. I've been crunching some numbers and I can't wait to share my insights on the latest market trends.",
+    "voice_id": "man1"
+  },
+  {
+    "text": "And as always, I'm Dana, your resident skeptic. I'll be asking the tough questions and keeping us all on our toes.",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "Thanks, team! Today, we're going to cover the latest news in the crypto world, and then our financial analyst, Charlie, will provide some intriguing insights. Let's get this conversation started!",
+    "voice_id": "man2"
+  },
+  {
+    "text": "<skip></skip>",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Alright, let's kick things off with some interesting news I came across. An analyst named Amr Taha recently shared some insights on CryptoQuant that suggest we might be heading for a significant shift in the Bitcoin market. What do you guys make of this?",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Well, according to Taha, there's a concerning trend with long-term Bitcoin holders. Their realized capitalization has gone from $19 billion to a whopping negative $5 billion. It seems like many are taking profits or closing their positions, which isn't exactly a vote of confidence for Bitcoin's future price.",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Just to clarify for our listeners, 'realized capitalization' refers to the value of all Bitcoin units at the price they last moved, right? So, a drop would suggest that people are selling at lower prices?",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Precisely, Beth. And on the flip side, short-term holders are becoming more active. Their realized capitalization has bounced back from negative $17 billion to $11 billion. So, it looks like we've got a pretty speculative atmosphere brewing.",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Well, one man's loss is another man's gain, right? But I can't help but wonder, what's driving this shift? Are we seeing any external factors that could be influencing this trend?",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "One thing Taha points out is the Korea Premium Index, which is usually positive when Bitcoin prices are higher in South Korea than other global exchanges. But right now, it's sitting near zero or even negative. This means Bitcoin's trading at lower prices in South Korea, which is a departure from the usual trend.",
+    "voice_id": "man2"
+  },
+  {
+    "text": "That's interesting, as Korean traders have historically helped drive price surges. So if demand there is decreasing, it could potentially impact the broader market.",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Another metric to keep an eye on is the net realized profit and loss, or NRPL. It's nearing a critical $4 billion threshold, which historically has signaled major market shifts. As we approach this figure, we could see a surge in trading activity.",
+    "voice_id": "man1"
+  },
+  {
+    "text": "Well, as always, the crypto market keeps us guessing. It's going to be fascinating to see if these trends continue and what that could mean for both long-term and short-term strategies. But remember, folks, always do your own research before making any investment decisions.",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Definitely, Alex! And as we watch these trends unfold, it'll be interesting to see how traders adapt to these emerging dynamics. Could we be on the cusp of another major movement in Bitcoin's price? Only time will tell.",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "Well, folks, that wraps up another episode of our podcast. We've covered some interesting ground today, haven't we?",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Absolutely, Alex. From the unusual situation with the Korea Premium Index to the nearing threshold of the net realized profit and loss, there's a lot to think about.",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Indeed, Beth. And it's important to remember that these trends are just indicators, not certainties. The crypto market is always evolving. Always stay informed, folks.",
+    "voice_id": "man1"
+  },
+  {
+    "text": "And make sure to do your own research before making any investment decisions. It's always crucial to understand the risks involved.",
+    "voice_id": "woman1"
+  },
+  {
+    "text": "Well said, Dana. And with that, we're signing off. Thanks for joining us today, everyone. Remember to stay curious, keep asking questions, and as always, keep exploring the fascinating world of crypto. Until next time, this is Alex...",
+    "voice_id": "man2"
+  },
+  {
+    "text": "Beth...",
+    "voice_id": "woman2"
+  },
+  {
+    "text": "Charlie...",
+    "voice_id": "man1"
+  },
+  {
+    "text": "And Dana, saying goodbye. Stay safe and keep on decrypting, folks!",
+    "voice_id": "woman1"
+  }
+]
