@@ -60,8 +60,27 @@ function updateWalletButton(accountId = null) {
     }
 }
 
-// Event listener for the wallet button to open the modal
-document.getElementById('wallet-btn').addEventListener('click', () => modal.show());
+// Event listener for the wallet button to handle sign in/out
+document.getElementById('wallet-btn').addEventListener('click', async () => {
+    try {
+        const wallet = await selector.wallet();
+        const accounts = await wallet.getAccounts();
+        
+        if (accounts.length > 0) {
+            // User is signed in, show confirmation dialog
+            if (confirm('Are you sure you want to sign out?')) {
+                await wallet.signOut();
+                window.location.reload(); // Reload to update UI state
+            }
+        } else {
+            // User is not signed in, show modal
+            modal.show();
+        }
+    } catch (error) {
+        console.error("Error handling wallet action:", error);
+        modal.show(); // Fallback to showing modal if there's an error
+    }
+});
 
 // Fetch the balance of the user's wallet from the NEAR blockchain
 export async function getNearWalletBalance(accountId) {
