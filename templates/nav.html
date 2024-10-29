@@ -1,7 +1,7 @@
 <nav class="navbar">
     <div class="nav-branding">
-        <h1 class="nav-title">Crypto Current</h1>
-        <p class="nav-subtitle">Automated DCA Investment Platform</p>
+        <h1 class="nav-title">DCA</h1>
+        <p class="nav-subtitle">Automated Investing</p>
     </div>
     <div id="audio-player" class="audio-player">
         <audio id="podcast-audio" controls>
@@ -12,7 +12,7 @@
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">☀️</button>
         <a href="/" class="nav-link desktop-link">Home</a>
         <a href="{{ url_for('dca.dca') }}" class="nav-link desktop-link">Dashboard</a>
-        <a href="/podcasts" class="nav-link desktop-link">Podcasts</a>
+        <a href="/podcasts" class="nav-link desktop-link">Crypto Current News</a>
         <button id="wallet-btn" class="login-btn">Connect Wallet</button>
         <div id="wallet-info" class="wallet-info" style="display: none;">
             <span id="account-id"></span>
@@ -22,6 +22,6 @@
     <div class="mobile-menu">
         <a href="/" class="nav-link">Home</a>
         <a href="{{ url_for('dca.dca') }}" class="nav-link">Dashboard</a>
-        <a href="/podcasts" class="nav-link">Podcasts</a>
+        <a href="/podcasts" class="nav-link">Crypto Current News</a>
     </div>
 </nav>

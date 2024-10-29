@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Podcasts - Podcast Platform{% endblock %}
+{% block title %}Crypto Current News{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/podcasts.css') }}">
@@ -10,7 +10,10 @@
 <div id="loading-spinner" class="hidden">Loading...</div>
 
 <div id="main-area" class="main podcast-group">
-    <h1>Most Recent Podcast</h1>
+    <h1>Latest Crypto News</h1>
+    <div class="intro-text">
+        <p>Stay informed with the latest cryptocurrency market updates, trends, and analysis. Our AI-powered system curates and summarizes the most important crypto news stories, delivering concise, actionable insights to help you make informed decisions. Updated daily with fresh content from trusted sources across the crypto space.</p>
+    </div>
     <div id="recent-podcast">
         <div class="card">
             <div id="articles-list">

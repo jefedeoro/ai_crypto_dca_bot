@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}NEAR DCA - Dollar Cost Averaging{% endblock %}
+{% block title %}DCA - Automated Investing - Dollar Cost Averaging on{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dca.css') }}">
@@ -9,13 +9,13 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">NEAR Dollar Cost Averaging (DCA)</h1>
+    <h1 class="mb-4">DCA Dashboard</h1>
     <p class="text-muted mb-4">Contract Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
     <div id="dcaRegistration"></div>
     <!-- DCA Setup Section -->
     <div class="dca-card mb-4">
         <div class="dca-card-header">
-            <h2>Set Up NEAR DCA Investment</h2>
+            <h2>Set Up DCA Automated Investment</h2>
             <p class="text-muted">Automatically swap NEAR to USDT at regular intervals</p>
         </div>
         <div class="dca-card-body">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <p class="text-muted mb-3">Wallet Balance: <span class="wallet-balance">Loading...</span> NEAR</p>
-                <button type="submit" class="dca-btn dca-btn-primary">Start DCA Investment</button>
+                <button type="submit" class="dca-btn dca-btn-primary">Start DCA Automated Investment</button>
             </form>
         </div>
     </div>
@@ -60,7 +60,7 @@
 <!-- Investment Dashboard Section -->
 <div class="dca-card investment-dashboard mb-4">
     <div class="dca-card-header d-flex justify-content-between align-items-center">
-        <h2>Active DCA Investment</h2>
+        <h2>Active Investment</h2>
         <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
             <i class="fas fa-sync-alt"></i> Refresh
         </button>
@@ -151,13 +151,13 @@
             <h2>Manage Investment</h2>
         </div>
         <div class="dca-card-body">
-            <p class="text-muted">Use the options below to manage your DCA investment.</p>
+            <p class="text-muted">Use the options below to manage your DCA automated investment.</p>
             <div class="d-flex gap-2 mb-3">
                 <button onclick="pauseDCA()" class="dca-btn dca-btn-warning">
-                    <i class="fas fa-pause-circle"></i> Pause DCA
+                    <i class="fas fa-pause-circle"></i> Pause Investment
                 </button>
                 <button onclick="resumeDCA()" class="dca-btn dca-btn-info">
-                    <i class="fas fa-play-circle"></i> Resume DCA
+                    <i class="fas fa-play-circle"></i> Resume Investment
                 </button>
             </div>
             <div class="mb-3">
@@ -180,10 +180,10 @@
             </div>
             <p class="text-danger">
                 <i class="fas fa-exclamation-triangle"></i>
-                Warning: Removing your DCA setup will stop all investments and withdraw all funds.
+                Warning: Removing your investment setup will stop all investments and withdraw all funds.
             </p>
             <button onclick="removeUser()" class="dca-btn dca-btn-danger">
-                <i class="fas fa-trash-alt"></i> Remove DCA Setup
+                <i class="fas fa-trash-alt"></i> Remove Investment Setup
             </button>
         </div>
     </div>
