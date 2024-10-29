@@ -2,6 +2,10 @@
 
 {% block title %}Podcasts - Podcast Platform{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/podcasts.css') }}">
+{% endblock %}
+
 {% block content %}
 <div id="loading-spinner" class="hidden">Loading...</div>
 

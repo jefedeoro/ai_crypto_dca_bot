@@ -10,13 +10,18 @@
     </div>
     <div class="nav-links">
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">☀️</button>
-        <a href="/" class="nav-link">Home</a>
-        <a href="{{ url_for('dca.dca') }}" class="nav-link">Dashboard</a>
-        <a href="/podcasts" class="nav-link">Podcasts</a>
+        <a href="/" class="nav-link desktop-link">Home</a>
+        <a href="{{ url_for('dca.dca') }}" class="nav-link desktop-link">Dashboard</a>
+        <a href="/podcasts" class="nav-link desktop-link">Podcasts</a>
         <button id="wallet-btn" class="login-btn">Connect Wallet</button>
         <div id="wallet-info" class="wallet-info" style="display: none;">
             <span id="account-id"></span>
         </div>
-
+        <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">☰</button>
+    </div>
+    <div class="mobile-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="{{ url_for('dca.dca') }}" class="nav-link">Dashboard</a>
+        <a href="/podcasts" class="nav-link">Podcasts</a>
     </div>
 </nav>

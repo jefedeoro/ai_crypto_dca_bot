@@ -1,0 +1,100 @@
+/* Podcast specific styles following DCA styling patterns */
+.podcast-group {
+    margin-top: 80px;
+    padding: var(--dca-spacing-md);
+}
+
+.podcast-group h1 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* Card styling matching DCA cards */
+.card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 32px var(--shadow);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1rem;
+    padding: var(--dca-spacing-md);
+}
+
+/* Articles list styling */
+#articles-list {
+    display: grid;
+    gap: 1rem;
+}
+
+#articles-list article {
+    background: var(--highlight-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: var(--dca-spacing-md);
+    transition: transform var(--dca-transition-speed);
+}
+
+#articles-list article:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+#articles-list h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+#articles-list p {
+    color: var(--text-primary);
+    opacity: 0.8;
+    margin-bottom: 1rem;
+}
+
+/* Loading spinner styling */
+#loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+#loading-spinner:not(.hidden)::after {
+    content: '';
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 0.5rem;
+    border: 2px solid var(--highlight-border);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 925px) {
+    .podcast-group {
+        margin-top: 60px;
+        padding: var(--dca-spacing-sm);
+    }
+
+    .card {
+        margin-bottom: 0.75rem;
+        padding: var(--dca-spacing-sm);
+    }
+
+    #articles-list article {
+        padding: 0.75rem;
+    }
+
+    #articles-list h2 {
+        font-size: 1.1rem;
+    }
+}

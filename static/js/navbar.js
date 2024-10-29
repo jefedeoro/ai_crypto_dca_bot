@@ -1,9 +1,9 @@
 console.log('Loading navbar.js...');
 
-// Theme toggle functionality
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded in navbar.js');
     
+    // Theme toggle functionality
     const themeToggle = document.getElementById('themeToggle');
     const html = document.documentElement;
     
@@ -21,23 +21,43 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.innerHTML = newTheme === 'light' ? '☀️' : '🌙';
     });
 
-    // Add wallet button click handler with polling for modal
+    // Mobile menu functionality
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    let isMenuOpen = false;
+
+    if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.add('show');
+            } else {
+                mobileMenu.classList.remove('show');
+            }
+            console.log('Menu clicked, isMenuOpen:', isMenuOpen);
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !menuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                isMenuOpen = false;
+                mobileMenu.classList.remove('show');
+                console.log('Menu closed by outside click');
+            }
+        });
+    }
+
+    // Wallet button functionality
     const walletBtn = document.getElementById('wallet-btn');
-    console.log('Wallet button element:', walletBtn);
-    
     if (walletBtn) {
-        console.log('Adding click listener to wallet button');
         walletBtn.onclick = async () => {
-            console.log('Wallet button clicked');
-            // Poll for modal availability
             for (let i = 0; i < 50; i++) {
-                console.log('Checking for modal...', { modal: window.modal, selector: window.selector });
                 if (window.modal) {
-                    console.log('Modal found, showing...');
                     window.modal.show();
                     return;
                 }
-                console.log('Modal not available, waiting...');
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
             console.error('Modal not available after waiting');

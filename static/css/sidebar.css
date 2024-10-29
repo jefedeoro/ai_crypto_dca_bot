@@ -1,37 +1,20 @@
-:root {
-    --sidebar-bg: #f8f9fa;
-    --sidebar-shadow: rgba(0, 0, 0, 0.1);
-    --card-bg: white;
-    --card-border: #ddd;
-    --date-text: #666;
-    --button-bg: #007bff;
-    --button-hover: #0056b3;
-    --selected-card-bg: #e3f2fd;
-    --selected-card-border: #2196f3;
-}
-
-[data-theme="dark"] {
-    --sidebar-bg: #2a2a2a;
-    --sidebar-shadow: rgba(0,0,0,0.3);
-    --card-bg: #333333;
-    --card-border: #404040;
-    --date-text: #a0a0a0;
-    --button-bg: #4a90e2;
-    --button-hover: #357abd;
-    --selected-card-bg: #1a3f5f;
-    --selected-card-border: #4a90e2;
-}
-
+/* Sidebar specific styles following DCA styling patterns */
 .toggle-btn {
     position: fixed;
     top: 20%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 5px;
+    padding: 0.5rem;
     z-index: 1001;
+    color: var(--text-primary);
+    transition: transform 0.2s;
+}
+
+.toggle-btn:hover {
+    transform: translateY(-50%) scale(1.1);
 }
 
 .sidebar {
@@ -42,15 +25,17 @@
     margin-top: 0;
     width: 250px;
     max-height: 70vh;
-    background-color: var(--sidebar-bg);
+    background-color: var(--bg-secondary);
     transition: left 0.3s ease;
-    padding: 20px;
-    box-shadow: 2px 0 5px var(--sidebar-shadow);
+    padding: var(--dca-spacing-md);
+    box-shadow: 0 8px 32px var(--shadow);
     z-index: 1000;
     direction: rtl;
     overflow-y: auto;
-    border-top-right-radius: 42.0px;
-    border-bottom-right-radius: 42.0px;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
 }
 
 .sidebar > * {
@@ -59,63 +44,87 @@
 
 .sidebar-title {
     text-align: right;
-    margin-right: 10px;
-    margin-top: 10px;
-    padding-left: 40px;
+    margin-right: var(--dca-spacing-sm);
+    margin-top: var(--dca-spacing-sm);
+    padding-left: var(--dca-spacing-lg);
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .podcast-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    gap: var(--dca-spacing-md);
+    margin-top: var(--dca-spacing-md);
 }
 
 .podcast-card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 4px;
-    padding: 10px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: var(--dca-spacing-md);
+    transition: all var(--dca-transition-speed);
+    box-shadow: 0 4px 12px var(--shadow);
+    backdrop-filter: blur(10px);
+}
+
+.podcast-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px var(--shadow);
 }
 
 .podcast-card.selected {
-    background: var(--selected-card-bg);
-    border-color: var(--selected-card-border);
+    background: var(--highlight-bg);
+    border-color: var(--highlight-border);
 }
 
 .podcast-date {
-    font-size: 0.9em;
-    color: var(--date-text);
-    margin-bottom: 5px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    opacity: 0.7;
+    margin-bottom: var(--dca-spacing-xs);
+    font-weight: 500;
 }
 
 .podcast-title {
-    font-size: 0.95em;
-    margin-bottom: 10px;
+    font-size: 0.95rem;
+    margin-bottom: var(--dca-spacing-sm);
     word-wrap: break-word;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .open-btn {
     width: 100%;
-    padding: 6px;
-    background-color: var(--button-bg);
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(45deg, var(--button-gradient-from), var(--button-gradient-to));
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--dca-transition-speed);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .open-btn:hover {
-    background-color: var(--button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.open-btn:active {
+    transform: translateY(0);
 }
 
 .main-container {
     padding-top: 60px;
     margin-left: 2rem;
     transition: margin-left 0.3s ease;
-    padding: 20px;
+    padding: var(--dca-spacing-md);
     width: calc(100% - 2rem);
     box-sizing: border-box;
     overflow-x: hidden;
@@ -124,4 +133,30 @@
 .main-container.sidebar-open {
     margin-left: calc(250px + 2rem);
     width: calc(100% - 250px - 2rem);
+}
+
+/* Responsive adjustments */
+@media (max-width: 925px) {
+    .sidebar {
+        padding: var(--dca-spacing-sm);
+    }
+
+    .podcast-card {
+        padding: var(--dca-spacing-sm);
+    }
+
+    .open-btn {
+        padding: 0.5rem 1rem;
+    }
+
+    .main-container {
+        margin-left: 1rem;
+        padding: var(--dca-spacing-sm);
+        width: calc(100% - 1rem);
+    }
+
+    .main-container.sidebar-open {
+        margin-left: calc(250px + 1rem);
+        width: calc(100% - 250px - 1rem);
+    }
 }
