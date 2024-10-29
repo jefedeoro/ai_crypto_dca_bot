@@ -14,17 +14,16 @@
 </head>
 
 <body class="light-theme">
-    {% include 'nav.html' %}
-
-    <!-- Sidebar -->
-    {% include 'sidebar.html' %}
-
-    <div id="main-container" class="main-container">
-        <main>
-            {% block content %}
-            <!-- Content from child templates will be injected here -->
-            {% endblock %}
-        </main>
+    <div class="app-wrapper">
+        {% include 'nav.html' %}
+        {% include 'sidebar.html' %}
+        <div id="main-container" class="main-container">
+            <main>
+                {% block content %}
+                <!-- Content from child templates will be injected here -->
+                {% endblock %}
+            </main>
+        </div>
     </div>
 
     <!-- ES Module Shims -->

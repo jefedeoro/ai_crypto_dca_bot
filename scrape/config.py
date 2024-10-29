@@ -26,7 +26,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 RESULT_FOLDER = os.getenv('TG_NEWS_RESULT_FOLDER', 'data')
 
 # Maximum number of stories to scrape
-MAX_STORIES = int(os.getenv('MAX_STORIES', 3))  # Default to 20 if not set in .env
+MAX_STORIES = int(os.getenv('MAX_STORIES', 2))  # Default to 20 if not set in .env
 
 # Blocked sites
 BLOCKED_SITES = ["lu.ma", "eventbrite.com"]

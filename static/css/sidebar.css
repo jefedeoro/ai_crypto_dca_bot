@@ -12,7 +12,7 @@
 
 [data-theme="dark"] {
     --sidebar-bg: #2a2a2a;
-    --sidebar-shadow: rgba(0, 0, 0, 0.3);
+    --sidebar-shadow: rgba(0,0,0,0.3);
     --card-bg: #333333;
     --card-border: #404040;
     --date-text: #a0a0a0;
@@ -24,7 +24,8 @@
 
 .toggle-btn {
     position: fixed;
-    top: 90px;
+    top: 20%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     font-size: 20px;
@@ -35,11 +36,12 @@
 
 .sidebar {
     position: fixed;
-    left: -250px;
-    top: 10;
-    margin-top: 40px;
+    left: 0;
+    top: 60%;
+    transform: translateY(-50%);
+    margin-top: 0;
     width: 250px;
-    height: 100%;
+    max-height: 70vh;
     background-color: var(--sidebar-bg);
     transition: left 0.3s ease;
     padding: 20px;
@@ -47,6 +49,8 @@
     z-index: 1000;
     direction: rtl;
     overflow-y: auto;
+    border-top-right-radius: 42.0px;
+    border-bottom-right-radius: 42.0px;
 }
 
 .sidebar > * {
@@ -108,11 +112,16 @@
 }
 
 .main-container {
+    padding-top: 60px;
     margin-left: 2rem;
     transition: margin-left 0.3s ease;
     padding: 20px;
+    width: calc(100% - 2rem);
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .main-container.sidebar-open {
     margin-left: calc(250px + 2rem);
+    width: calc(100% - 250px - 2rem);
 }
