@@ -4,103 +4,166 @@
     max-width: 1100px;
     margin: 0 auto;
     padding: 0 1.25rem;
+    position: relative;
 }
 
 /* Hero Section */
 .hero-wrapper {
     position: relative;
-    padding: 2rem 0 1.5rem;
     width: 100%;
-    background: transparent;
+    margin-top: 80px;
 }
 
 .hero-section {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
-    gap: 1.5rem;
-    align-items: center;
+    gap: 2rem;
+    align-items: start;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    padding-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 1rem;
 }
 
 .hero-content {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 2rem;
+    padding-top: 2rem;
 }
 
-/* Floating Cards */
-.floating-cards {
+.hero-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.hero-lead {
+    font-size: 1.125rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.hero-visual {
     position: relative;
     width: 100%;
-    height: 300px; /* Increased height for more space */
+    height: 400px;
+    margin-top: 2rem;
 }
 
-.float-card {
+/* Cards Container */
+.cards-container {
     position: absolute;
-    padding: 0.875rem;
-    border-radius: 0.75rem;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+/* Base Card Styles */
+.static-card {
+    position: absolute;
+    width: 160px;
+    padding: 1.5rem;
+    border-radius: 1rem;
     background: var(--bg-secondary);
-    backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     box-shadow: 0 8px 32px var(--shadow);
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
+}
+
+/* Card Positions */
+.static-card-1 {
+    top: 40px;
+    right: 120px;
+}
+
+.static-card-2 {
+    top: 200px;
+    right: 420px;
+}
+
+.static-card-3 {
+    top: 200px;
+    right: 120px;
+}
+
+.card-icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.card-text {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* Stats Section */
+.hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
-    animation: float 6s ease-in-out infinite;
-    width: 120px;
 }
 
-/* Adjusted positions for better spacing */
-.card-1 { 
-    top: 5%; 
-    right: 15%; 
-    animation-delay: 0s;
-    z-index: 3;
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--button-gradient-from);
 }
 
-.card-2 { 
-    top: 40%; 
-    left: -20%; 
-    animation-delay: -2s;
-    z-index: 2;
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
-.card-3 { 
-    bottom: -5%; 
-    right: 25%; 
-    animation-delay: -4s;
-    z-index: 1;
+/* Section Headers */
+.section-header {
+    margin-top: 8rem;
+    margin-bottom: 3rem;
 }
 
-
-/* Section Wrappers */
+/* Rest of your existing styles... */
 .features-wrapper,
 .podcast-wrapper,
 .process-wrapper,
 .cta-wrapper {
-    padding: 2rem 0;
+    padding: 3rem 0;
     width: 100%;
 }
 
-/* Grid Layouts */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
     width: 100%;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 }
 
 .podcast-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.25rem;
+    gap: 2rem;
     width: 100%;
-    margin: 1.5rem auto 0;
+    margin: 2rem auto 0;
     max-width: 900px;
 }
 
-/* Timeline */
 .process-timeline {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -131,123 +194,93 @@
     z-index: 1;
 }
 
-.step-circle {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background: var(--button-gradient-from);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-weight: bold;
-}
-
-/* Stats Display */
-.hero-stats {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.stat-value {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: var(--button-gradient-from);
-}
-
-.stat-label {
-    font-size: 0.8125rem;
-    opacity: 0.8;
-}
-
-/* Trust Indicators */
-.trust-indicators {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
-    margin-top: 1.25rem;
-}
-
-.trust-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.875rem;
-    border-radius: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-}
-
-@keyframes float {
-    0% { 
-        transform: translateY(0) rotate(0deg); 
-    }
-    50% { 
-        transform: translateY(-15px) rotate(2deg); 
-    }
-    100% { 
-        transform: translateY(0) rotate(0deg); 
-    }
-}
-
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hero-section {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 1.5rem;
+        gap: 3rem;
+    }
+
+    .hero-content {
+        padding: 0 1rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
     }
     
     .hero-stats {
         justify-content: center;
     }
 
-    .podcast-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    .hero-visual {
+        height: 580px;
+        margin-top: 0;
     }
 
-    .process-timeline {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
+    /* Stack cards in a column */
+    .static-card {
+        width: 180px;
+        left: 50%;
+        transform: translateX(-50%) !important;
     }
 
-    .timeline-line {
-        display: none;
+    .static-card-1 {
+        top: 20px;
+    }
+
+    .static-card-2 {
+        top: 220px;
+    }
+
+    .static-card-3 {
+        top: 420px;
+        right: auto;
+    }
+
+    .section-header {
+        margin-top: 4rem;
+        margin-bottom: 2rem;
     }
 }
 
 @media (max-width: 768px) {
-    /* Previous mobile styles remain unchanged */
-    .floating-cards {
-        height: 250px; /* Adjusted for mobile */
+    .hero-wrapper {
+        margin-top: 60px;
     }
 
-    .float-card {
-        width: 100px;
+    .hero-visual {
+        height: 520px;
     }
 
-    /* Adjusted mobile positions */
-    .card-1 { 
-        top: 15%; 
-        right: 10%; 
+    .static-card {
+        width: 150px;
+        padding: 1.25rem;
     }
 
-    .card-2 { 
-        top: 45%; 
-        left: 15%; 
+    .static-card-1 {
+        top: 20px;
     }
 
-    .card-3 { 
-        bottom: 20%; 
-        right: 20%; 
+    .static-card-2 {
+        top: 190px;
+    }
+
+    .static-card-3 {
+        top: 360px;
+    }
+
+    .card-icon {
+        font-size: 1.75rem;
+    }
+
+    .card-text {
+        font-size: 0.875rem;
+    }
+
+    .section-header {
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
     }
 }
