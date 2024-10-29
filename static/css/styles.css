@@ -48,6 +48,7 @@ h3 {
 .container {
     max-width: 800px;
     margin: auto;
+    margin-top: 100px;
     padding: 20px;
 }
 
@@ -144,6 +145,10 @@ button:hover {
 
 #main-area.shrink {
     margin-left: 250px;
+}
+
+.podcast-group {
+    margin-top: 80px;
 }
 
 #button-container {
