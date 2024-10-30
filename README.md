@@ -1,127 +1,387 @@
-# AI-Driven Crypto News & DCA Bot
+# AI-Powered DCA Bot with Crypto News Integration
 
-An application that aggregates crypto news, summarizes it, converts it to audio, and delivers it via a Telegram bot. It also allows users to set up Dollar-Cost Averaging (DCA) investments on the NEAR blockchain.
+<style>
+.spoiler {
+    background: #000;
+    color: #000;
+    padding: 5px;
+}
+.spoiler:hover {
+    color: #fff;
+}
+.spoiler a {
+    color: #000;
+}
+.spoiler:hover a {
+    color: #0366d6;
+}
+.spoiler code,
+.spoiler .bash,
+.spoiler .env,
+.spoiler .language-bash,
+.spoiler .language-env,
+.spoiler .cd,
+.spoiler .test,
+.spoiler .cp {
+    color: #000 !important;
+    background: #000 !important;
+}
+.spoiler:hover code,
+.spoiler:hover .bash,
+.spoiler:hover .env,
+.spoiler:hover .language-bash,
+.spoiler:hover .language-env,
+.spoiler:hover .cd,
+.spoiler:hover .test,
+.spoiler:hover .cp {
+    color: #24292e !important;
+    background: #f6f8fa !important;
+}
+.spoiler pre {
+    background: #000 !important;
+}
+.spoiler:hover pre {
+    background: #f6f8fa !important;
+}
+.spoiler pre code {
+    color: #000 !important;
+    background: #000 !important;
+}
+.spoiler:hover pre code {
+    color: #24292e !important;
+    background: #f6f8fa !important;
+}
+.spoiler .hljs,
+.spoiler .hljs-keyword,
+.spoiler .hljs-selector-tag,
+.spoiler .hljs-subst,
+.spoiler .hljs-number,
+.spoiler .hljs-literal,
+.spoiler .hljs-variable,
+.spoiler .hljs-template-variable,
+.spoiler .hljs-tag .hljs-attr,
+.spoiler .hljs-string,
+.spoiler .hljs-doctag,
+.spoiler .hljs-title,
+.spoiler .hljs-section,
+.spoiler .hljs-selector-id,
+.spoiler .hljs-type,
+.spoiler .hljs-class .hljs-title,
+.spoiler .hljs-symbol,
+.spoiler .hljs-bullet,
+.spoiler .hljs-built_in,
+.spoiler .hljs-builtin-name,
+.spoiler .hljs-attr,
+.spoiler .hljs-link,
+.spoiler .hljs-params,
+.spoiler .hljs-attribute,
+.spoiler .hljs-regexp,
+.spoiler .hljs-meta,
+.spoiler .hljs-selector-class,
+.spoiler .hljs-selector-attr,
+.spoiler .hljs-selector-pseudo,
+.spoiler .hljs-template-tag,
+.spoiler .hljs-quote,
+.spoiler .hljs-deletion,
+.spoiler .hljs-addition,
+.spoiler .hljs-emphasis,
+.spoiler .hljs-strong,
+.spoiler .hljs-comment {
+    color: #000 !important;
+    background: #000 !important;
+}
+.spoiler:hover .hljs,
+.spoiler:hover .hljs-keyword,
+.spoiler:hover .hljs-selector-tag,
+.spoiler:hover .hljs-subst,
+.spoiler:hover .hljs-number,
+.spoiler:hover .hljs-literal,
+.spoiler:hover .hljs-variable,
+.spoiler:hover .hljs-template-variable,
+.spoiler:hover .hljs-tag .hljs-attr,
+.spoiler:hover .hljs-string,
+.spoiler:hover .hljs-doctag,
+.spoiler:hover .hljs-title,
+.spoiler:hover .hljs-section,
+.spoiler:hover .hljs-selector-id,
+.spoiler:hover .hljs-type,
+.spoiler:hover .hljs-class .hljs-title,
+.spoiler:hover .hljs-symbol,
+.spoiler:hover .hljs-bullet,
+.spoiler:hover .hljs-built_in,
+.spoiler:hover .hljs-builtin-name,
+.spoiler:hover .hljs-attr,
+.spoiler:hover .hljs-link,
+.spoiler:hover .hljs-params,
+.spoiler:hover .hljs-attribute,
+.spoiler:hover .hljs-regexp,
+.spoiler:hover .hljs-meta,
+.spoiler:hover .hljs-selector-class,
+.spoiler:hover .hljs-selector-attr,
+.spoiler:hover .hljs-selector-pseudo,
+.spoiler:hover .hljs-template-tag,
+.spoiler:hover .hljs-quote,
+.spoiler:hover .hljs-deletion,
+.spoiler:hover .hljs-addition,
+.spoiler:hover .hljs-emphasis,
+.spoiler:hover .hljs-strong,
+.spoiler:hover .hljs-comment {
+    color: inherit !important;
+    background: transparent !important;
+}
+</style>
+
+## Overview
+### [REDACTED]
+<div class="spoiler">
+This project combines automated Dollar Cost Averaging (DCA) on the NEAR blockchain with AI-powered crypto news delivery. It features:
+
+- Smart contract-based DCA execution
+- AI-driven news aggregation and summarization
+- Professional-quality audio news broadcasts
+- Telegram bot integration for updates and control
+- Real-time portfolio monitoring
+</div>
+
+## Project Structure
+### [REDACTED]
+<div class="spoiler">
+ ├── contracts/ # NEAR smart contracts 
+ 
+ ├── routes/ # Flask route handlers 
+
+ ├── scrape/ # News scraping and AI processing 
+
+ ├── static/ # Frontend assets
+
+ ├── telegram-bot/ # Telegram bot integration 
+ 
+ ├── templates/ # Flask HTML templates 
+
+ └── data/ # Generated content storage
+</div>
+
+## Prerequisites
+### [REDACTED]
+<div class="spoiler">
+- Python 3.8+
+- Node.js 14+
+- Rust (for NEAR contracts)
+- NEAR CLI
+- Telegram Bot Token
+- OpenAI API Key
+- ... (other dependencies)
+</div>
+
+## Installation
+### [REDACTED]
+<div class="spoiler">
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd ai_crypto_dca_bot
+```
+
+2. Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Install Node.js dependencies:
+```bash
+cd telegram-bot
+npm install
+```
+
+4. Build NEAR contracts:
+```bash
+cd contracts/near-dca
+./build.sh
+```
+</div>
+
+## Configuration
+### [REDACTED]
+<div class="spoiler">
+1. Create a `.env` file based on `example.env.txt`:
+```env
+NEAR_NETWORK=testnet
+NEAR_CONTRACT_ID=your-contract.testnet
+TELEGRAM_BOT_TOKEN=your-telegram-token
+OPENAI_API_KEY=your-openai-key
+... (add other keys as needed)
+```
+
+2. Configure the Telegram bot:
+```bash
+cd telegram-bot
+cp .env_example .env
+# Edit .env with your bot token
+```
+</div>
+
+## Smart Contract Deployment
+### [REDACTED]
+<div class="spoiler">
+1. Login to NEAR CLI:
+```bash
+near login
+```
+
+2. Deploy the contract:
+```bash
+cd contracts/near-dca
+near deploy --accountId your-contract.testnet --wasmFile res/near_dca.wasm
+```
+</div>
+
+## Running the Application
+### [REDACTED]
+<div class="spoiler">
+1. Start the Flask server:
+```bash
+python app.py
+```
+
+2. Start the Telegram bot:
+```bash
+cd telegram-bot
+npm start
+```
+
+3. Launch the news processing service:
+```bash
+python main.py
+```
+</div>
 
 ## Features
 
-- **News Aggregation**: Scrapes news from trusted crypto sources.
-- **Summarization**: Uses NLP to summarize articles.
-- **Text-to-Speech**: Converts summaries into audio.
-- **Telegram Bot**: Delivers news and manages DCA investments. (Currently commented out for testing)
-- **DCA Investments**: Users can set up DCA on the NEAR blockchain.
+### DCA Functionality
+### [REDACTED]
+<div class="spoiler">
+- Configure investment amount and intervals
+- Automated NEAR to USDT swaps
+- Real-time balance tracking
+- Portfolio performance monitoring
+</div>
 
-## Setup Instructions
+### AI News Integration
+### [REDACTED]
+<div class="spoiler">
+- Automated news aggregation
+- AI-powered summarization
+- Text-to-speech conversion
+- Professional audio delivery
+</div>
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/crypto-dca-bot.git
-   cd crypto-dca-bot
-   ```
+### Telegram Bot Commands
+### [REDACTED]
+<div class="spoiler">
+```
+/start - Initialize the bot
+/dca - View DCA settings
+/balance - Check portfolio balance
+/news - Get latest crypto news
+/help - Display command list
+```
+</div>
 
-2. **Run the setup script**:
-   ```bash
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-   This script will:
-   - Create necessary directories
-   - Create a .env file with placeholders
-   - Install Python dependencies
-   - Install NEAR CLI
-   - Create a default result folder and export it as an environment variable
+## Development
 
-3. **Update the `.env` file**:
-   Open the `.env` file and replace the placeholders with your actual API keys and settings:
-   ```
-   TELEGRAM_TOKEN=your_telegram_token
-   OPENAI_API_KEY=your_openai_api_key
-   ELEVENLABS_API_KEY=your_elevenlabs_api_key
-   NEAR_NETWORK=testnet
-   NEAR_CONTRACT_ID=your_contract_id.testnet
-   DCA_SERVER_URL=http://localhost:5000
-   ```
+### Local Testing
+### [REDACTED]
+<div class="spoiler">
+1. Run tests:
+```bash
+python test_app.py
+```
 
-4. **Set up NEAR account**:
-   Log in to your NEAR account:
-   ```bash
-   near login
-   ```
+2. Test smart contracts:
+```bash
+cd contracts/near-dca
+cargo test
+```
+</div>
 
-5. **Build and deploy smart contracts**:
-   - Navigate to `smart_contracts/`:
-     ```bash
-     cd smart_contracts
-     npm install
-     ```
-   - Build the contract:
-     ```bash
-     npm run build
-     ```
-   - Deploy to NEAR testnet:
-     ```bash
-     near deploy --accountId your_account.testnet --wasmFile build/contract.ts
-     ```
+### Adding New Features
+### [REDACTED]
+<div class="spoiler">
+1. Create a new branch:
+```bash
+git checkout -b feature/your-feature
+```
 
-6. **Run the main script to process news**:
-   ```bash
-   python main.py
-   ```
-   This script will aggregate news, summarize articles, generate a script, and convert it to audio.
+2. Implement your changes
+3. Run tests
+4. Submit a pull request
+</div>
 
-7. **Run the Flask app for the Telegram bot** (Currently commented out for testing):
-   ```bash
-   # python app.py
-   ```
+## Architecture
 
-8. **Set up Telegram webhook** (Currently not needed for testing):
-   - Use a service like ngrok to expose your local server:
-     ```bash
-     # ngrok http 5000
-     ```
-   - Set the webhook URL to `https://your_ngrok_url/webhook` using Telegram's API.
+### Backend Components
+### [REDACTED]
+<div class="spoiler">
+- Flask server for API endpoints
 
-## Usage
+- NEAR smart contracts for DCA execution
 
-Note: The following commands are currently unavailable as the Telegram bot is commented out for testing.
+- AI pipeline for news processing
 
-- Start the bot by sending `/start` in Telegram.
-- Use `/help` to see available commands.
-- Use `/getnews` to receive the latest crypto news.
-- Set up DCA investments:
-  - Use `/setdca` to initiate the DCA setup process.
-  - Follow the prompts to set your crypto, amount, and frequency.
-- Check your DCA status with `/status`.
+- Audio processing for news delivery
+</div>
 
-## Project Structure
+### Frontend Structure
+### [REDACTED]
+<div class="spoiler">
+- Responsive web interface
 
-- `main.py`: Orchestrates the news aggregation, summarization, script writing, and text-to-speech processes.
-- `news_aggregator.py`: Scrapes news from crypto sources.
-- `news_summarizer.py`: Summarizes articles using OpenAI's GPT-4o-mini model.
-- `script_writer.py`: Generates a script from summarized news.
-- `text_to_speech.py`: Converts the script to audio.
-- `app.py`: Flask application for the Telegram bot. (Currently not in use)
-- `dca_integration.py`: Handles DCA investment logic and NEAR blockchain integration.
-- `data/`: Contains result folders with processed news data and audio files.
+- Real-time updates via WebSocket
 
-## NEAR Smart Contract Integration
+- Interactive portfolio dashboard
 
-This bot integrates with a NEAR smart contract to manage DCA investments. The smart contract handles setting and retrieving investment details for each user. The integration is done using NEAR CLI, which must be installed and configured on the system running the bot.
+- News player integration
+</div>
+
+## Security Considerations
+### [REDACTED]
+<div class="spoiler">
+- Smart contract auditing required before mainnet deployment
+
+- API key management through environment variables
+
+- Rate limiting on API endpoints
+
+- Input validation for all user data
+</div>
 
 ## Contributing
+### [REDACTED]
+<div class="spoiler">
+1. Fork the repository
 
-Contributions are welcome! Please open an issue or submit a pull request.
+2. Create your feature branch
+
+3. Commit your changes
+
+4. Push to the branch
+
+5. Create a Pull Request
+</div>
 
 ## License
+### [REDACTED]
+<div class="spoiler">
+MIT License - see LICENSE file for details
+</div>
 
-[MIT License](LICENSE)
+## Support
+### [REDACTED]
+<div class="spoiler">
+For support and questions:
 
-## Troubleshooting
+- Create an issue in the repository
 
-If you encounter any issues:
-1. Ensure all environment variables are correctly set in the `.env` file.
-2. Check that NEAR CLI is properly installed and you're logged in to your NEAR account.
-3. Verify that the smart contract is correctly deployed and the contract ID is set in your environment variables.
-4. Make sure you're connected to the correct NEAR network (testnet or mainnet) as specified in your environment variables.
-5. Check the console output for any error messages when running the scripts.
-
-If you face any other issues, please open an issue on the GitHub repository.
+- Contact via Telegram: https://t.me/neardcabot
+- Email: support@nearhub.online
+</div>
