@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize sidebar as closed
     sidebar.style.left = '-250px';
     toggleSidebarBtn.textContent = '➡️';
-    // No sidebar-open class by default
 
     // Load podcasts
     function loadPodcasts() {
@@ -61,44 +60,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Add selected class if this is the current folder
                         if (currentFolder && folderPath === currentFolder) {
                             card.classList.add('selected');
-                            // Update audio player if this is the selected folder
-                            if (window.AudioPlayer) {
-                                window.AudioPlayer.updatePodcast(folderPath);
-                            }
                         }
 
                         // Create card content
-                        card.innerHTML = `
+                        const contentDiv = document.createElement('div');
+                        contentDiv.innerHTML = `
                             <div class="podcast-date">${formattedDate}</div>
                             <div class="podcast-title">${title}</div>
-                            <button class="open-btn" data-folder="${folderPath}">Open</button>
                         `;
+                        card.appendChild(contentDiv);
 
-                        // Add click handler for open button
-                        const openBtn = card.querySelector('.open-btn');
-                        openBtn.addEventListener('click', async () => {
-                            const folder = openBtn.dataset.folder;
-                            
-                            // Update audio player
-                            if (window.AudioPlayer) {
-                                await window.AudioPlayer.updatePodcast(folder);
+                        // Make card clickable for summary
+                        card.addEventListener('click', async () => {
+                            if (window.PodcastControls) {
+                                await window.PodcastControls.openSummary(folderPath);
                             }
-
-                            // Update content using fetchPodcast from podcasts.js
-                            if (window.fetchPodcast) {
-                                await window.fetchPodcast(folder);
-                            }
-                            
-                            // Update URL without full page reload
-                            const newUrl = `/podcasts?folder=${encodeURIComponent(folder)}`;
-                            window.history.pushState({ folder }, '', newUrl);
-                            
-                            // Update selected states
-                            document.querySelectorAll('.podcast-card').forEach(c => {
-                                c.classList.remove('selected');
-                            });
-                            card.classList.add('selected');
                         });
+
+                        // Add audio control
+                        if (window.PodcastControls) {
+                            const controls = window.PodcastControls.createControls(folderPath, card);
+                            card.appendChild(controls);
+                        }
 
                         podcastList.appendChild(card);
                     });
@@ -110,9 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle browser back/forward
     window.addEventListener('popstate', async (event) => {
         const newFolder = new URLSearchParams(window.location.search).get('folder');
-        if (window.AudioPlayer && newFolder) {
-            await window.AudioPlayer.updatePodcast(newFolder);
-        }
         if (window.fetchPodcast && newFolder) {
             await window.fetchPodcast(newFolder);
         }

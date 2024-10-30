@@ -2,6 +2,7 @@
 const AudioPlayer = {
     init() {
         this.audioElement = document.getElementById('podcast-audio');
+        this.isLocked = false;
         this.setupEventListeners();
         this.loadStoredPodcast();
     },
@@ -18,6 +19,11 @@ const AudioPlayer = {
         // Handle audio errors
         this.audioElement.addEventListener('error', (e) => {
             console.error('Error loading audio:', e);
+        });
+
+        // When audio starts playing, lock it
+        this.audioElement.addEventListener('play', () => {
+            this.isLocked = true;
         });
 
         // When audio can play, restore state if needed
@@ -50,39 +56,49 @@ const AudioPlayer = {
         }
     },
     
-    async updatePodcast(folder = null) {
-        try {
-            const url = folder ? 
-                `/api/podcasts/get?folder=${encodeURIComponent(folder)}` : 
-                '/api/podcasts/get';
-            
-            const response = await fetch(url);
-            const data = await response.json();
-            
-            if (data.status === 'success' && data.podcast.audio_url) {
-                const sanitizedUrl = this.sanitizeURL(data.podcast.audio_url);
+    async updatePodcast(folder = null, restoreState = false) {
+        // Only allow updates if not locked or if it's a manual play request
+        if (!this.isLocked || restoreState === false) {
+            try {
+                const url = folder ? 
+                    `/api/podcasts/get?folder=${encodeURIComponent(folder)}` : 
+                    '/api/podcasts/get';
                 
-                // Store current playback state
-                const wasPlaying = !this.audioElement.paused;
-                const currentTime = this.audioElement.currentTime;
+                const response = await fetch(url);
+                const data = await response.json();
                 
-                this.audioElement.src = sanitizedUrl;
-                this.audioElement.load();
-                localStorage.setItem('currentPodcastUrl', sanitizedUrl);
-                
-                // Restore playback state when audio is ready
-                this.audioElement.addEventListener('canplay', () => {
-                    this.audioElement.currentTime = currentTime;
-                    if (wasPlaying) {
-                        this.audioElement.play().catch(console.error);
+                if (data.status === 'success' && data.podcast.audio_url) {
+                    const sanitizedUrl = this.sanitizeURL(data.podcast.audio_url);
+                    
+                    // Store current playback state only if restoreState is true
+                    const wasPlaying = restoreState ? !this.audioElement.paused : false;
+                    const currentTime = restoreState ? this.audioElement.currentTime : 0;
+                    
+                    this.audioElement.src = sanitizedUrl;
+                    this.audioElement.load();
+                    localStorage.setItem('currentPodcastUrl', sanitizedUrl);
+                    
+                    // Restore playback state only if restoreState is true
+                    if (restoreState) {
+                        this.audioElement.addEventListener('canplay', () => {
+                            this.audioElement.currentTime = currentTime;
+                            if (wasPlaying) {
+                                this.audioElement.play().catch(console.error);
+                            }
+                        }, { once: true });
+                    } else {
+                        // For manual track changes, start playing from the beginning
+                        this.audioElement.addEventListener('canplay', () => {
+                            this.audioElement.play().catch(console.error);
+                        }, { once: true });
                     }
-                }, { once: true });
-                
-                return data;
+                    
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error fetching podcast:', error);
+                throw error;
             }
-        } catch (error) {
-            console.error('Error fetching podcast:', error);
-            throw error;
         }
     },
 

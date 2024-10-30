@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const recentPodcast = document.getElementById('recent-podcast');
     const articlesList = document.getElementById('articles-list');
     const loadingSpinner = document.getElementById('loading-spinner');
-    const navbarAudio = document.querySelector('nav audio source#podcast-audio');
 
     /**
      * Show loading spinner and hide content
@@ -21,6 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Create play button HTML
+     */
+    function createPlayButtonHTML(folder) {
+        return `
+            <button id="play-podcast-btn" class="play-btn" onclick="window.PodcastControls.playAudio('${folder}', null)">
+                ▶️ Play Audio
+            </button>
+        `;
+    }
+
+    /**
      * Create HTML for an article
      */
     function createArticleHTML(article) {
@@ -35,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Fetch and display a podcast from the backend API.
+     * Fetch and display a podcast's articles from the backend API.
      * @param {string} folder - Optional folder name. If not provided, gets the most recent podcast.
      */
     const fetchPodcast = async (folder = null) => {
@@ -49,16 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (data.status === 'success') {
-                // Update navbar audio player
-                if (data.podcast.audio_url && navbarAudio) {
-                    const sanitizedUrl = sanitizeURL(data.podcast.audio_url);
-                    navbarAudio.src = sanitizedUrl;
-                    navbarAudio.parentElement.load();
-                    localStorage.setItem('currentPodcastUrl', sanitizedUrl);
-                }
+                // Add play button at the top
+                const playButton = createPlayButtonHTML(folder || data.podcast.folder);
+                articlesList.innerHTML = playButton;
 
                 // Display all articles
-                articlesList.innerHTML = data.podcast.articles
+                articlesList.innerHTML += data.podcast.articles
                     .map(article => createArticleHTML(article))
                     .join('');
             } else {

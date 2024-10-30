@@ -10,6 +10,24 @@
     font-weight: 600;
 }
 
+/* Play button styling */
+.play-btn {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: var(--dca-spacing-sm) var(--dca-spacing-md);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform var(--dca-transition-speed), box-shadow var(--dca-transition-speed);
+    margin-bottom: var(--dca-spacing-md);
+}
+
+.play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
 /* Card styling matching DCA cards */
 .card {
     background-color: var(--bg-secondary);
@@ -96,5 +114,9 @@
 
     #articles-list h2 {
         font-size: 1.1rem;
+    }
+
+    .play-btn {
+        padding: var(--dca-spacing-sm);
     }
 }
