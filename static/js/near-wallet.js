@@ -14,7 +14,7 @@ export async function registerUserWithContract(amountPerSwap, swapInterval, depo
         const amountPerSwapYocto = BigInt(Math.round(parseFloat(amountPerSwap) * 1e24)).toString();
         
         return await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -43,7 +43,7 @@ const selector = await setupWalletSelector({
 });
 
 const modal = setupModal(selector, {
-    contractId: "test.dca-near.testnet",
+    contractId: "test2.dca-near.testnet",
 });
 
 window.selector = selector;

@@ -45,7 +45,7 @@ window.startDCAInvestment = async function(event) {
 
         const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -87,7 +87,7 @@ window.changeSwapInterval = async function() {
 
         console.log("Sending change interval transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -189,7 +189,7 @@ async function checkUserRegistration(accountId) {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test.dca-near.testnet',
+                    account_id: 'test2.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -262,7 +262,7 @@ async function refreshDashboard() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test.dca-near.testnet',
+                    account_id: 'test2.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -463,7 +463,7 @@ window.topUp = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -503,7 +503,7 @@ window.withdrawNear = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -535,7 +535,7 @@ window.pauseDCA = async function() {
 
         console.log("Sending pause transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -570,7 +570,7 @@ window.resumeDCA = async function() {
 
         console.log("Sending resume transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -607,7 +607,7 @@ window.removeUser = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -672,7 +672,7 @@ function formatTimestamp(nanoseconds) {
 // Update balances for wallet and contract
 async function updateNearBalances() {
     const accountId = await getAccountId();
-    const contractId = "test.dca-near.testnet";
+    const contractId = "test2.dca-near.testnet";
 
     if (!accountId) {
         document.querySelectorAll('.wallet-balance').forEach(el => {
@@ -737,7 +737,7 @@ async function getUserData() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test.dca-near.testnet',
+                    account_id: 'test2.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -776,7 +776,7 @@ window.withdrawUSDT = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
+            receiverId: "test2.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
