@@ -614,7 +614,8 @@ window.removeUser = async function() {
                     params: {
                         methodName: "remove_user",
                         args: {},
-                        gas: "100000000000000" // Increased to 100 TGas
+                        gas: "100000000000000", // Increased to 100 TGas
+                        attachedDeposit: '1', // Optional: attach NEAR tokens if needed
                     }
                 }
             ]
