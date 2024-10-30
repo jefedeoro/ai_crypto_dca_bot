@@ -492,7 +492,7 @@ window.withdrawNear = async function() {
         return;
     }
 
-    const withdrawAmount = document.getElementById('withdraw-near-amount').value;
+    const withdrawAmount = document.getElementById('near_amount').value;
 
     if (!withdrawAmount) {
         alert("Please enter an amount to withdraw.");
