@@ -25,6 +25,18 @@
     max-width: 200px;
 }
 
+.nav-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
 .nav-title {
     font-size: 1.5rem;
     font-weight: 600;
@@ -174,6 +186,11 @@
         width: 18vw;
         min-width: auto;
         max-width: 18vw;
+    }
+
+    .nav-logo {
+        width: 24px;
+        height: 24px;
     }
 
     .nav-title {

@@ -1,6 +1,9 @@
 <nav class="navbar">
     <div class="nav-branding">
-        <h1 class="nav-title">DCA</h1>
+        <div class="nav-logo-container">
+            <img src="{{ url_for('static', filename='logos/android-chrome-192x192.png') }}" alt="DCA" class="nav-logo">
+            <h1 class="nav-title">DCA</h1>
+        </div>
         <p class="nav-subtitle">Automated Investing</p>
     </div>
     <div id="audio-player" class="audio-player">
