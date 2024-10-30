@@ -1,6 +1,73 @@
 // static/js/dca.js
 
-import { getNearWalletBalance, getNearContractBalance } from './near-wallet.js';
+import { getNearWalletBalance, getNearContractBalance, registerUserWithContract } from './near-wallet.js';
+
+let isUserRegistered = false;
+
+function updateDCAButton() {
+    const submitButton = document.querySelector('form button[type="submit"]');
+    if (submitButton) {
+        submitButton.textContent = isUserRegistered ? 'Start DCA Automated Investment' : 'Register DCA Automated Investment';
+    }
+}
+
+// Handle DCA setup form submission
+window.startDCAInvestment = async function(event) {
+    event.preventDefault();
+    
+    const accountId = await getAccountId();
+    if (!accountId) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+
+    const initialBudget = document.getElementById('initial_budget').value;
+    const amountPerSwap = document.getElementById('total_amount').value;
+    const interval = document.getElementById('interval').value;
+
+    if (!initialBudget || !amountPerSwap || !interval) {
+        alert("Please complete all fields.");
+        return;
+    }
+
+    try {
+        const isRegistered = await checkUserRegistration(accountId);
+        
+        if (!isRegistered) {
+            console.log("User not registered, proceeding with registration...");
+            await registerUserWithContract(amountPerSwap, interval, initialBudget);
+            isUserRegistered = true;
+            updateDCAButton();
+            alert("DCA setup successful!");
+            refreshDashboard();
+            return;
+        }
+
+        const wallet = await window.selector.wallet();
+        await wallet.signAndSendTransaction({
+            receiverId: "test.dca-near.testnet",
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: "start_investment",
+                        args: {
+                            amount_per_swap: amountPerSwap,
+                            swap_interval: interval
+                        },
+                        gas: "300000000000000",
+                        deposit: initialBudget
+                    }
+                }
+            ]
+        });
+        alert("DCA investment started successfully!");
+        refreshDashboard();
+    } catch (error) {
+        console.error("Error setting up DCA:", error);
+        alert("An error occurred while setting up DCA investment: " + error.message);
+    }
+}
 
 // Change swap interval
 window.changeSwapInterval = async function() {
@@ -81,27 +148,8 @@ async function registerUser() {
         return;
     }
 
-    const depositAmountYocto = BigInt(Math.round(parseFloat(depositAmount) * 1e24)).toString();
-    const wallet = await window.selector.wallet();
-
     try {
-        await wallet.signAndSendTransaction({
-            receiverId: "test.dca-near.testnet",
-            actions: [
-                {
-                    type: "FunctionCall",
-                    params: {
-                        methodName: "register_user",
-                        args: {
-                            amount_per_swap: amountPerSwap,
-                            swap_interval: swapInterval,
-                        },
-                        gas: "300000000000000",
-                        deposit: depositAmountYocto
-                    }
-                }
-            ]
-        });
+        await registerUserWithContract(amountPerSwap, swapInterval, depositAmount);
         alert("User registered successfully.");
         refreshDashboard();
     } catch (error) {
@@ -149,16 +197,19 @@ async function checkUserRegistration(accountId) {
         });
         
         const result = await response.json();
-        if (result.error) {
-            if (result.error.data && result.error.data.includes("panicked")) {
-                return false;
-            }
-            throw new Error(result.error.data);
+        if (result.error || (result.result && result.result.error)) {
+            isUserRegistered = false;
+            updateDCAButton();
+            return false;
         }
         
+        isUserRegistered = true;
+        updateDCAButton();
         return true;
     } catch (error) {
         console.log("Error checking user registration:", error);
+        isUserRegistered = false;
+        updateDCAButton();
         return false;
     }
 }
@@ -359,7 +410,7 @@ async function refreshDashboard() {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log("DCA.js: DOM Content Loaded");
     // Check for error parameters in URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -371,7 +422,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if we're already logged in
     const accountId = window.getNearAccountId();
     if (accountId) {
-        console.log("DCA.js: Account found, refreshing dashboard");
+        console.log("DCA.js: Account found, checking registration");
+        await checkUserRegistration(accountId);
         refreshDashboard();
     }
 
@@ -380,7 +432,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (refreshButton) {
         refreshButton.addEventListener('click', refreshDashboard);
     }
+
+    // Add event listener for form submission
+    const dcaForm = document.querySelector('form');
+    if (dcaForm) {
+        dcaForm.onsubmit = startDCAInvestment;
+    }
 });
+
 
 // Top up funds in the DCA contract
 window.topUp = async function() {

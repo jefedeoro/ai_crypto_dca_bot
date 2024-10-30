@@ -4,6 +4,38 @@ import { setupModal } from "@near-wallet-selector/modal-ui-js";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 
+// Function to register a user with the DCA contract
+export async function registerUserWithContract(amountPerSwap, swapInterval, deposit) {
+    try {
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        const depositYocto = BigInt(Math.round(parseFloat(deposit) * 1e24)).toString();
+        const amountPerSwapYocto = BigInt(Math.round(parseFloat(amountPerSwap) * 1e24)).toString();
+        
+        return await wallet.signAndSendTransaction({
+            receiverId: "test.dca-near.testnet",
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: "register_user",
+                        args: {
+                            amount_per_swap: amountPerSwapYocto,
+                            swap_interval: parseInt(swapInterval)
+                        },
+                        gas: "300000000000000",
+                        deposit: depositYocto
+                    }
+                }
+            ]
+        });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        throw error;
+    }
+}
+
 // Initialize wallet selector and modal for NEAR
 const selector = await setupWalletSelector({
     network: "testnet",
