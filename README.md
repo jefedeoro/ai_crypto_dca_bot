@@ -372,7 +372,7 @@ git checkout -b feature/your-feature
 ## License
 ### [REDACTED]
 <div class="spoiler">
-MIT License - see LICENSE file for details
+Apache version 2 License - see LICENSE file for details
 </div>
 
 ## Support
