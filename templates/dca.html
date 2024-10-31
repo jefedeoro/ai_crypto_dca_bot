@@ -11,7 +11,26 @@
 <div class="container">
     <h1 class="mb-4">DCA Dashboard</h1>
     <p class="text-muted mb-4">Contract Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
-    <div id="dcaRegistration"></div>
+
+    <!-- USDT Storage Registration Section -->
+    <div class="dca-card mb-4">
+        <div class="dca-card-header">
+            <h2>USDT Registration Status</h2>
+            <p class="text-muted">Required before you can receive USDT from swaps</p>
+        </div>
+        <div class="dca-card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div id="usdt-storage-status">Checking registration status...</div>
+                <button id="register-usdt-btn" onclick="registerUSDTStorage()" class="dca-btn dca-btn-primary d-none">
+                    <i class="fas fa-wallet"></i> Register USDT Storage
+                </button>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-info-circle"></i> You need to register your wallet with the USDT contract before you can receive USDT tokens. This requires a one-time storage deposit of 0.00125 NEAR.
+            </small>
+        </div>
+    </div>
+
     <!-- DCA Setup Section -->
     <div class="dca-card mb-4">
         <div class="dca-card-header">
@@ -62,41 +81,42 @@
         </div>
     </div>
 
-<!-- Investment Dashboard Section -->
-<div class="dca-card investment-dashboard mb-4">
-    <div class="dca-card-header d-flex justify-content-between align-items-center">
-        <h2>Active Investment</h2>
-        <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
-            <i class="fas fa-sync-alt"></i> Refresh
-        </button>
+    <!-- Investment Dashboard Section -->
+    <div class="dca-card investment-dashboard mb-4">
+        <div class="dca-card-header d-flex justify-content-between align-items-center">
+            <h2>Active Investment</h2>
+            <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+        <div class="dca-card-body">
+            <!-- Desktop Table View -->
+            <div class="table-responsive desktop-view">
+                <table class="dca-table" id="investment-dashboard">
+                    <thead>
+                        <tr>
+                            <th>Amount per Swap</th>
+                            <th>Interval</th>
+                            <th>Next Swap</th>
+                            <th>NEAR Balance</th>
+                            <th>USDT Swapped</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="mobile-view">
+                <!-- Dynamic content will be populated by JavaScript -->
+            </div>
+        </div>
     </div>
-    <div class="dca-card-body">
-        <!-- Desktop Table View -->
-        <div class="table-responsive desktop-view">
-            <table class="dca-table" id="investment-dashboard">
-                <thead>
-                    <tr>
-                        <th>Amount per Swap</th>
-                        <th>Interval</th>
-                        <th>Next Swap</th>
-                        <th>NEAR Balance</th>
-                        <th>USDT Swapped</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Dynamic content will be populated by JavaScript -->
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Mobile Card View -->
-        <div class="mobile-view">
-            <!-- Dynamic content will be populated by JavaScript -->
-        </div>
-
-        
     <!-- Token Management Section -->
     <div class="row">
         <!-- NEAR Management Section -->

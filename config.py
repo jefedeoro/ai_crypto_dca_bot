@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Contract configuration
-CONTRACT_ID = 'test2.dca-near.testnet'
+CONTRACT_ID = 'test.dca-near.testnet'
+CONTRACT_ID2 = 'test2.dca-near.testnet'
 NEAR_RPC_ENDPOINT = os.getenv('NEAR_RPC_URL')  # Use NEAR_RPC_URL from .env
 
 # Set up logging
