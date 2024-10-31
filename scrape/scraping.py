@@ -8,6 +8,7 @@ from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeo
 from functools import wraps
 from .config import NEWS_SOURCES, KEYWORDS, MAX_STORIES, BLOCKED_SITES
 from .selection import select_best_headlines
+from .content_extractor import get_article_content
 
 def retry(max_attempts=3):
     """Decorator for retrying a function if an exception occurs."""
@@ -150,93 +151,93 @@ def scrape_website(page, source, nonce_start):
 
     content = page.content()
     soup = BeautifulSoup(content, 'html.parser')
-    if name == 'NewsBTC':
-        items = soup.select('.jnews_search_content_wrapper .jeg_post')
-    elif name == 'CryptoNews':
-        items = soup.select('.aside-news-list a')
-    elif name == 'TheBlock':
-        items = soup.select('.popularRail.d-print-none a')
+    
+    if name == 'Google News':
+        # Handle Google News search results
+        items = soup.select('div.SoaBEf')
+        for item in items:
+            title_elem = item.find('div', {'role': 'heading'})
+            link_elem = item.find('a')
+            source_elem = item.find('div', {'class': 'OSrXXb'})
+            
+            if title_elem and link_elem:
+                title = title_elem.get_text().strip()
+                link = link_elem.get('href', '')
+                source_info = source_elem.get_text().strip() if source_elem else "Unknown Source"
+                
+                if not link.startswith('http'):
+                    link = 'https://www.google.com' + link
+                
+                if link and title and not is_blocked(link):
+                    logging.info(f"Checking Google News headline: {title}")
+                    headlines.append({
+                        'nonce': f"{nonce:05d}",
+                        'title': title,
+                        'link': link,
+                        'description': source_info,
+                        'source': name
+                    })
+                    nonce += 1
+                    logging.info(f"Added Google News headline: {title}")
     else:
-        items = []
+        # Handle other news sources
+        if name == 'NewsBTC':
+            items = soup.select('.jnews_search_content_wrapper .jeg_post')
+        elif name == 'CryptoNews':
+            items = soup.select('.aside-news-list a')
+        elif name == 'TheBlock':
+            items = soup.select('.popularRail.d-print-none a')
+        else:
+            items = []
 
-    for item in items:
-        title = item.select_one('.jeg_post_title a').text.strip() if item.select_one('.jeg_post_title a') else None
-        link = item.select_one('.jeg_post_title a')['href'] if item.select_one('.jeg_post_title a') else None
-        description = item.select_one('.jeg_post_excerpt').text.strip() if item.select_one('.jeg_post_excerpt') else None
+        for item in items:
+            title = item.select_one('.jeg_post_title a').text.strip() if item.select_one('.jeg_post_title a') else None
+            link = item.select_one('.jeg_post_title a')['href'] if item.select_one('.jeg_post_title a') else None
+            description = item.select_one('.jeg_post_excerpt').text.strip() if item.select_one('.jeg_post_excerpt') else None
 
-        if link and title and not is_blocked(link):
-            if not link.startswith('http'):
-                link = f'{url.rstrip("/")}/{link.lstrip("/")}'
-            logging.info(f"Checking headline: {title}")
-            headlines.append({
-                'nonce': f"{nonce:05d}",
-                'title': title,
-                'link': link,
-                'description': description,
-                'source': name
-            })
-            nonce += 1
-            logging.info(f"Added headline: {title}")
-        elif is_blocked(link):
-            logging.info(f"Blocked headline from {link}")
+            if link and title and not is_blocked(link):
+                if not link.startswith('http'):
+                    link = f'{url.rstrip("/")}/{link.lstrip("/")}'
+                logging.info(f"Checking headline: {title}")
+                headlines.append({
+                    'nonce': f"{nonce:05d}",
+                    'title': title,
+                    'link': link,
+                    'description': description,
+                    'source': name
+                })
+                nonce += 1
+                logging.info(f"Added headline: {title}")
+            elif is_blocked(link):
+                logging.info(f"Blocked headline from {link}")
 
     logging.info(f"Collected {len(headlines)} headlines from {name}")
     return headlines, nonce
-
-
 
 @retry(max_attempts=3)
 def scrape_article(page, article):
     try:
         link = article['link']
         logging.info(f"Navigating to article: {link}")
-        page.goto(link, wait_until="networkidle", timeout=60000)  # 60 seconds timeout
-        page.wait_for_timeout(random.randint(3000, 5000))  # Random delay to mimic human behavior
+        page.goto(link, wait_until="networkidle", timeout=60000)
+        page.wait_for_timeout(random.randint(3000, 5000))
 
-        # Parsing logic based on the news source
-        selectors = {
-            'NEARWeek': {
-                'content': 'article',
-                'author': '.author-name',
-                'date': '.post-date'
-            },
-            'NewsBTC': {
-                'content': '.content-inner',
-                'author': '.author-name',
-                'date': '.post-date'
-            },
-            'CryptoNews': {
-                'content': '.article-single__content.category_contents_details',
-                'author': '.article-single__author-name',
-                'date': '.article-single__date'
-            },
-            'TheBlock': {
-                'content': '.article',
-                'author': '.article__author-name',
-                'date': '.article__date'
-            }
-        }
-
-        source_selectors = selectors.get(article['source'], {})
+        # Get the full HTML content
+        content = page.content()
         
-        content_elem = page.query_selector(source_selectors.get('content'))
-        author_elem = page.query_selector(source_selectors.get('author'))
-        date_elem = page.query_selector(source_selectors.get('date'))
-
-        if content_elem:
-            article['article'] = content_elem.inner_text().strip()
-            article['author'] = author_elem.inner_text().strip() if author_elem else "Unknown"
-            article['date'] = date_elem.inner_text().strip() if date_elem else "Unknown"
-            
-            logging.debug(f"Added full article: {article['title']}")
-            logging.debug(f"Author: {article['author']}, Date: {article['date']}")
+        # Use GPT-4 to extract clean content
+        article_content = get_article_content(link)
+        
+        if article_content:
+            article['article'] = article_content
+            # Set default values for author and date since they'll be included in the markdown if available
+            article['author'] = "Unknown"
+            article['date'] = "Unknown"
             return True
         else:
-            logging.warning(f"No article content found for: {article['title']}")
-            logging.debug(f"Content selector: {source_selectors.get('content')}")
-            logging.debug(f"Author selector: {source_selectors.get('author')}")
-            logging.debug(f"Date selector: {source_selectors.get('date')}")
+            logging.warning(f"No article content extracted for: {article['title']}")
             return False
+
     except PlaywrightTimeoutError:
         logging.error(f"Timeout error scraping article: {article['link']}")
         return False

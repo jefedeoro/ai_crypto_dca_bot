@@ -8,10 +8,11 @@ load_dotenv()
 
 # Trusted crypto news websites
 NEWS_SOURCES = [
-    {'url': 'https://us1.campaign-archive.com/feed?u=ed13caf5cf7d37689d81ef60b&id=86d4e11a12', 'name': 'NEARWeek'},
-    {'url': 'https://www.newsbtc.com/?s=NEAR', 'name': 'NewsBTC'},
+    # {'url': 'https://us1.campaign-archive.com/feed?u=ed13caf5cf7d37689d81ef60b&id=86d4e11a12', 'name': 'NEARWeek'},
+    # {'url': 'https://www.newsbtc.com/?s=NEAR', 'name': 'NewsBTC'},
     # {'url': 'https://cryptonews.com', 'name': 'CryptoNews'},
     # {'url': 'https://www.theblockcrypto.com/?modal=newsletter', 'name': 'TheBlock'},
+    {'url': 'https://news.google.com/search?q=near+protocol+news&sca_esv=04ccc06d6a14a3bd&rlz=1C1ONGR_enMX1063MX1063&biw=1600&bih=1171&dpr=0.8&hl=en-US&gl=US&ceid=US:en', 'name': 'Google News'},
 ]
 
 # Relevant keywords for filtering
@@ -26,7 +27,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 RESULT_FOLDER = os.getenv('TG_NEWS_RESULT_FOLDER', 'data')
 
 # Maximum number of stories to scrape
-MAX_STORIES = int(os.getenv('MAX_STORIES', 2))  # Default to 20 if not set in .env
+MAX_STORIES = int(os.getenv('MAX_STORIES', 5))  # Default to 20 if not set in .env
 
 # Blocked sites
 BLOCKED_SITES = ["lu.ma", "eventbrite.com"]
