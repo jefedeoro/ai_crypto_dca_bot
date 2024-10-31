@@ -8,17 +8,21 @@ const { message } = require('telegraf/filters')
 const dotenv = require('dotenv');
 const { env } = require("process");
 const { isValidNearAddress, checkAddressRegistered, getRegisteredAddresses, deleteRegisteredAddress, registerAddress, registerConversion, getTelegramUsers, getConversions, getLatestConversion, getNearAccountBalance } = require('./utils');
+const { reverse } = require("dns");
 
 
 dotenv.config();
 const NEAR_NET = 'testnet';
-const CONTRACT_ID = 'test.dca-near.testnet';
-const CONTRACT_ID2 = 'test2.dca-near.testnet';
+const CONTRACT_ID = 'test2.dca-near.testnet';
 const ACCOUNT_ID = 'dca-near.testnet';
 const LOG_FILE_BATCH = `./logs/dca-batch-${new Date().toISOString().split('T')[0]}.log`;
 const LOG_FILE_BOT = `./logs/dca-bot-${new Date().toISOString().split('T')[0]}.log`;
 const DB_FILE = env.DATABASE_FILE || './data/dca-batch.db';
 const TELEGRAM_BOT_TOKEN = env.TELEGRAM_BOT_TOKEN || 'TELEGRAM_BOT_TOKEN';
+const DECIMALS = {
+  'wrap.testnet': 24,
+  'usdt.fakes.testnet': 6,
+}
 
 // Set up the key store
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(path.join(__dirname, '/near-credentials'));
@@ -61,7 +65,7 @@ async function main() {
   try {
     
         const responseView = await account.viewFunction({
-            contractId: CONTRACT_ID2,
+            contractId: CONTRACT_ID,
             methodName: 'can_swap',
             args: {
             // Change method arguments go here
@@ -71,15 +75,71 @@ async function main() {
 
         // if can't swap, exit
         if(responseView === false) {
-            logStream.write(`Can't swap, exit\n`);
-            return;
+            logStream.write(`Can't swap regular, exit\n`);
+        }
+        else{
+          const response = await account.functionCall({
+              contractId: CONTRACT_ID,
+              methodName: 'swap',
+              args: {
+              // Change method arguments go here
+              },
+              gas: '300000000000000', // Adjust gas accordingly
+              attachedDeposit: '1', // Optional: attach NEAR tokens if needed
+          });
+
+          // parse the response and for each receipts_outcome check if has outcome log
+          const receipts_outcome = response.receipts_outcome
+          for (const outcome of receipts_outcome) {
+              if (outcome.outcome.logs.length > 0) {
+                  for (const log of outcome.outcome.logs) {
+                      if (log.startsWith('<swapLog>')) {
+                        let logVal = log.replace('<swapLog> ', '');
+                        logStream.write(`Swap logs: ${logVal}\n`);
+                        const json = JSON.parse(logVal);
+                        logStream.write(`Swap logs: ${outcome.outcome.logs}\n`);
+                        registerConversion(DB_FILE, outcome.id, json.user, json.source_amount, json.target_amount, json.source, json.target);
+
+                        // check if a user subscribed to telegram notification for the user address
+                        const registeredAddresses = await getTelegramUsers(DB_FILE, json.user);
+
+                        logStream.write(`Registered addresses: ${JSON.stringify(registeredAddresses)}\n`);
+
+                        // if registered, send telegram notification
+                        if(registeredAddresses.length > 0) {
+                          const bot = new Telegraf(TELEGRAM_BOT_TOKEN)
+                          registeredAddresses.forEach(registeredAddress => {
+                              logStream.write(`User ${registeredAddress.telegram_id} subscribed to telegram notification for ${json.user}... sending message\n`);
+                              bot.telegram.sendMessage(registeredAddress.telegram_id, `🔄💸 Conversion Alert! 💸🔄\n\n👤 User: ${json.user}\n💰 ${json.source_amount} ${json.source} ➡️ ${json.target_amount} ${json.target}\n🚀`);
+                          });
+                        }
+
+                      }
+                  }
+
+              }
+          }
         }
 
+      const responseViewReverse = await account.viewFunction({
+          contractId: CONTRACT_ID,
+          methodName: 'can_swap',
+          args: {
+            reverse: true,
+          },
+      });
+      logStream.write(`Read reverse function result: ${JSON.stringify(responseViewReverse)}\n`);
+
+      // if can't swap, exit
+      if(responseViewReverse === false) {
+          logStream.write(`Can't swap reverse, exit\n`);
+      }
+      else{
         const response = await account.functionCall({
             contractId: CONTRACT_ID,
             methodName: 'swap',
             args: {
-            // Change method arguments go here
+              reverse: true,
             },
             gas: '300000000000000', // Adjust gas accordingly
             attachedDeposit: '1', // Optional: attach NEAR tokens if needed
@@ -116,6 +176,7 @@ async function main() {
 
             }
         }
+      }
         
   } catch (error) {
     logStream.write(`Error calling view function: ${JSON.stringify(error)}\n`);
@@ -154,14 +215,14 @@ bot.start((ctx) => ctx.reply('Welcome to NEAR DCA Bot. \n Send `/help` to get st
 bot.help((ctx) => ctx.reply(`
 Available commands:
 
-/register <address> - Register a new address to track
-/unregister <address> - Unregister an address
-/list - List all registered addresses
-/swaps <address> - Get a list of swaps for an address
-/last_swap <address> - Get the last swap for an address
-/check <address> - Get the onchain status for an address
-/about - About message
-/help - Help message
+/register <address> - Register a new address to track 💰
+/unregister <address> - Unregister an address ❌
+/list - List all registered addresses 📝
+/swaps <address> - Get a list of swaps for an address 📊
+/last_swap <address> - Get the last swap for an address ⏱️
+/check <address> - Get the onchain status for an address 📊
+/about - About message 🤔
+/help - Help message 🤔
 `))
 bot.command('about', (ctx) => ctx.reply('About message'))
 
@@ -170,18 +231,18 @@ bot.command('about', (ctx) => ctx.reply('About message'))
 bot.command('register', async (ctx) => {
   const address = ctx.message.text.split(' ')[1]
   if (!address) {
-    ctx.reply('Please provide a valid address. Send `/register <address>`')
+    ctx.reply('❌ Please provide a valid address. Send `/register <address>`')
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
-  ctx.reply(`Registering new address: ${address}. Please wait...`)
+  ctx.reply(`Registering new address: ${address} 📝. Please wait...`)
   logStreamBot.write(`${new Date().toISOString()} -- Registering new address: ${address}. current telegram id: ${ctx.from.id}\n`)
 
   // check if address is a valid near address
   let isValid = await isValidNearAddress(config, address)
   console.log(isValid)
   if (!isValid) {
-    ctx.reply('${address} is not a valid NEAR address. Please provide a valid address.')
+    ctx.reply(`❌ ${address} is not a valid NEAR address. Please provide a valid address.`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -192,7 +253,7 @@ bot.command('register', async (ctx) => {
   // check if address is already registered
   let registered = await checkAddressRegistered(DB_FILE, address, ctx.from.id)
   if (registered) {
-    ctx.reply('Address ${address} already registered')
+    ctx.reply(`❌ Address ${address} already registered`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Address already registered: ${address}\n`)
     return
   }
@@ -200,10 +261,10 @@ bot.command('register', async (ctx) => {
   // register address in database
   let register = await registerAddress(DB_FILE, address, ctx.from.id)
   if (register) {
-    ctx.reply('Address registered')
+    ctx.reply('✅ Address registered 👍')
     logStreamBot.write(`${new Date().toISOString()} -- Address registered: ${address}\n`)
   } else {
-    ctx.reply('Error registering address')
+    ctx.reply('❌ Error registering address')
     logStreamBot.write(`${new Date().toISOString()} -- Error registering address: ${address}, current telegram id: ${ctx.from.id}\n`)
   }
 })
@@ -215,14 +276,14 @@ bot.command('list', async (ctx) => {
     logStreamBot.write(`${new Date().toISOString()} -- Error: No addresses registered\n`)
     return
   }
-  ctx.reply(`Registered addresses:\n${addresses.map(address => address.wallet).join('\n')}`)
+  ctx.reply(`✅ Registered addresses:\n${addresses.map(address => address.wallet).join('\n')}`)
   logStreamBot.write(`${new Date().toISOString()} -- Registered addresses: ${addresses.map(address => address.wallet).join(', ')}\n`)
 })
 
 bot.command('unregister', async (ctx) => {
   const address = ctx.message.text.split(' ')[1]
   if (!address) {
-    ctx.reply('Please provide a valid address. Send `/delete <address>`')
+    ctx.reply('❌ Please provide a valid address. Send `/delete <address>`')
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -232,7 +293,7 @@ bot.command('unregister', async (ctx) => {
   // check if address is a valid near address
   let isValid = await isValidNearAddress(config, address)
   if (!isValid) {
-    ctx.reply('${address} is not a valid NEAR address. Please provide a valid address')
+    ctx.reply(`❌ ${address} is not a valid NEAR address. Please provide a valid address`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -243,7 +304,7 @@ bot.command('unregister', async (ctx) => {
   // check if address is already registered
   let registered = await checkAddressRegistered(DB_FILE, address, ctx.from.id)
   if (!registered) {
-    ctx.reply('Address ${address} not registered')
+    ctx.reply(`❌ Address ${address} not registered`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Address not registered: ${address}\n`)
     return
   }
@@ -251,10 +312,10 @@ bot.command('unregister', async (ctx) => {
   // delete address from database
   let deleteAddress = await deleteRegisteredAddress(DB_FILE, address, ctx.from.id)
   if (deleteAddress) {
-    ctx.reply('Address deleted')
+    ctx.reply('✅ Address deleted')
     logStreamBot.write(`${new Date().toISOString()} -- Address deleted: ${address}\n`)
   } else {
-    ctx.reply('Error deleting address')
+    ctx.reply('❌ Error deleting address')
     logStreamBot.write(`${new Date().toISOString()} -- Error deleting address: ${address}\n`)
   }
 })
@@ -262,7 +323,7 @@ bot.command('unregister', async (ctx) => {
 bot.command('swaps', async (ctx) => {
   const address = ctx.message.text.split(' ')[1]
   if (!address) {
-    ctx.reply('Please provide a valid address. Send `/swap <address>`')
+    ctx.reply('❌ Please provide a valid address. Send `/swap <address>`')
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -272,7 +333,7 @@ bot.command('swaps', async (ctx) => {
   // check if address is a valid near address
   let isValid = await isValidNearAddress(config, address)
   if (!isValid) {
-    ctx.reply('${address} is not a valid NEAR address. Please provide a valid address')
+    ctx.reply(`❌ ${address} is not a valid NEAR address. Please provide a valid address`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -283,7 +344,7 @@ bot.command('swaps', async (ctx) => {
   // check if address is already registered
   let registered = await checkAddressRegistered(DB_FILE, address, ctx.from.id)
   if (!registered) {
-    ctx.reply('Address ${address} not registered')
+    ctx.reply(`❌ Address ${address} not registered`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Address not registered: ${address}\n`)
     return
   }
@@ -291,11 +352,21 @@ bot.command('swaps', async (ctx) => {
   // get list of swaps
   let swaps = await getConversions(DB_FILE, address)
   if (swaps) {
+    // if there are no swaps
+    if (swaps.length === 0) {
+      ctx.reply('No swaps found')
+      logStreamBot.write(`${new Date().toISOString()} -- No swaps found: ${address}\n`)
+      return
+    }
+    
     const formattedSwaps = swaps.map(swap => {
-      return `User: ${swap.user}, Source: ${swap.source}, Source Amount: ${swap.source_amount}, Target: ${swap.target}, Target Amount: ${swap.target_amount}`;
+      // convert source amount and divide by decimals
+      let amount_source = swap.amount_source / (10 ** DECIMALS[swap.token_source])
+      // convert target amount and divide by decimals
+      let amount_dest = swap.amount_dest / (10 ** DECIMALS[swap.token_dest])
+      return `👥 User: ${swap.account_id}\n💰 Source: ${swap.token_source}\n💸 Source Amount: ${amount_source}\n📈 Target: ${swap.token_dest}\n💸 Target Amount: ${amount_dest}\n`;
     }).join('\n');
     ctx.reply(formattedSwaps);
-    logStreamBot.write(`${new Date().toISOString()} -- Swaps: ${swaps}\n`)
   } else {
     ctx.reply('Error getting swaps')
     logStreamBot.write(`${new Date().toISOString()} -- Error getting swaps: ${address}\n`)
@@ -305,7 +376,7 @@ bot.command('swaps', async (ctx) => {
 bot.command('last_swap', async (ctx) => {
   const address = ctx.message.text.split(' ')[1]
   if (!address) {
-    ctx.reply('Please provide a valid address. Send `/last_swaps <address>`')
+    ctx.reply('❌ Please provide a valid address. Send `/last_swaps <address>`')
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -315,7 +386,7 @@ bot.command('last_swap', async (ctx) => {
   // check if address is a valid near address
   let isValid = await isValidNearAddress(config, address)
   if (!isValid) {
-    ctx.reply('${address} is not a valid NEAR address. Please provide a valid address')
+    ctx.reply(`❌ ${address} is not a valid NEAR address. Please provide a valid address`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -326,7 +397,7 @@ bot.command('last_swap', async (ctx) => {
   // check if address is already registered
   let registered = await checkAddressRegistered(DB_FILE, address, ctx.from.id)
   if (!registered) {
-    ctx.reply('Address ${address} not registered')
+    ctx.reply(`❌ Address ${address} not registered`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Address not registered: ${address}\n`)
     return
   }
@@ -334,10 +405,26 @@ bot.command('last_swap', async (ctx) => {
   // get last swap
   let lastSwap = await getLatestConversion(DB_FILE, address)
   if (lastSwap) {
-    ctx.reply(`Last Swap Details:\nAccount ID: ${lastSwap.account_id}\nSource Amount: ${lastSwap.amount_source}\nDestination Amount: ${lastSwap.amount_dest}\nSource Token: ${lastSwap.token_source}\nDestination Token: ${lastSwap.token_dest}\nTransaction ID: ${lastSwap.transaction_id}\nDate: ${lastSwap.date}`)
+    // if there are no swaps
+    if (lastSwap.length === 0) {
+      ctx.reply('No swaps found')
+      logStreamBot.write(`${new Date().toISOString()} -- No swaps found: ${address}\n`)
+      return
+    }
+
+    // format last swap
+    ctx.reply(`Last Swap Details:\n`);
+    const formattedSwaps = lastSwap.map(swap => {
+      // convert source amount and divide by decimals
+      let amount_source = swap.amount_source / (10 ** DECIMALS[swap.token_source])
+      // convert target amount and divide by decimals
+      let amount_dest = swap.amount_dest / (10 ** DECIMALS[swap.token_dest])
+      return `👥 User: ${swap.account_id}\n💰 Source: ${swap.token_source}\n💸 Source Amount: ${amount_source}\n📈 Target: ${swap.token_dest}\n💸 Target Amount: ${amount_dest}\n`;
+    }).join('\n');
+    ctx.reply(formattedSwaps);
     logStreamBot.write(`${new Date().toISOString()} -- Last swap: ${lastSwap}\n`)
   } else {
-    ctx.reply('Error getting last swap')
+    ctx.reply('❌ Error getting last swap')
     logStreamBot.write(`${new Date().toISOString()} -- Error getting last swap: ${address}\n`)
   }
 })
@@ -345,7 +432,7 @@ bot.command('last_swap', async (ctx) => {
 bot.command('check', async (ctx) => {
   const address = ctx.message.text.split(' ')[1]
   if (!address) {
-    ctx.reply('Please provide a valid address. Send `/check <address>`')
+    ctx.reply('❌ Please provide a valid address. Send `/check <address>`')
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -355,7 +442,7 @@ bot.command('check', async (ctx) => {
   // check if address is a valid near address
   let isValid = await isValidNearAddress(config, address)
   if (!isValid) {
-    ctx.reply('${address} is not a valid NEAR address. Please provide a valid address')
+    ctx.reply(`❌ ${address} is not a valid NEAR address. Please provide a valid address`)
     logStreamBot.write(`${new Date().toISOString()} -- Error: Invalid address provided: ${address}\n`)
     return
   }
@@ -364,7 +451,7 @@ bot.command('check', async (ctx) => {
   }
 
   let status = await getNearAccountBalance(config, CONTRACT_ID, address)
-  if (status) {
+  if (status) {  
     ctx.reply(`Account status:\nAmount per swap: ${status.amount_per_swap}\nSwap interval: ${status.swap_interval}\nLast swap timestamp: ${status.last_swap_timestamp}\nTarget amount: ${status.total_swapped}\nPaused: ${status.pause}`)
     logStreamBot.write(`${new Date().toISOString()} -- Status: ${status}\n`)
   } else {
@@ -372,6 +459,11 @@ bot.command('check', async (ctx) => {
     logStreamBot.write(`${new Date().toISOString()} -- Error getting status: ${address}\n`)
   }
 })
+
+bot.on('message', (ctx) => {
+  logStreamBot.write(`${new Date().toISOString()} -- Message: ${ctx.message.text}\n`)
+  ctx.reply(`❌ Unknown command: ${ctx.message.text}. Send /help for help.`)
+  })
 
 bot.launch()
 
