@@ -62,11 +62,15 @@ pub struct User {
 // Define the default, which automatically initializes the contract
 #[near]
 impl Contract {
+    // Helper function to convert from NEAR's 24 decimals to USDT's 6 decimals
+    fn adjust_decimals_for_usdt(&self, amount: u128) -> u128 {
+        amount / 1_000_000_000_000_000_000u128  // divide by 10^18
+    }
+
     #[init]
     #[private]
     pub fn init(token_address: AccountId, owner: AccountId, fees: u8, wrap_account: AccountId, pool_id: u16, pool_address: AccountId) -> Self {
         Self {
-            
             users: HashMap::new(),
             user_addresses: Vec::new(),
             batch_swap_threshold: 10, // Adjust threshold as needed
@@ -144,7 +148,6 @@ impl Contract {
         let new_total_swapped = user.total_swapped.0.checked_sub(amount.0).expect("Amount to withdraw is greater than total swapped");
         user.total_swapped = U128(new_total_swapped); // subtract amount;
         self.users.insert(env::signer_account_id(), user.clone());
-
 
         ext_fungible_token::ext(self.token_address.clone())
             .with_static_gas(GAS_FOR_FT_TRANSFER)
@@ -242,7 +245,6 @@ impl Contract {
         }
 
         return false;
-        
     }
 
     #[payable]
@@ -276,7 +278,6 @@ impl Contract {
                 // add to batch
                 batch_amount = U128(batch_amount.0 + user.amount_per_swap.0);
                 batch_users.push(user.wallet.clone());
-
             }
         }
 
@@ -301,7 +302,6 @@ impl Contract {
                     batch_amount,
                     batch_amount_total
         ));
-
     }
 
     #[private]
@@ -347,7 +347,6 @@ impl Contract {
             return HashMap::new();
         }
         
-        // log call result
         log!("call result: {}", call_result.unwrap());
         
 
@@ -358,8 +357,12 @@ impl Contract {
         for user in batch_users {
             let mut user_tmp: User = self.users.get(&user.clone()).unwrap().clone();
             user_tmp.last_swap_timestamp = env::block_timestamp();
-            // get the percentage of total_swapped and amount
-            user_tmp.total_swapped = U128(user_tmp.total_swapped.0 + (user_tmp.amount_per_swap.0 / batch_amount.0) * batch_amount_total);
+            
+            // Calculate user's share of the swap and adjust decimals for USDT
+            let swap_share = (user_tmp.amount_per_swap.0 / batch_amount.0) * batch_amount_total;
+            let adjusted_amount = self.adjust_decimals_for_usdt(swap_share);
+            user_tmp.total_swapped = U128(user_tmp.total_swapped.0 + adjusted_amount);
+            
             let new_amount = user_tmp.amount.0.checked_sub(user_tmp.amount_per_swap.0).expect("Insufficient funds");
             user_tmp.amount = U128(new_amount);
             self.users.insert(user_tmp.wallet.clone(), user_tmp.clone());

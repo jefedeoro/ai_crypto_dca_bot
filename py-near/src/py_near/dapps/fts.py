@@ -21,7 +21,7 @@ class FTS:
     wNEAR = FtModel("wrap.near", 24)
     META = FtModel("meta-token.near", 24)
 
-    USDT = FtModel("usdt.tether-token.near", 6)
+    USDT = FtModel("usdt.fakes.testnet ", 6)
     USDC = FtModel(
         "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1", 6
     )

@@ -159,6 +159,8 @@ Instructions:
 - If there is insufficient context or content to discuss, output `<skip></skip>` and nothing else.
 
 3. **Output Format:**
+- ENGLISH 
+
 - Spell out all numbers (e.g., "two" instead of "2").
 
 - Prices just use 2 decimal places (e.g., $3.50).

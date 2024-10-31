@@ -4,17 +4,115 @@ import { setupModal } from "@near-wallet-selector/modal-ui-js";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 
+const USDT_CONTRACT = "usdt.fakes.testnet"; // USDT contract on NEAR testnet
+
+// Function to check if wallet has USDT storage paid
+export async function checkUSDTStorage(accountId) {
+    try {
+        // First encode the args using our base64 converter
+        const encodeResponse = await fetch('/api/base64/encode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ account_id: accountId })
+        });
+        const encodeResult = await encodeResponse.json();
+        if (encodeResult.error) {
+            throw new Error(encodeResult.error);
+        }
+
+        // Call the USDT contract
+        const response = await fetch('https://rpc.testnet.near.org', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: generateNonce(),
+                method: 'query',
+                params: {
+                    request_type: 'call_function',
+                    finality: 'final',
+                    account_id: USDT_CONTRACT,
+                    method_name: 'storage_balance_of',
+                    args_base64: encodeResult.result
+                }
+            })
+        });
+        
+        const result = await response.json();
+        if (result.error) return false;
+
+        // Decode the result using our base64 converter
+        const decodeResponse = await fetch('/api/base64/decode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ base64: result.result.result })
+        });
+        const decodeResult = await decodeResponse.json();
+        if (decodeResult.error) return false;
+
+        const storage = decodeResult.result;
+        return storage !== null && storage.total !== "0";
+    } catch (error) {
+        console.error("Error checking USDT storage:", error);
+        return false;
+    }
+}
+
+// Function to register wallet with USDT contract
+export async function registerUSDTStorage() {
+    try {
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        // Storage deposit for USDT contract (0.00125 NEAR is typical minimum)
+        const STORAGE_DEPOSIT = "1250000000000000000000";
+
+        return await wallet.signAndSendTransaction({
+            receiverId: USDT_CONTRACT,
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: "storage_deposit",
+                        args: {},
+                        gas: "30000000000000",
+                        deposit: STORAGE_DEPOSIT
+                    }
+                }
+            ]
+        });
+    } catch (error) {
+        console.error("Error registering USDT storage:", error);
+        throw error;
+    }
+}
+
 // Function to register a user with the DCA contract
 export async function registerUserWithContract(amountPerSwap, swapInterval, deposit) {
     try {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
 
+        const accounts = await wallet.getAccounts();
+        if (!accounts.length) throw new Error("No account selected");
+
+        // Check if wallet has USDT storage paid
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        if (!hasStorage) {
+            throw new Error("Please register USDT storage first");
+        }
+
         const depositYocto = BigInt(Math.round(parseFloat(deposit) * 1e24)).toString();
         const amountPerSwapYocto = BigInt(Math.round(parseFloat(amountPerSwap) * 1e24)).toString();
         
         return await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -36,6 +134,11 @@ export async function registerUserWithContract(amountPerSwap, swapInterval, depo
     }
 }
 
+// Helper function to generate unique nonce
+function generateNonce() {
+    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
 // Initialize wallet selector and modal for NEAR
 const selector = await setupWalletSelector({
     network: "testnet",
@@ -43,11 +146,15 @@ const selector = await setupWalletSelector({
 });
 
 const modal = setupModal(selector, {
-    contractId: "test2.dca-near.testnet",
+    contractId: "test.dca-near.testnet",
 });
 
 window.selector = selector;
 window.modal = modal;
+
+// Export USDT storage functions to window for use in HTML
+window.checkUSDTStorage = checkUSDTStorage;
+window.registerUSDTStorage = registerUSDTStorage;
 
 // Wallet event handlers
 selector.on("signedIn", async ({ accounts }) => {
@@ -57,6 +164,18 @@ selector.on("signedIn", async ({ accounts }) => {
         // Call refreshDashboard after account is set
         if (window.refreshDashboard) {
             window.refreshDashboard();
+        }
+        // Check USDT storage status
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        const storageStatus = document.getElementById('usdt-storage-status');
+        if (storageStatus) {
+            if (hasStorage) {
+                storageStatus.innerHTML = '<span class="text-success">✓ USDT Storage Registered</span>';
+                document.getElementById('register-usdt-btn')?.classList.add('d-none');
+            } else {
+                storageStatus.innerHTML = '<span class="text-warning">⚠ USDT Storage Not Registered</span>';
+                document.getElementById('register-usdt-btn')?.classList.remove('d-none');
+            }
         }
     }
 });
@@ -77,6 +196,18 @@ async function initWallet() {
         // Call refreshDashboard after account is set during initialization
         if (window.refreshDashboard) {
             window.refreshDashboard();
+        }
+        // Check USDT storage status
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        const storageStatus = document.getElementById('usdt-storage-status');
+        if (storageStatus) {
+            if (hasStorage) {
+                storageStatus.innerHTML = '<span class="text-success">✓ USDT Storage Registered</span>';
+                document.getElementById('register-usdt-btn')?.classList.add('d-none');
+            } else {
+                storageStatus.innerHTML = '<span class="text-warning">⚠ USDT Storage Not Registered</span>';
+                document.getElementById('register-usdt-btn')?.classList.remove('d-none');
+            }
         }
     } else {
         localStorage.removeItem('nearAccountId');
@@ -122,7 +253,7 @@ export async function getNearWalletBalance(accountId) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 jsonrpc: "2.0",
-                id: "1",
+                id: generateNonce(),
                 method: "query",
                 params: {
                     request_type: "view_account",
@@ -147,7 +278,7 @@ export async function getNearContractBalance(contractId) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 jsonrpc: "2.0",
-                id: "1",
+                id: generateNonce(),
                 method: "query",
                 params: {
                     request_type: "view_account",

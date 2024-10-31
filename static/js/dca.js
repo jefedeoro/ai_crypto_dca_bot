@@ -1,5 +1,4 @@
 // static/js/dca.js
-
 import { getNearWalletBalance, getNearContractBalance, registerUserWithContract } from './near-wallet.js';
 
 let isUserRegistered = false;
@@ -45,7 +44,7 @@ window.startDCAInvestment = async function(event) {
 
         const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -87,7 +86,7 @@ window.changeSwapInterval = async function() {
 
         console.log("Sending change interval transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -189,7 +188,7 @@ async function checkUserRegistration(accountId) {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: 'test.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -262,7 +261,7 @@ async function refreshDashboard() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: 'test.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -311,7 +310,7 @@ async function refreshDashboard() {
                     <td>${formatInterval(BigInt(userData.swap_interval))}</td>
                     <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
                     <td>${formatNearAmount(userData.amount)}</td>
-                    <td>${formatNearAmount(userData.total_swapped)}</td>
+                    <td>${formatUSDTAmount(userData.total_swapped)}</td>
                     <td>
                         <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
                             ${userData.pause ? 'Paused' : 'Active'}
@@ -360,7 +359,7 @@ async function refreshDashboard() {
                             </div>
                             <div class="dashboard-item">
                                 <p class="item-label">USDT Swapped</p>
-                                <div class="item-value">${formatNearAmount(userData.total_swapped)}</div>
+                                <div class="item-value">${formatUSDTAmount(userData.total_swapped)}</div>
                             </div>
                             <div class="dashboard-item">
                                 <p class="item-label">Status</p>
@@ -440,7 +439,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-
 // Top up funds in the DCA contract
 window.topUp = async function() {
     const accountId = await getAccountId();
@@ -463,7 +461,7 @@ window.topUp = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -499,18 +497,22 @@ window.withdrawNear = async function() {
         return;
     }
 
+    // Convert withdrawAmount to yoctoNEAR using BigInt
+    const withdrawAmountYocto = BigInt(Math.round(parseFloat(withdrawAmount) * 1e24));
+
     const wallet = await window.selector.wallet();
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
                         methodName: "withdraw_near",
-                        args: { amount: withdrawAmount },
-                        gas: "100000000000000" // Increased to 100 TGas
+                        args: { amount: withdrawAmountYocto.toString() },
+                        gas: "100000000000000", // Increased to 100 TGas
+                        deposit: "1"
                     }
                 }
             ]
@@ -535,7 +537,7 @@ window.pauseDCA = async function() {
 
         console.log("Sending pause transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -570,7 +572,7 @@ window.resumeDCA = async function() {
 
         console.log("Sending resume transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -607,7 +609,7 @@ window.removeUser = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
@@ -630,20 +632,21 @@ window.removeUser = async function() {
 
 function formatNearAmount(yoctoNear) {
     try {
-        // Convert to BigInt and divide
-        const nearValue = BigInt(yoctoNear) / BigInt(10 ** 20); // Keep 4 extra decimal places
-        const nearString = nearValue.toString();
+        const value = BigInt(yoctoNear);
+        return (Number(value) / 1e24).toFixed(6).replace(/\.?0+$/, '');
         
-        // Add decimal point 4 places from the end
-        const length = nearString.length;
-        if (length <= 4) {
-            // Pad with zeros if needed
-            return "0." + nearString.padStart(4, '0');
-        } else {
-            return nearString.slice(0, -4) + "." + nearString.slice(-4);
-        }
     } catch (error) {
         console.error("Error formatting NEAR amount:", error);
+        return "0";
+    }
+}
+
+function formatUSDTAmount(amount) {
+    try {
+        const value = BigInt(amount);
+        return (Number(value) / 1e6).toFixed(2).replace(/\.?0+$/, ''); // Using 1e6 for USDT's 6 decimal places
+    } catch (error) {
+        console.error("Error formatting USDT amount:", error);
         return "0";
     }
 }
@@ -673,7 +676,7 @@ function formatTimestamp(nanoseconds) {
 // Update balances for wallet and contract
 async function updateNearBalances() {
     const accountId = await getAccountId();
-    const contractId = "test2.dca-near.testnet";
+    const contractId = "test.dca-near.testnet";
 
     if (!accountId) {
         document.querySelectorAll('.wallet-balance').forEach(el => {
@@ -701,7 +704,7 @@ async function updateNearBalances() {
         const userData = await getUserData();
         if (userData) {
             document.getElementById('near-contract-balance').textContent = formatNearAmount(userData.amount);
-            document.getElementById('usdt-contract-balance').textContent = formatNearAmount(userData.total_swapped);
+            document.getElementById('usdt-contract-balance').textContent = formatUSDTAmount(userData.total_swapped);
         }
     } catch (error) {
         console.error('Error fetching balances:', error);
@@ -738,7 +741,7 @@ async function getUserData() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: 'test.dca-near.testnet',
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -758,8 +761,8 @@ async function getUserData() {
     }
 }
 
-// Withdraw USDT from the DCA contract
-window.withdrawUSDT = async function() {
+// Withdraw fungible tokens from the DCA contract
+window.withdrawFT = async function() {
     const accountId = await getAccountId();
     if (!accountId) {
         alert("Please connect your wallet first.");
@@ -773,27 +776,31 @@ window.withdrawUSDT = async function() {
         return;
     }
 
+    // Convert withdrawAmount to USDT decimal format (6 decimals)
+    const withdrawAmountUSDT = BigInt(Math.round(parseFloat(withdrawAmount) * 1e6));
+
     const wallet = await window.selector.wallet();
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: "test.dca-near.testnet",
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "withdraw_usdt",
-                        args: { amount: withdrawAmount },
-                        gas: "100000000000000" // Increased to 100 TGas
+                        methodName: "withdraw_ft",
+                        args: { amount: withdrawAmountUSDT.toString() },
+                        gas: "100000000000000", // Increased to 100 TGas
+                        deposit: "1" // Required for payable functions
                     }
                 }
             ]
         });
-        alert("USDT withdrawal successful.");
+        alert("Token withdrawal successful.");
         refreshDashboard();
     } catch (error) {
-        console.error("Error during USDT withdrawal:", error);
-        alert("An error occurred during USDT withdrawal.");
+        console.error("Error during token withdrawal:", error);
+        alert("An error occurred during token withdrawal.");
     }
 }
 
