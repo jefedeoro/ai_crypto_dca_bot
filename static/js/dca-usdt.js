@@ -2,87 +2,7 @@
 import { getNearWalletBalance, getNearContractBalance, registerUserWithContract } from './near-wallet.js';
 
 const contractId = "test2.dca-near.testnet";
-const usdtContractId = "usdt.fakes.testnet";
 let isUserRegistered = false;
-
-// Add function to get USDT balance
-async function getUSDTBalance(accountId) {
-    try {
-        console.log('Getting USDT balance for:', accountId);
-        
-        // First encode the args using our base64 converter
-        const encodeResponse = await fetch('/api/base64/encode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-                account_id: accountId
-            })
-        });
-        const encodeResult = await encodeResponse.json();
-        if (encodeResult.error) {
-            console.error('Error encoding args:', encodeResult.error);
-            throw new Error(encodeResult.error);
-        }
-        console.log('Encoded args:', encodeResult);
-
-        // Call ft_balance_of on the USDT contract
-        const response = await fetch('https://rpc.testnet.near.org', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: generateNonce(),
-                method: 'query',
-                params: {
-                    request_type: 'call_function',
-                    finality: 'final',
-                    account_id: usdtContractId,
-                    method_name: 'ft_balance_of',
-                    args_base64: encodeResult.result
-                }
-            })
-        });
-        
-        const result = await response.json();
-        console.log('RPC response:', result);
-        
-        if (result.error) {
-            console.error('RPC error:', result.error);
-            throw new Error(result.error.data || result.error.message);
-        }
-
-        // Convert result array to string and parse JSON
-        const resultArray = result.result.result;
-        console.log('Result array:', resultArray);
-        
-        if (!resultArray || !Array.isArray(resultArray)) {
-            console.error('Invalid result array:', resultArray);
-            return '0';
-        }
-
-        const jsonString = String.fromCharCode.apply(null, resultArray);
-        console.log('Parsed JSON string:', jsonString);
-        
-        const balance = JSON.parse(jsonString);
-        console.log('Final balance:', balance);
-        
-        return balance;
-    } catch (error) {
-        console.error('Error fetching USDT balance:', error);
-        return '0';
-    }
-}
-
-function updateDCAButton() {
-    const submitButton = document.querySelector('#dca-usdt-setup-form button[type="submit"]');
-    if (submitButton) {
-        submitButton.textContent = isUserRegistered ? 'Start USDT to NEAR DCA' : 'Register USDT to NEAR DCA';
-    }
-}
 
 function updateDCAButton() {
     const submitButton = document.querySelector('#dca-usdt-setup-form button[type="submit"]');
@@ -115,7 +35,6 @@ window.startUsdtDCAInvestment = async function(event) {
         
         if (!isRegistered) {
             console.log("User not registered, proceeding with registration...");
-            // Use same contract but with reverse flag
             await registerUserWithContract(amountPerSwap, interval, initialBudget, true);
             isUserRegistered = true;
             updateDCAButton();
@@ -126,7 +45,7 @@ window.startUsdtDCAInvestment = async function(event) {
 
         const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -154,7 +73,6 @@ window.startUsdtDCAInvestment = async function(event) {
 // Change swap interval
 window.changeUsdtSwapInterval = async function() {
     try {
-        // Get wallet
         const wallet = await window.selector.wallet();
         if (!wallet) {
             alert("Please connect your wallet first");
@@ -169,7 +87,7 @@ window.changeUsdtSwapInterval = async function() {
 
         console.log("Sending change interval transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -226,12 +144,12 @@ async function checkUserRegistration(accountId) {
             },
             body: JSON.stringify({
                 jsonrpc: '2.0',
-                id: 'dontcare',
+                id: generateNonce(),
                 method: 'query',
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: contractId,
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -304,7 +222,7 @@ async function refreshUsdtDashboard() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: contractId,
                     method_name: 'get_user',
                     args_base64: encodeResult.result
                 }
@@ -474,6 +392,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (dcaForm) {
         dcaForm.onsubmit = startUsdtDCAInvestment;
     }
+
+    // Listen for wallet connection changes
+    window.selector.on("signedIn", async ({ accounts }) => {
+        if (accounts.length > 0) {
+            await checkUserRegistration(accounts[0].accountId);
+            refreshUsdtDashboard();
+        }
+    });
 });
 
 // Top up funds in the DCA contract
@@ -498,7 +424,7 @@ window.topUpUsdt = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -541,7 +467,7 @@ window.withdrawUsdtNear = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -568,7 +494,6 @@ window.withdrawUsdtNear = async function() {
 // Pause DCA swaps
 window.pauseUsdtDCA = async function() {
     try {
-        // Get wallet
         const wallet = await window.selector.wallet();
         if (!wallet) {
             alert("Please connect your wallet first");
@@ -577,7 +502,7 @@ window.pauseUsdtDCA = async function() {
 
         console.log("Sending pause transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -603,7 +528,6 @@ window.pauseUsdtDCA = async function() {
 // Resume DCA swaps
 window.resumeUsdtDCA = async function() {
     try {
-        // Get wallet
         const wallet = await window.selector.wallet();
         if (!wallet) {
             alert("Please connect your wallet first");
@@ -612,7 +536,7 @@ window.resumeUsdtDCA = async function() {
 
         console.log("Sending resume transaction...");
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -649,7 +573,7 @@ window.removeUsdtUser = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
@@ -715,7 +639,7 @@ async function updateUsdtBalances() {
     const accountId = window.getNearAccountId();
 
     if (!accountId) {
-        document.querySelectorAll('.wallet-balance').forEach(el => {
+        document.querySelectorAll('.wallet-balance-usdt').forEach(el => {
             el.textContent = 'Not connected';
         });
         document.getElementById('contract-balance-usdt').textContent = 'Not connected';
@@ -728,19 +652,14 @@ async function updateUsdtBalances() {
         // Fetch and display wallet balance
         const walletBalance = await getNearWalletBalance(accountId);
         const formattedBalance = formatNearAmount(walletBalance);
-        document.querySelectorAll('.wallet-balance').forEach(el => {
+        document.querySelectorAll('.wallet-balance-usdt').forEach(el => {
             el.textContent = formattedBalance;
         });
 
-        // Get USDT balance using ft_balance_of
-        const usdtBalance = await getUSDTBalance(accountId);
-        console.log('USDT Balance received:', usdtBalance);
-        if (usdtBalance && usdtBalance !== '0') {
-            document.getElementById('contract-balance-usdt').textContent = formatUSDTAmount(usdtBalance);
-        } else {
-            document.getElementById('contract-balance-usdt').textContent = '0';
-        }
-
+        // Fetch and display contract pool balance
+        const contractBalance = await getNearContractBalance(contractId);
+        document.getElementById('contract-balance-usdt').textContent = formatNearAmount(contractBalance);
+        
         // Get user data for other balances
         const userEncodeResponse = await fetch('/api/base64/encode', {
             method: 'POST',
@@ -789,7 +708,6 @@ async function updateUsdtBalances() {
     }
 }
 
-
 // Withdraw fungible tokens from the DCA contract
 window.withdrawUsdtFT = async function() {
     const accountId = window.getNearAccountId();
@@ -836,9 +754,6 @@ window.withdrawUsdtFT = async function() {
     }
 }
 
-// updateNearBalances to DOMContentLoaded
-document.addEventListener("DOMContentLoaded", updateUsdtBalances);
-
 // Export functions for use in HTML
 window.startUsdtDCAInvestment = startUsdtDCAInvestment;
 window.refreshUsdtDashboard = refreshUsdtDashboard;
@@ -846,6 +761,9 @@ window.topUpUsdt = topUpUsdt;
 window.withdrawUsdtNear = withdrawUsdtNear;
 window.withdrawUsdtFT = withdrawUsdtFT;
 window.pauseUsdtDCA = pauseUsdtDCA;
+window.resumeUsdtDCA = resumeUsdtDCA;
+window.removeUsdtUser = removeUsdtUser;
+window.changeUsdtSwapInterval = changeUsdtSwapInterval;
 window.resumeUsdtDCA = resumeUsdtDCA;
 window.removeUsdtUser = removeUsdtUser;
 window.changeUsdtSwapInterval = changeUsdtSwapInterval;
