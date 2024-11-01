@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 import base64
 import json
+import struct
 
 base64_bp = Blueprint('base64', __name__)
 
@@ -21,7 +22,7 @@ def encode():
 
 @base64_bp.route('/api/base64/decode', methods=['POST'])
 def decode():
-    """Decode base64 data to JSON"""
+    """Decode base64 data to JSON or Borsh"""
     try:
         data = request.json
         if not data or 'base64' not in data:
@@ -36,19 +37,34 @@ def decode():
             padded = data['base64'] + '=' * (-len(data['base64']) % 4)
             decoded = base64.b64decode(padded)
 
-        # Convert array of numbers to string and parse as JSON
+        # If the decoded data is null, return null
+        if not decoded or decoded == b'null':
+            return jsonify({'result': None})
+
+        # First try to parse as JSON
         try:
-            # Convert bytes to list of integers
-            bytes_list = [b for b in decoded]
-            # Convert integers to characters and join
-            json_str = ''.join(chr(b) for b in bytes_list)
-            # Parse JSON
+            json_str = decoded.decode('utf-8')
             result = json.loads(json_str)
             return jsonify({'result': result})
-        except Exception as e:
-            print(f"Error parsing JSON: {e}")
-            # If parsing fails, return the raw bytes as a list
-            return jsonify({'result': bytes_list})
+        except:
+            # If JSON parsing fails, try to parse as Borsh StorageBalance
+            try:
+                # StorageBalance struct has two U128 fields (total and available)
+                # Each U128 is represented as a little-endian 16-byte number
+                if len(decoded) == 32:  # 16 bytes for total + 16 bytes for available
+                    total = int.from_bytes(decoded[:16], 'little')
+                    available = int.from_bytes(decoded[16:], 'little')
+                    return jsonify({
+                        'result': {
+                            'total': str(total),
+                            'available': str(available)
+                        }
+                    })
+            except Exception as e:
+                print(f"Error parsing Borsh: {e}")
+
+            # If all parsing attempts fail, return the raw bytes as a list
+            return jsonify({'result': [b for b in decoded]})
             
     except Exception as e:
         print(f"Base64 decode error: {e}")
