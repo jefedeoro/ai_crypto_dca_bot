@@ -1,7 +1,13 @@
 from flask import Blueprint, request, jsonify
 import base64
 import json
-import struct
+from borsh_construct import U128, CStruct
+
+# Define the StorageBalance structure with borsh-construct
+StorageBalance = CStruct(
+    "total" / U128,
+    "available" / U128
+)
 
 base64_bp = Blueprint('base64', __name__)
 
@@ -46,20 +52,16 @@ def decode():
             json_str = decoded.decode('utf-8')
             result = json.loads(json_str)
             return jsonify({'result': result})
-        except:
-            # If JSON parsing fails, try to parse as Borsh StorageBalance
+        except json.JSONDecodeError:
+            # If JSON parsing fails, attempt Borsh decoding for StorageBalance
             try:
-                # StorageBalance struct has two U128 fields (total and available)
-                # Each U128 is represented as a little-endian 16-byte number
-                if len(decoded) == 32:  # 16 bytes for total + 16 bytes for available
-                    total = int.from_bytes(decoded[:16], 'little')
-                    available = int.from_bytes(decoded[16:], 'little')
-                    return jsonify({
-                        'result': {
-                            'total': str(total),
-                            'available': str(available)
-                        }
-                    })
+                # Attempt to parse the decoded data as a Borsh StorageBalance structure
+                storage_balance = StorageBalance.parse(decoded)
+                result = {
+                    'total': str(storage_balance.total),
+                    'available': str(storage_balance.available)
+                }
+                return jsonify({'result': result})
             except Exception as e:
                 print(f"Error parsing Borsh: {e}")
 
