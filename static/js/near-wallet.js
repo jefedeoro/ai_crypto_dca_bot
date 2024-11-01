@@ -186,6 +186,7 @@ selector.on("signedIn", async ({ accounts }) => {
         }
         // Check USDT storage status
         const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
+        console.log("USDT storage status on signin:", hasStorage);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
             if (hasStorage) {
