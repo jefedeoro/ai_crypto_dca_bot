@@ -84,7 +84,7 @@
     <!-- USDT to NEAR Investment Dashboard Section -->
     <div class="dca-card investment-dashboard mb-4">
         <div class="dca-card-header d-flex justify-content-between align-items-center">
-            <h2>USDT to NEAR Investment - coffee added debugging in progress :) </h2>
+            <h2>USDT to NEAR Investment</h2>
             <button class="dca-btn dca-btn-success" id="refresh-usdt-dashboard-btn">
                 <i class="fas fa-sync-alt"></i> Refresh
             </button>
@@ -390,6 +390,10 @@
 <!-- Application Scripts -->
 <script src="{{ url_for('static', filename='js/near-wallet.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/dca-usdt.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca-registration.js') }}" type="module"></script>
+
+<!-- USDT Module Scripts -->
+<script src="{{ url_for('static', filename='js/usdt/usdt-balance.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/usdt/usdt-dca.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/usdt/usdt-dashboard.js') }}" type="module"></script>
 {% endblock %}
