@@ -43,6 +43,8 @@ export async function checkUSDTStorage(accountId) {
         });
         
         const result = await response.json();
+
+        console.log("USDT storage result:", result);
         if (result.error) return false;
 
         // Decode the result using our base64 converter
@@ -57,6 +59,7 @@ export async function checkUSDTStorage(accountId) {
         if (decodeResult.error) return false;
 
         const storage = decodeResult.result;
+        console.log("USDT storage:", storage);
         return storage !== null && storage.total !== "0";
     } catch (error) {
         console.error("Error checking USDT storage:", error);
