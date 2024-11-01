@@ -72,7 +72,9 @@ export async function checkUSDTStorage2(accountId) {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
 
-        const storage = await wallet.viewMethod({ contractId: USDT_CONTRACT, method: 'ft_balance_of', args: { account_id: accountId } });
+        console.log("Checking USDT storage for:", accountId);
+        // Call the USDT contract
+        const storage = await wallet.viewMethod({ contractId: USDT_CONTRACT, method: 'storage_balance_of', args: { account_id: accountId } });
         console.log("USDT storage:", storage);
         return storage !== null && storage !== "0";
     } catch (error) {
