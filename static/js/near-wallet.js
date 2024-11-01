@@ -7,7 +7,7 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 const USDT_CONTRACT = "usdt.fakes.testnet"; // USDT contract on NEAR testnet
 
 // Function to check if wallet has USDT storage paid
-export async function checkUSDTStorage(accountId) {
+export async function checkUSDTStorage_old(accountId) {
     try {
         // First encode the args using our base64 converter
         const encodeResponse = await fetch('/api/base64/encode', {
@@ -67,7 +67,7 @@ export async function checkUSDTStorage(accountId) {
     }
 }
 
-export async function checkUSDTStorage2(accountId) {
+export async function checkUSDTStorage(accountId) {
     try{
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
@@ -122,7 +122,7 @@ export async function registerUserWithContract(amountPerSwap, swapInterval, depo
         if (!accounts.length) throw new Error("No account selected");
 
         // Check if wallet has USDT storage paid
-        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
         if (!hasStorage) {
             throw new Error("Please register USDT storage first");
         }
@@ -185,7 +185,7 @@ selector.on("signedIn", async ({ accounts }) => {
             window.refreshDashboard();
         }
         // Check USDT storage status
-        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
         console.log("USDT storage status on signin:", hasStorage);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
@@ -218,7 +218,7 @@ async function initWallet() {
             window.refreshDashboard();
         }
         // Check USDT storage status
-        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
             if (hasStorage) {
