@@ -6,8 +6,6 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY index.js .
-COPY utils.js .
-COPY createDB.js .
+COPY *.js .
 
 CMD [ "node", "index.js" ]
