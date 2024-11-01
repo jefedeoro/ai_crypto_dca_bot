@@ -67,6 +67,20 @@ export async function checkUSDTStorage(accountId) {
     }
 }
 
+export async function checkUSDTStorage2(accountId) {
+    try{
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        const storage = await wallet.viewMethod({ contractId: USDT_CONTRACT, method: 'ft_balance_of', args: { account_id: accountId } });
+        console.log("USDT storage:", storage);
+        return storage !== null && storage !== "0";
+    } catch (error) {
+        console.error("Error checking USDT storage:", error);
+        return false;
+    }
+}
+
 // Function to register wallet with USDT contract
 export async function registerUSDTStorage() {
     try {
@@ -106,7 +120,7 @@ export async function registerUserWithContract(amountPerSwap, swapInterval, depo
         if (!accounts.length) throw new Error("No account selected");
 
         // Check if wallet has USDT storage paid
-        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
         if (!hasStorage) {
             throw new Error("Please register USDT storage first");
         }
@@ -169,7 +183,7 @@ selector.on("signedIn", async ({ accounts }) => {
             window.refreshDashboard();
         }
         // Check USDT storage status
-        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
             if (hasStorage) {
@@ -201,7 +215,7 @@ async function initWallet() {
             window.refreshDashboard();
         }
         // Check USDT storage status
-        const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        const hasStorage = await checkUSDTStorage2(accounts[0].accountId);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
             if (hasStorage) {
