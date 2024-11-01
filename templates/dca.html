@@ -59,10 +59,10 @@
                 <table class="dca-table" id="investment-dashboard">
                     <thead>
                         <tr>
-                            <th>Amount per Swap</th>
-                            <th>Interval</th>
-                            <th>Next Swap</th>
                             <th>NEAR Balance</th>
+                            <th>Interval</th>
+                            <th>Amount per Swap</th>
+                            <th>Next Swap</th>
                             <th>USDT Swapped</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -84,7 +84,7 @@
     <!-- USDT to NEAR Investment Dashboard Section -->
     <div class="dca-card investment-dashboard mb-4">
         <div class="dca-card-header d-flex justify-content-between align-items-center">
-            <h2>USDT to NEAR Investment</h2>
+            <h2>USDT to NEAR Investment - coffee added debugging in progress :) </h2>
             <button class="dca-btn dca-btn-success" id="refresh-usdt-dashboard-btn">
                 <i class="fas fa-sync-alt"></i> Refresh
             </button>
@@ -95,11 +95,11 @@
                 <table class="dca-table" id="usdt-investment-dashboard">
                     <thead>
                         <tr>
-                            <th>Amount per Swap</th>
+                            <th>USDT Balance</th>
                             <th>Interval</th>
+                            <th>Amount per Swap</th>
                             <th>Next Swap</th>
-                            <th>NEAR Balance</th>
-                            <th>USDT Swapped</th>
+                            <th>NEAR Swapped</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -128,14 +128,14 @@
                 <h3>Setup</h3>
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <label for="initial_budget_usdt" class="dca-form-label">Initial Budget (NEAR):</label>
+                        <label for="initial_budget_usdt" class="dca-form-label">Initial Budget (USDT):</label>
                         <input type="number" class="dca-form-control" id="initial_budget_usdt" name="initial_budget_usdt" min="0" step="0.1" required>
                         <small class="form-text text-muted">Total amount for initial DCA setup</small>
                     </div>
                     <div class="col-md-4">
-                        <label for="total_amount_usdt" class="dca-form-label">Amount per Swap (NEAR):</label>
+                        <label for="total_amount_usdt" class="dca-form-label">Amount per Swap (USDT):</label>
                         <input type="number" class="dca-form-control" id="total_amount_usdt" name="total_amount_usdt" min="0" step="0.1" required>
-                        <small class="form-text text-muted">Amount of NEAR to swap each interval</small>
+                        <small class="form-text text-muted">Amount of USDT to swap each interval</small>
                     </div>
                     <div class="col-md-4">
                         <label for="interval_usdt" class="dca-form-label">Swap Interval:</label>
@@ -159,43 +159,43 @@
                         <small class="form-text text-muted">How often to perform the swap</small>
                     </div>
                 </div>
-                <p class="text-muted mb-3">Wallet Balance: <span class="wallet-balance">Loading...</span> NEAR</p>
+                <p class="text-muted mb-3">Wallet Balance: <span class="wallet-balance-usdt">Loading...</span> USDT</p>
                 <button type="submit" class="dca-btn dca-btn-primary">Start USDT to NEAR DCA</button>
             </form>
 
             <!-- Top-up and Withdraw Section -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <h3>NEAR Management</h3>
-                    <form id="near-management-form-usdt">
+                    <h3>USDT Management</h3>
+                    <form id="usdt-topup-form">
                         <div class="mb-3">
-                            <label for="near_amount_usdt" class="dca-form-label">NEAR Amount:</label>
-                            <input type="number" class="dca-form-control" id="near_amount_usdt" min="0" step="0.1" required>
+                            <label for="usdt_amount_topup" class="dca-form-label">USDT Amount:</label>
+                            <input type="number" class="dca-form-control" id="usdt_amount_topup" min="0" step="0.1" required>
                             <div class="balance-container">
-                                <div class="balance-item text-muted">Wallet Balance: <span class="wallet-balance">Loading...</span> NEAR</div>
-                                <div class="balance-item text-muted">NEAR in Contract: <span id="near-contract-balance-usdt">Loading...</span> NEAR</div>
+                                <div class="balance-item text-muted">Wallet Balance: <span class="wallet-balance-usdt">Loading...</span> USDT</div>
+                                <div class="balance-item text-muted">USDT in Contract: <span id="usdt-contract-balance-usdt">Loading...</span> USDT</div>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
                             <button type="button" onclick="topUpUsdt()" class="dca-btn dca-btn-success flex-grow-1">
                                 <i class="fas fa-plus-circle"></i> Top-Up
                             </button>
-                            <button type="button" onclick="withdrawUsdtNear()" class="dca-btn dca-btn-warning flex-grow-1">
-                                <i class="fas fa-minus-circle"></i> Withdraw NEAR
+                            <button type="button" onclick="withdrawUsdtFT()" class="dca-btn dca-btn-warning flex-grow-1">
+                                <i class="fas fa-minus-circle"></i> Withdraw USDT
                             </button>
                         </div>
                     </form>
                 </div>
                 <div class="col-md-6">
-                    <h3>USDT Management</h3>
-                    <form id="usdt-management-form-usdt">
+                    <h3>NEAR Management</h3>
+                    <form id="near-withdraw-form">
                         <div class="mb-3">
-                            <label for="usdt_amount_usdt" class="dca-form-label">USDT Amount:</label>
-                            <input type="number" class="dca-form-control" id="usdt_amount_usdt" min="0" step="0.01" required>
-                            <p class="text-muted mt-2 mb-3">USDT in Contract: <span id="usdt-contract-balance-usdt">Loading...</span> USDT</p>
+                            <label for="near_amount_withdraw" class="dca-form-label">NEAR Amount:</label>
+                            <input type="number" class="dca-form-control" id="near_amount_withdraw" min="0" step="0.01" required>
+                            <p class="text-muted mt-2 mb-3">NEAR in Contract: <span id="near-contract-balance-usdt">Loading...</span> NEAR</p>
                         </div>
-                        <button type="button" onclick="withdrawUsdtFT()" class="dca-btn dca-btn-warning w-100">
-                            <i class="fas fa-minus-circle"></i> Withdraw USDT
+                        <button type="button" onclick="withdrawUsdtNear()" class="dca-btn dca-btn-warning w-100">
+                            <i class="fas fa-minus-circle"></i> Withdraw NEAR
                         </button>
                     </form>
                 </div>

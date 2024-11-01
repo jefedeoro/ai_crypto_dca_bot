@@ -14,6 +14,7 @@ const { reverse } = require("dns");
 dotenv.config();
 const NEAR_NET = 'testnet';
 const CONTRACT_ID = 'test2.dca-near.testnet';
+
 const ACCOUNT_ID = 'dca-near.testnet';
 const LOG_FILE_BATCH = `./logs/dca-batch-${new Date().toISOString().split('T')[0]}.log`;
 const LOG_FILE_BOT = `./logs/dca-bot-${new Date().toISOString().split('T')[0]}.log`;
