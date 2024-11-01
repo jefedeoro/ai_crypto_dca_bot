@@ -183,8 +183,6 @@ def scrape_website(page, source, nonce_start):
         # Handle other news sources
         if name == 'NewsBTC':
             items = soup.select('.jnews_search_content_wrapper .jeg_post')
-        elif name == 'CryptoNews':
-            items = soup.select('.aside-news-list a')
         elif name == 'TheBlock':
             items = soup.select('.popularRail.d-print-none a')
         else:

@@ -1,7 +1,88 @@
 // static/js/dca-usdt.js
 import { getNearWalletBalance, getNearContractBalance, registerUserWithContract } from './near-wallet.js';
 
+const contractId = "test2.dca-near.testnet";
+const usdtContractId = "usdt.fakes.testnet";
 let isUserRegistered = false;
+
+// Add function to get USDT balance
+async function getUSDTBalance(accountId) {
+    try {
+        console.log('Getting USDT balance for:', accountId);
+        
+        // First encode the args using our base64 converter
+        const encodeResponse = await fetch('/api/base64/encode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                account_id: accountId
+            })
+        });
+        const encodeResult = await encodeResponse.json();
+        if (encodeResult.error) {
+            console.error('Error encoding args:', encodeResult.error);
+            throw new Error(encodeResult.error);
+        }
+        console.log('Encoded args:', encodeResult);
+
+        // Call ft_balance_of on the USDT contract
+        const response = await fetch('https://rpc.testnet.near.org', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: generateNonce(),
+                method: 'query',
+                params: {
+                    request_type: 'call_function',
+                    finality: 'final',
+                    account_id: usdtContractId,
+                    method_name: 'ft_balance_of',
+                    args_base64: encodeResult.result
+                }
+            })
+        });
+        
+        const result = await response.json();
+        console.log('RPC response:', result);
+        
+        if (result.error) {
+            console.error('RPC error:', result.error);
+            throw new Error(result.error.data || result.error.message);
+        }
+
+        // Convert result array to string and parse JSON
+        const resultArray = result.result.result;
+        console.log('Result array:', resultArray);
+        
+        if (!resultArray || !Array.isArray(resultArray)) {
+            console.error('Invalid result array:', resultArray);
+            return '0';
+        }
+
+        const jsonString = String.fromCharCode.apply(null, resultArray);
+        console.log('Parsed JSON string:', jsonString);
+        
+        const balance = JSON.parse(jsonString);
+        console.log('Final balance:', balance);
+        
+        return balance;
+    } catch (error) {
+        console.error('Error fetching USDT balance:', error);
+        return '0';
+    }
+}
+
+function updateDCAButton() {
+    const submitButton = document.querySelector('#dca-usdt-setup-form button[type="submit"]');
+    if (submitButton) {
+        submitButton.textContent = isUserRegistered ? 'Start USDT to NEAR DCA' : 'Register USDT to NEAR DCA';
+    }
+}
 
 function updateDCAButton() {
     const submitButton = document.querySelector('#dca-usdt-setup-form button[type="submit"]');
@@ -268,11 +349,11 @@ async function refreshUsdtDashboard() {
             // Update desktop view
             dashboardBody.innerHTML = `
                 <tr>
-                    <td>${formatNearAmount(userData.amount_per_swap)}</td>
+                    <td>${formatUSDTAmount(userData.amount)}</td>
                     <td>${formatInterval(BigInt(userData.swap_interval))}</td>
+                    <td>${formatUSDTAmount(userData.amount_per_swap)}</td>
                     <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
-                    <td>${formatNearAmount(userData.amount)}</td>
-                    <td>${formatUSDTAmount(userData.total_swapped)}</td>
+                    <td>${formatNearAmount(userData.total_swapped)}</td>
                     <td>
                         <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
                             ${userData.pause ? 'Paused' : 'Active'}
@@ -304,24 +385,24 @@ async function refreshUsdtDashboard() {
                         <div class="pool-header">USDT to NEAR Pool</div>
                         <div class="dashboard-grid">
                             <div class="dashboard-item">
-                                <p class="item-label">Amount per Swap</p>
-                                <div class="item-value">${formatNearAmount(userData.amount_per_swap)}</div>
+                                <p class="item-label">USDT Balance</p>
+                                <div class="item-value">${formatUSDTAmount(userData.amount)}</div>
                             </div>
                             <div class="dashboard-item">
                                 <p class="item-label">Interval</p>
                                 <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
                             </div>
                             <div class="dashboard-item">
+                                <p class="item-label">Amount per Swap</p>
+                                <div class="item-value">${formatUSDTAmount(userData.amount_per_swap)}</div>
+                            </div>
+                            <div class="dashboard-item">
                                 <p class="item-label">Next Swap</p>
                                 <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
                             </div>
                             <div class="dashboard-item">
-                                <p class="item-label">NEAR Balance</p>
-                                <div class="item-value">${formatNearAmount(userData.amount)}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">USDT Swapped</p>
-                                <div class="item-value">${formatUSDTAmount(userData.total_swapped)}</div>
+                                <p class="item-label">NEAR Swapped</p>
+                                <div class="item-value">${formatNearAmount(userData.total_swapped)}</div>
                             </div>
                             <div class="dashboard-item">
                                 <p class="item-label">Status</p>
@@ -632,7 +713,6 @@ function showConnectWalletMessage() {
 // Update balances for wallet and contract
 async function updateUsdtBalances() {
     const accountId = window.getNearAccountId();
-    const contractId = "test2.dca-near.testnet";
 
     if (!accountId) {
         document.querySelectorAll('.wallet-balance').forEach(el => {
@@ -652,40 +732,27 @@ async function updateUsdtBalances() {
             el.textContent = formattedBalance;
         });
 
-        // Fetch and display contract pool balance
-        const contractBalance = await getNearContractBalance(contractId);
-        document.getElementById('contract-balance-usdt').textContent = formatNearAmount(contractBalance);
-        
-        // Get user's NEAR balance from contract and USDT balance
-        const userData = await getUserData();
-        if (userData) {
-            document.getElementById('near-contract-balance-usdt').textContent = formatNearAmount(userData.amount);
-            document.getElementById('usdt-contract-balance-usdt').textContent = formatUSDTAmount(userData.total_swapped);
+        // Get USDT balance using ft_balance_of
+        const usdtBalance = await getUSDTBalance(accountId);
+        console.log('USDT Balance received:', usdtBalance);
+        if (usdtBalance && usdtBalance !== '0') {
+            document.getElementById('contract-balance-usdt').textContent = formatUSDTAmount(usdtBalance);
+        } else {
+            document.getElementById('contract-balance-usdt').textContent = '0';
         }
-    } catch (error) {
-        console.error('Error fetching balances:', error);
-    }
-}
 
-// Helper function to get user data
-async function getUserData() {
-    try {
-        const accountId = window.getNearAccountId();
-        if (!accountId) return null;
-
-        const encodeResponse = await fetch('/api/base64/encode', {
+        // Get user data for other balances
+        const userEncodeResponse = await fetch('/api/base64/encode', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ user: accountId, reverse: true })
         });
-        const encodeResult = await encodeResponse.json();
-        if (encodeResult.error) {
-            throw new Error(encodeResult.error);
-        }
-
-        const response = await fetch('https://rpc.testnet.near.org', {
+        const userEncodeResult = await userEncodeResponse.json();
+        
+        // Get user data
+        const userResponse = await fetch('https://rpc.testnet.near.org', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -697,25 +764,31 @@ async function getUserData() {
                 params: {
                     request_type: 'call_function',
                     finality: 'final',
-                    account_id: 'test2.dca-near.testnet',
+                    account_id: contractId,
                     method_name: 'get_user',
-                    args_base64: encodeResult.result
+                    args_base64: userEncodeResult.result
                 }
             })
         });
-        
-        const result = await response.json();
-        if (result.error || !result.result || !result.result.result) {
-            return null;
-        }
 
-        const jsonString = String.fromCharCode.apply(null, result.result.result);
-        return JSON.parse(jsonString);
+        const userResult = await userResponse.json();
+        if (userResult.result && userResult.result.result) {
+            const userDataString = String.fromCharCode.apply(null, userResult.result.result);
+            const userData = JSON.parse(userDataString);
+            
+            // Update contract balances from user data
+            document.getElementById('near-contract-balance-usdt').textContent = formatNearAmount(userData.amount);
+            document.getElementById('usdt-contract-balance-usdt').textContent = formatUSDTAmount(userData.total_swapped);
+        }
     } catch (error) {
-        console.error('Error fetching user data:', error);
-        return null;
+        console.error('Error fetching balances:', error);
+        // Set default values on error
+        document.getElementById('contract-balance-usdt').textContent = '0';
+        document.getElementById('near-contract-balance-usdt').textContent = '0';
+        document.getElementById('usdt-contract-balance-usdt').textContent = '0';
     }
 }
+
 
 // Withdraw fungible tokens from the DCA contract
 window.withdrawUsdtFT = async function() {
@@ -739,7 +812,7 @@ window.withdrawUsdtFT = async function() {
 
     try {
         await wallet.signAndSendTransaction({
-            receiverId: "test2.dca-near.testnet",
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
