@@ -7,7 +7,7 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 const USDT_CONTRACT = "usdt.fakes.testnet"; // USDT contract on NEAR testnet
 
 // Function to check if wallet has USDT storage paid
-export async function checkUSDTStorage_old(accountId) {
+export async function checkUSDTStorage(accountId) {
     try {
         // First encode the args using our base64 converter
         const encodeResponse = await fetch('/api/base64/encode', {
@@ -67,7 +67,7 @@ export async function checkUSDTStorage_old(accountId) {
     }
 }
 
-export async function checkUSDTStorage(accountId) {
+export async function checkUSDTStorageOnchain(accountId) {
     try{
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
