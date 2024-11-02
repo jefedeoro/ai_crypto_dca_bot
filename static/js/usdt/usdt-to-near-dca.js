@@ -45,7 +45,7 @@ export async function registerUsdtToNearDCA(usdtAmount, frequency) {
                                     reverse: true
                                 },
                                 gas: "180000000000000",
-                                deposit: "1000000000000000000000000" // 1 NEAR
+                                deposit: "1" // 1 YoctoNEAR required for function call
                             }
                         }
                     ]
