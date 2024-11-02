@@ -15,12 +15,10 @@ export function getSelectedPool() {
 export function updatePoolVisibility(poolType = getSelectedPool()) {
     console.log(`Updating pool visibility for: ${poolType}`); // Debugging output
     const nearToUsdtElements = [
-        document.querySelector('.investment-dashboard:not(:last-child)'),
         document.getElementById('near-to-usdt-card')
     ];
 
     const usdtToNearElements = [
-        document.querySelector('.investment-dashboard:last-child'),
         document.getElementById('usdt-to-near-card')
     ];
 
