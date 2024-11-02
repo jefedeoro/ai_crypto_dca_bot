@@ -226,7 +226,7 @@ async function refreshUsdtDashboard() {
                             ${userData.pause ? 'Paused' : 'Active'}
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                         <div class="action-buttons">
                             ${userData.pause ? 
                                 `<button onclick="resumeUsdtDCA()" class="dca-btn dca-btn-info btn-sm">

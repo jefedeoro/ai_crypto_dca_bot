@@ -15,7 +15,7 @@ export async function getUSDTBalance(accountId) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ account_id: accountId })
+            body: JSON.stringify({ account_id: accountId, reverse: true  })
         });
         const encodeResult = await encodeResponse.json();
         if (encodeResult.error) {
@@ -102,26 +102,26 @@ export async function getUSDTBalance(accountId) {
 export function formatNearAmount(yoctoNear) {
     try {
         const value = BigInt(yoctoNear);
-        const nearStr = value.toString().padStart(25, '0'); // Ensure at least 24 decimal places
-        const integerPart = nearStr.slice(0, -24) || '0';
-        const decimalPart = nearStr.slice(-24);
+        const numStr = value.toString();
         
-        // Find first non-zero digit in decimal part
-        let firstNonZero = 0;
-        while (firstNonZero < decimalPart.length && decimalPart[firstNonZero] === '0') {
-            firstNonZero++;
+        // If number is small enough, just format normally
+        if (numStr.length <= 6) {
+            return (Number(value) / 1e24).toFixed(6);
         }
         
-        if (firstNonZero === decimalPart.length) {
-            // All zeros after decimal point
-            return integerPart;
+        // For larger numbers, show first 6 digits and add power notation
+        const firstSixDigits = numStr.slice(0, 6);
+        const remainingDigits = numStr.length - 6;
+        
+        // Format with decimal point after first digit
+        const formattedNumber = `${firstSixDigits[0]}.${firstSixDigits.slice(1)}`;
+        
+        // Add power notation if there are remaining digits
+        if (remainingDigits > 0) {
+            return `${formattedNumber}e+${remainingDigits}`;
         }
         
-        // Take the first non-zero digit and next two digits
-        const significantDecimals = decimalPart.slice(firstNonZero, firstNonZero + 3);
-        
-        // Format with proper number of leading zeros
-        return `0.${'0'.repeat(firstNonZero)}${significantDecimals}`;
+        return formattedNumber;
     } catch (error) {
         console.error("Error formatting NEAR amount:", error);
         return "0";
@@ -131,7 +131,26 @@ export function formatNearAmount(yoctoNear) {
 export function formatUSDTAmount(amount) {
     try {
         const value = BigInt(amount);
-        return (Number(value) / 24).toFixed(2).replace(/\.?0+$/, '');
+        const numStr = value.toString();
+        
+        // If number is small enough, just format normally
+        if (numStr.length <= 6) {
+            return (Number(value) / 1e6).toFixed(2);
+        }
+        
+        // For larger numbers, show first 6 digits and add power notation
+        const firstSixDigits = numStr.slice(0, 6);
+        const remainingDigits = numStr.length - 6;
+        
+        // Format with decimal point after first digit
+        const formattedNumber = `${firstSixDigits[0]}.${firstSixDigits.slice(1)}`;
+        
+        // Add power notation if there are remaining digits
+        if (remainingDigits > 0) {
+            return `${formattedNumber}e+${remainingDigits}`;
+        }
+        
+        return formattedNumber;
     } catch (error) {
         console.error("Error formatting USDT amount:", error);
         return "0";
@@ -159,7 +178,7 @@ async function get_usdt_pool_balance() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ account_id: "test2.dca-near.testnet" })
+            body: JSON.stringify({ account_id: "test2.dca-near.testnet", reverse: true })
         });
         const encodeResult = await encodeResponse.json();
         if (encodeResult.error) {
