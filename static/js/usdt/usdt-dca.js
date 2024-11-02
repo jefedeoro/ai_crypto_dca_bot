@@ -16,15 +16,19 @@ export async function topUpUsdt() {
         const depositAmountUSDT = integerPart + paddedDecimal;
 
         await wallet.signAndSendTransaction({
-            receiverId: contractId,
+            receiverId: USDT_CONTRACT,
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "topup",
-                        args: {},
+                        methodName: "ft_transfer_call",
+                        args: {
+                            receiver_id: contractId,
+                            amount: depositAmountUSDT.toString(),
+                            msg: ""
+                        },
                         gas: "100000000000000",
-                        deposit: depositAmountUSDT
+                        deposit: "1"  // 1 yoctoNEAR required for ft_transfer_call
                     }
                 }
             ]
