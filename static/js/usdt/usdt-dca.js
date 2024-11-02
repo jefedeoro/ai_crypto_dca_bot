@@ -3,12 +3,10 @@ const contractId = "test2.dca-near.testnet";
 const USDT_CONTRACT = "usdt.fakes.testnet";
 
 // Top up USDT
-export async function topUpUsdt() {
+export async function topUpUsdt(amount) {
     try {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
-
-        const amount = document.getElementById('usdt_amount_topup').value;
 
         // Convert to USDT amount (6 decimals)
         const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
@@ -16,19 +14,15 @@ export async function topUpUsdt() {
         const depositAmountUSDT = integerPart + paddedDecimal;
 
         await wallet.signAndSendTransaction({
-            receiverId: USDT_CONTRACT,
+            receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "ft_transfer_call",
-                        args: {
-                            receiver_id: contractId,
-                            amount: depositAmountUSDT.toString(),
-                            msg: ""
-                        },
+                        methodName: "topup",
+                        args: {},
                         gas: "100000000000000",
-                        deposit: "1"  // 1 yoctoNEAR required for ft_transfer_call
+                        deposit: depositAmountUSDT
                     }
                 }
             ]
