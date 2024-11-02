@@ -8,6 +8,7 @@ from routes.dca_routes import dca_bp
 from routes.near import near_bp
 from routes.base64Converter import base64_bp
 from routes.admin_routes import admin_bp, init_admin_bp
+from routes.usdt_routes import usdt_bp
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
@@ -77,6 +78,7 @@ app.register_blueprint(dca_bp)
 app.register_blueprint(near_bp)
 app.register_blueprint(base64_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(usdt_bp)  # Register USDT routes
 
 if __name__ == '__main__':
     app.run(debug=True)

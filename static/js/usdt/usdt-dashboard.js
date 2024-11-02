@@ -9,7 +9,8 @@ import {
     pauseUsdtDCA, 
     resumeUsdtDCA, 
     removeUsdtUser, 
-    changeUsdtSwapInterval 
+    changeUsdtSwapInterval,
+    updateDCAButton 
 } from './usdt-dca.js';
 import { getNearWalletBalance, getNearContractBalance } from '../near-wallet.js';
 
@@ -23,7 +24,7 @@ function showConnectWalletMessage() {
 }
 
 // Update balances for wallet and contract
-async function updateUsdtBalances() {
+export async function updateUsdtBalances() {
     const accountId = window.getNearAccountId();
 
     // Helper function to safely update element text content
@@ -99,6 +100,18 @@ async function updateUsdtBalances() {
             // Update contract balances from user data
             safeSetTextContent('near-contract-balance-usdt', formatNearAmount(userData.amount));
             safeSetTextContent('usdt-contract-balance-usdt', formatUSDTAmount(userData.total_swapped));
+
+            // Dispatch event with user data
+            window.dispatchEvent(new CustomEvent('usdtUserDataUpdated', { 
+                detail: {
+                    amount: userData.amount,
+                    totalSwapped: userData.total_swapped
+                }
+            }));
+        } else {
+            // If no user data, set balances to 0
+            safeSetTextContent('near-contract-balance-usdt', '0');
+            safeSetTextContent('usdt-contract-balance-usdt', '0');
         }
     } catch (error) {
         console.error('Error fetching balances:', error);
@@ -170,6 +183,8 @@ async function refreshUsdtDashboard() {
         // Check for error in result that indicates user doesn't exist
         if (result.result && result.result.error && result.result.error.includes("panicked")) {
             console.log("User not registered");
+            window.isUserRegistered = false;  // Update registration state
+            updateDCAButton();  // Update button text
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
@@ -193,6 +208,10 @@ async function refreshUsdtDashboard() {
         try {
             const userData = JSON.parse(jsonString);
             console.log('Parsed user data:', userData);
+
+            // Update registration state based on user data
+            window.isUserRegistered = true;
+            updateDCAButton();
 
             // Update desktop view
             dashboardBody.innerHTML = `
@@ -284,10 +303,16 @@ async function refreshUsdtDashboard() {
             await updateUsdtBalances();
         } catch (error) {
             console.error('Error parsing user data:', error);
+            window.isUserRegistered = false;  // Update registration state on error
+            updateDCAButton();  // Update button text
             throw new Error('Failed to parse user data');
         }
     } catch (error) {
         console.error("Error refreshing dashboard:", error);
+        // Update registration state on error
+        window.isUserRegistered = false;
+        updateDCAButton();
+        
         // Check if error is from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const errorMessage = urlParams.get('errorMessage');
