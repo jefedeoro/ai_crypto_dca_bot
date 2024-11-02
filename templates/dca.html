@@ -35,14 +35,16 @@
         </div>
     </div>
 
-    <!-- Pool Balances -->
-    <div class="row">
-        <div class="col-md-6">
-            <p class="text-muted mb-4">NEAR to USDT Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
+    <!-- Pool Selection Toggle -->
+    <div class="pool-toggle">
+        <div class="pool-toggle-container">
+            <span class="pool-toggle-text-left active">NEAR → USDT</span>
+            <label class="pool-toggle-switch">
+                <input type="checkbox" id="poolToggle">
+                <span class="pool-toggle-slider"></span>
+            </label>
+            <span class="pool-toggle-text-right">USDT → NEAR</span>
         </div>
-        <!-- <div class="col-md-6">
-            <p class="text-muted mb-4">USDT to NEAR Pool Balance: <span id="contract-balance-usdt">Loading...</span> USDT</p>
-        </div> -->
     </div>
 
     <!-- NEAR to USDT Investment Dashboard Section -->
@@ -133,28 +135,14 @@
                         <small class="form-text text-muted">Total amount for initial DCA setup</small>
                     </div>
                     <div class="col-md-4">
-                        <label for="total_amount_usdt" class="dca-form-label">Amount per Swap (USDT):</label>
-                        <input type="number" class="dca-form-control" id="total_amount_usdt" name="total_amount_usdt" min="0" step="0.1" required>
+                        <label for="swap_amount_usdt" class="dca-form-label">Amount per Swap (USDT):</label>
+                        <input type="number" class="dca-form-control" id="swap_amount_usdt" name="swap_amount_usdt" min="0" step="0.1" required>
                         <small class="form-text text-muted">Amount of USDT to swap each interval</small>
                     </div>
                     <div class="col-md-4">
                         <label for="interval_usdt" class="dca-form-label">Swap Interval:</label>
                         <select class="dca-form-select" id="interval_usdt" name="interval_usdt" required>
-                            <option value="" selected disabled>Select Interval</option>
-                            <option value="300000000000">5 Minutes</option>
-                            <option value="900000000000">15 Minutes</option>
-                            <option value="1800000000000">30 Minutes</option>
-                            <option value="3600000000000">1 Hour</option>
-                            <option value="7200000000000">2 Hours</option>
-                            <option value="14400000000000">4 Hours</option>
-                            <option value="21600000000000">6 Hours</option>
-                            <option value="43200000000000">12 Hours</option>
-                            <option value="86400000000000">24 Hours</option>
-                            <option value="604800000000000">7 Days</option>
-                            <option value="2592000000000000">30 Days</option>
-                            <option value="7776000000000000">90 Days</option>
-                            <option value="15552000000000000">180 Days</option>
-                            <option value="31104000000000000">360 Days</option>
+                            <!-- Options will be populated by interval-options.js -->
                         </select>
                         <small class="form-text text-muted">How often to perform the swap</small>
                     </div>
@@ -221,21 +209,7 @@
                 <div class="mb-3">
                     <label for="new_interval_usdt" class="dca-form-label">Update Swap Interval:</label>
                     <select class="dca-form-select mb-2" id="new_interval_usdt" required>
-                        <option value="" selected disabled>Select New Interval</option>
-                        <option value="300000000000">5 Minutes</option>
-                        <option value="900000000000">15 Minutes</option>
-                        <option value="1800000000000">30 Minutes</option>
-                        <option value="3600000000000">1 Hour</option>
-                        <option value="7200000000000">2 Hours</option>
-                        <option value="14400000000000">4 Hours</option>
-                        <option value="21600000000000">6 Hours</option>
-                        <option value="43200000000000">12 Hours</option>
-                        <option value="86400000000000">24 Hours</option>
-                        <option value="604800000000000">7 Days</option>
-                        <option value="2592000000000000">30 Days</option>
-                        <option value="7776000000000000">90 Days</option>
-                        <option value="15552000000000000">180 Days</option>
-                        <option value="31104000000000000">360 Days</option>
+                        <!-- Options will be populated by interval-options.js -->
                     </select>
                     <button onclick="changeUsdtSwapInterval()" class="dca-btn dca-btn-primary">
                         <i class="fas fa-clock"></i> Update Interval
@@ -275,21 +249,7 @@
                     <div class="col-md-4">
                         <label for="interval" class="dca-form-label">Swap Interval:</label>
                         <select class="dca-form-select" id="interval" name="interval" required>
-                            <option value="" selected disabled>Select Interval</option>
-                            <option value="300000000000">5 Minutes</option>
-                            <option value="900000000000">15 Minutes</option>
-                            <option value="1800000000000">30 Minutes</option>
-                            <option value="3600000000000">1 Hour</option>
-                            <option value="7200000000000">2 Hours</option>
-                            <option value="14400000000000">4 Hours</option>
-                            <option value="21600000000000">6 Hours</option>
-                            <option value="43200000000000">12 Hours</option>
-                            <option value="86400000000000">24 Hours</option>
-                            <option value="604800000000000">7 Days</option>
-                            <option value="2592000000000000">30 Days</option>
-                            <option value="7776000000000000">90 Days</option>
-                            <option value="15552000000000000">180 Days</option>
-                            <option value="31104000000000000">360 Days</option>
+                            <!-- Options will be populated by interval-options.js -->
                         </select>
                         <small class="form-text text-muted">How often to perform the swap</small>
                     </div>
@@ -350,21 +310,7 @@
                 <div class="mb-3">
                     <label for="new_interval" class="dca-form-label">Update Swap Interval:</label>
                     <select class="dca-form-select mb-2" id="new_interval" required>
-                        <option value="" selected disabled>Select New Interval</option>
-                        <option value="300000000000">5 Minutes</option>
-                        <option value="900000000000">15 Minutes</option>
-                        <option value="1800000000000">30 Minutes</option>
-                        <option value="3600000000000">1 Hour</option>
-                        <option value="7200000000000">2 Hours</option>
-                        <option value="14400000000000">4 Hours</option>
-                        <option value="21600000000000">6 Hours</option>
-                        <option value="43200000000000">12 Hours</option>
-                        <option value="86400000000000">24 Hours</option>
-                        <option value="604800000000000">7 Days</option>
-                        <option value="2592000000000000">30 Days</option>
-                        <option value="7776000000000000">90 Days</option>
-                        <option value="15552000000000000">180 Days</option>
-                        <option value="31104000000000000">360 Days</option>
+                        <!-- Options will be populated by interval-options.js -->
                     </select>
                     <button onclick="changeSwapInterval()" class="dca-btn dca-btn-primary">
                         <i class="fas fa-clock"></i> Update Interval
@@ -395,8 +341,10 @@
 
 <!-- Application Scripts -->
 <script src="{{ url_for('static', filename='js/near-wallet.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/pool-toggle.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca-registration.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/interval-options.js') }}" type="module"></script>
 
 <!-- USDT Module Scripts -->
 <script src="{{ url_for('static', filename='js/usdt/usdt-balance.js') }}" type="module"></script>

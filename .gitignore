@@ -52,3 +52,17 @@ ignore/*
 contracts/near-dca/target
 contracts/near-dca/out
 logs
+data/20241031-14_27_21_91373253/enhanced_script.json
+data/20241031-14_27_21_91373253/headlines.json
+data/20241031-14_27_21_91373253/news.json
+data/20241031-14_27_21_91373253/output_audio.mp3
+data/20241031-14_27_21_91373253/script.json
+data/20241031-14_27_21_91373253/selected_headlines.json
+data/20241031-14_27_21_91373253/summarized_news.json
+data/20241031-14_33_09_781dad2f/headlines.json
+data/20241031-14_33_09_781dad2f/selected_headlines.json
+data/20241031-14_38_57_81c98803/headlines.json
+data/20241031-14_38_57_81c98803/selected_headlines.json
+data\20241031-14_42_28_d6f4e2fb/*
+data\20241031-14_38_57_81c98803/*
+data/20241031-16_39_10_f2920908/*

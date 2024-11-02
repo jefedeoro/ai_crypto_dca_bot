@@ -1,227 +1,47 @@
-// usdt-dca.js - Handles USDT DCA functionality
-import { registerUserWithContract } from '../near-wallet.js';
-import { getUSDTBalance, formatUSDTAmount } from './usdt-balance.js';
-
+// usdt-dca.js - Handles USDT DCA contract interactions
 const contractId = "test2.dca-near.testnet";
 const USDT_CONTRACT = "usdt.fakes.testnet";
-let isUserRegistered = false;
 
-function generateNonce() {
-    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
-}
-
-// Helper function to convert NEAR amount to yoctoNEAR string
-function toYoctoNearString(amount) {
-    if (amount.includes('.')) {
-        // Handle decimal input
-        const [integerPart = "0", decimalPart = ""] = amount.split(".");
-        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 24);
-        return integerPart + paddedDecimal;
-    } else {
-        // Handle whole number input
-        return amount + "0".repeat(24);
-    }
-}
-
-export function updateDCAButton() {
-    const submitButton = document.querySelector('#dca-usdt-setup-form button[type="submit"]');
-    if (submitButton) {
-        submitButton.textContent = isUserRegistered ? 'Start USDT to NEAR DCA' : 'Register USDT to NEAR DCA';
-    }
-}
-
-// Listen for user data updates from dashboard
-window.addEventListener('usdtUserDataUpdated', (event) => {
-    const { amount, totalSwapped } = event.detail;
-    
-    // Update USDT balance in management section
-    const balanceElement = document.getElementById('usdt-contract-balance-usdt');
-    if (balanceElement) {
-        balanceElement.textContent = formatUSDTAmount(amount);
-    }
-});
-
-// Check if user needs to register
-export async function checkUserRegistration(accountId) {
-    if (!accountId) return false;
-    
+// Top up USDT
+export async function topUpUsdt(amount) {
     try {
-        // First encode the args using our base64 converter
-        const encodeResponse = await fetch('/api/base64/encode', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user: accountId, reverse: true })
-        });
-        const encodeResult = await encodeResponse.json();
-        if (encodeResult.error) {
-            throw new Error(encodeResult.error);
-        }
-
-        // Use RPC directly for view calls with encoded args
-        const response = await fetch('https://rpc.testnet.near.org', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: generateNonce(),
-                method: 'query',
-                params: {
-                    request_type: 'call_function',
-                    finality: 'final',
-                    account_id: contractId,
-                    method_name: 'get_user',
-                    args_base64: encodeResult.result
-                }
-            })
-        });
-        
-        const result = await response.json();
-        if (result.error || (result.result && result.result.error)) {
-            isUserRegistered = false;
-            updateDCAButton();
-            return false;
-        }
-        
-        isUserRegistered = true;
-        updateDCAButton();
-        return true;
-    } catch (error) {
-        console.log("Error checking user registration:", error);
-        isUserRegistered = false;
-        updateDCAButton();
-        return false;
-    }
-}
-
-// DCA Investment Functions
-export async function startUsdtDCAInvestment(event) {
-    event.preventDefault();
-    
-    const accountId = window.getNearAccountId();
-    if (!accountId) {
-        alert("Please connect your wallet first.");
-        return;
-    }
-
-    const initialBudget = document.getElementById('initial_budget_usdt').value;
-    const amountPerSwap = document.getElementById('total_amount_usdt').value;
-    const interval = document.getElementById('interval_usdt').value;
-
-    if (!initialBudget || !amountPerSwap || !interval) {
-        alert("Please complete all fields.");
-        return;
-    }
-
-    try {
-        const isRegistered = await checkUserRegistration(accountId);
-        
-        if (!isRegistered) {
-            console.log("User not registered, proceeding with registration...");
-            await registerUserWithContract(amountPerSwap, interval, initialBudget, true);
-            isUserRegistered = true;
-            updateDCAButton();
-            alert("DCA setup successful!");
-            window.refreshUsdtDashboard();
-            return;
-        }
-
         const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        // Convert to USDT amount (6 decimals)
+        const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
+        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
+        const depositAmountUSDT = integerPart + paddedDecimal;
+
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "start_investment",
-                        args: {
-                            amount_per_swap: amountPerSwap,
-                            swap_interval: interval,
-                            reverse: true
-                        },
-                        gas: "300000000000000",
-                        deposit: initialBudget
-                    }
-                }
-            ]
-        });
-        alert("DCA investment started successfully!");
-        window.refreshUsdtDashboard();
-    } catch (error) {
-        console.error("Error setting up DCA:", error);
-        alert("An error occurred while setting up DCA investment: " + error.message);
-    }
-}
-
-// Contract Interaction Functions
-export async function topUpUsdt() {
-    const accountId = window.getNearAccountId();
-    if (!accountId) {
-        alert("Please connect your wallet first.");
-        return;
-    }
-
-    const depositAmount = document.getElementById('usdt_amount_topup').value;
-    if (!depositAmount) {
-        alert("Please enter an amount to top up.");
-        return;
-    }
-
-    // Convert to USDT amount (6 decimals)
-    const [integerPart = "0", decimalPart = ""] = depositAmount.split(".");
-    const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
-    const depositAmountUSDT = integerPart + paddedDecimal;
-
-    const wallet = await window.selector.wallet();
-
-    try {
-        // Call ft_transfer_call on USDT contract
-        await wallet.signAndSendTransaction({
-            receiverId: USDT_CONTRACT,
-            actions: [
-                {
-                    type: "FunctionCall",
-                    params: {
-                        methodName: "ft_transfer_call",
-                        args: {
-                            receiver_id: contractId,
-                            amount: depositAmountUSDT,
-                            msg: ""
-                        },
+                        methodName: "topup",
+                        args: {},
                         gas: "100000000000000",
-                        deposit: "1"  // 1 yoctoNEAR required for ft_transfer_call
+                        deposit: depositAmountUSDT
                     }
                 }
             ]
         });
-        alert("Top-up successful.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error during top-up:", error);
-        alert("An error occurred during top-up.");
+        console.error("Error during USDT top-up:", error);
+        throw error;
     }
 }
 
-export async function withdrawUsdtNear() {
-    const accountId = window.getNearAccountId();
-    if (!accountId) {
-        alert("Please connect your wallet first.");
-        return;
-    }
-
-    const withdrawAmount = document.getElementById('near_amount_withdraw').value;
-    if (!withdrawAmount) {
-        alert("Please enter an amount to withdraw.");
-        return;
-    }
-
+// Withdraw NEAR
+export async function withdrawUsdtNear(amount) {
     try {
-        const withdrawAmountYocto = toYoctoNearString(withdrawAmount);
-
         const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        const withdrawAmountYocto = BigInt(Math.round(parseFloat(amount) * 1e24)).toString();
+
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
@@ -239,34 +59,24 @@ export async function withdrawUsdtNear() {
                 }
             ]
         });
-        alert("Withdrawal successful.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error during withdrawal:", error);
-        alert("An error occurred during withdrawal.");
+        console.error("Error during NEAR withdrawal:", error);
+        throw error;
     }
 }
 
-export async function withdrawUsdtFT() {
-    const accountId = window.getNearAccountId();
-    if (!accountId) {
-        alert("Please connect your wallet first.");
-        return;
-    }
-
-    const withdrawAmount = document.getElementById('usdt_amount_withdraw').value;
-    if (!withdrawAmount) {
-        alert("Please enter an amount to withdraw.");
-        return;
-    }
-
+// Withdraw USDT
+export async function withdrawUsdtFT(amount) {
     try {
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
         // Convert to USDT amount (6 decimals)
-        const [integerPart = "0", decimalPart = ""] = withdrawAmount.split(".");
+        const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
         const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
         const withdrawAmountUSDT = integerPart + paddedDecimal;
 
-        const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
@@ -284,22 +94,18 @@ export async function withdrawUsdtFT() {
                 }
             ]
         });
-        alert("Token withdrawal successful.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error during token withdrawal:", error);
-        alert("An error occurred during token withdrawal: " + error.message);
+        console.error("Error during USDT withdrawal:", error);
+        throw error;
     }
 }
 
-// DCA Control Functions
+// Pause DCA
 export async function pauseUsdtDCA() {
     try {
         const wallet = await window.selector.wallet();
-        if (!wallet) {
-            alert("Please connect your wallet first");
-            return;
-        }
+        if (!wallet) throw new Error("Wallet not connected");
 
         await wallet.signAndSendTransaction({
             receiverId: contractId,
@@ -315,22 +121,18 @@ export async function pauseUsdtDCA() {
                 }
             ]
         });
-
-        alert("DCA paused successfully.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error pausing DCA:", error);
-        alert("An error occurred while pausing DCA: " + error.message);
+        console.error("Error pausing USDT DCA:", error);
+        throw error;
     }
 }
 
+// Resume DCA
 export async function resumeUsdtDCA() {
     try {
         const wallet = await window.selector.wallet();
-        if (!wallet) {
-            alert("Please connect your wallet first");
-            return;
-        }
+        if (!wallet) throw new Error("Wallet not connected");
 
         await wallet.signAndSendTransaction({
             receiverId: contractId,
@@ -346,27 +148,19 @@ export async function resumeUsdtDCA() {
                 }
             ]
         });
-
-        alert("DCA resumed successfully.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error resuming DCA:", error);
-        alert("An error occurred while resuming DCA: " + error.message);
+        console.error("Error resuming USDT DCA:", error);
+        throw error;
     }
 }
 
+// Remove user
 export async function removeUsdtUser() {
-    if (!confirm("Are you sure you want to remove your DCA setup? This will withdraw all your tokens.")) return;
-
-    const accountId = window.getNearAccountId();
-    if (!accountId) {
-        alert("Please connect your wallet first.");
-        return;
-    }
-
-    const wallet = await window.selector.wallet();
-
     try {
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
@@ -381,27 +175,18 @@ export async function removeUsdtUser() {
                 }
             ]
         });
-        alert("User removed and tokens withdrawn.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error during user removal:", error);
-        alert("An error occurred while removing user.");
+        console.error("Error removing USDT user:", error);
+        throw error;
     }
 }
 
-export async function changeUsdtSwapInterval() {
+// Change swap interval
+export async function changeUsdtSwapInterval(newInterval) {
     try {
         const wallet = await window.selector.wallet();
-        if (!wallet) {
-            alert("Please connect your wallet first");
-            return;
-        }
-
-        const newInterval = document.getElementById('new_interval_usdt').value;
-        if (!newInterval) {
-            alert("Please select a new interval");
-            return;
-        }
+        if (!wallet) throw new Error("Wallet not connected");
 
         await wallet.signAndSendTransaction({
             receiverId: contractId,
@@ -411,7 +196,7 @@ export async function changeUsdtSwapInterval() {
                     params: {
                         methodName: "change_swap_interval",
                         args: { 
-                            swap_interval: parseInt(newInterval),
+                            swap_interval: newInterval,
                             reverse: true
                         },
                         gas: "100000000000000",
@@ -420,11 +205,9 @@ export async function changeUsdtSwapInterval() {
                 }
             ]
         });
-
-        alert("Swap interval updated successfully.");
-        window.refreshUsdtDashboard();
+        return true;
     } catch (error) {
-        console.error("Error changing interval:", error);
-        alert("An error occurred while updating interval: " + error.message);
+        console.error("Error changing swap interval:", error);
+        throw error;
     }
 }

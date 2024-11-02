@@ -49,15 +49,49 @@ class DCARegistration {
 
 // Initialize the component
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('#dcaRegistration');
-    if (container) {
-        const dcaRegistration = new DCARegistration();
-        container.appendChild(dcaRegistration.container);
+    const registerBtn = document.getElementById('register-usdt-btn');
+    if (!registerBtn) return;
 
-        // Listen for wallet connection changes
-        window.selector.on("signedIn", () => dcaRegistration.render());
-        window.selector.on("signedOut", () => dcaRegistration.render());
-    } else {
-        console.error('Registration container not found');
-    }
+    // Hide button by default
+    registerBtn.classList.add('d-none');
+
+    // Show button only when needed
+    window.addEventListener('walletConnected', () => {
+        const isRegistered = document.body.getAttribute('data-register') === 'true';
+        if (!isRegistered) {
+            registerBtn.classList.remove('d-none');
+        }
+    });
+
+    // Watch for registration state changes
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'data-register') {
+                const isRegistered = document.body.getAttribute('data-register') === 'true';
+                if (isRegistered) {
+                    registerBtn.classList.add('d-none');
+                } else {
+                    registerBtn.classList.remove('d-none');
+                }
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['data-register']
+    });
 });
+
+// Export registration check function
+export async function checkRegistration() {
+    const registerBtn = document.getElementById('register-usdt-btn');
+    if (!registerBtn) return;
+
+    const isRegistered = document.body.getAttribute('data-register') === 'true';
+    if (isRegistered) {
+        registerBtn.classList.add('d-none');
+    } else {
+        registerBtn.classList.remove('d-none');
+    }
+}

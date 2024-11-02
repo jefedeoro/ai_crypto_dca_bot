@@ -1,6 +1,162 @@
-/* Previous styles remain unchanged until dashboard styles */
+/* Add to existing dca.css */
+.pool-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px var(--shadow);
+}
 
-/* Desktop Table View */
+.pool-toggle-label {
+    font-size: 1rem;
+    margin: 0 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.pool-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pool-toggle-text-left,
+.pool-toggle-text-right {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.pool-toggle-text-left.active,
+.pool-toggle-text-right.active {
+    opacity: 1;
+}
+
+.pool-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.pool-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.pool-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, var(--button-gradient-from), var(--button-gradient-to));
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid var(--border-color);
+}
+
+.pool-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--bg-primary);
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+/* USDT Storage Registration Styles */
+#usdt-storage-card {
+    transition: all 0.3s ease;
+}
+
+#usdt-storage-card .text-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: help;
+}
+
+/* Hide elements when storage is registered */
+#usdt-storage-card .text-success ~ #register-usdt-btn {
+    display: none !important;
+}
+
+#usdt-storage-card .text-success ~ #usdt-storage-details {
+    display: none;
+}
+
+#usdt-storage-card.registered .dca-card-header {
+    border-bottom: none;
+    padding: 0.75rem var(--dca-spacing-lg);
+}
+
+#usdt-storage-card.registered h2 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+#usdt-storage-status {
+    position: relative;
+    cursor: help;
+}
+
+#usdt-storage-status[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: var(--bg-secondary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+/* Hide elements when storage is registered */
+#usdt-storage-card .text-success ~ #register-usdt-btn,
+#usdt-storage-card .text-success ~ #usdt-storage-details,
+#usdt-storage-card .dca-card-header:has(.text-success) ~ .dca-card-body {
+    display: none;
+}
+
+/* Hide register-usdt-btn when register is true */
+[data-register="true"] #register-usdt-btn {
+    display: none;
+}
+
+/* Minimize card when storage is registered */
+#usdt-storage-card .dca-card-header:has(.text-success) {
+    border-bottom: none;
+    padding: 0.5rem 1rem;
+}
+
+#usdt-storage-card .dca-card-header:has(.text-success) h2 {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+input:checked + .pool-toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Rest of the existing CSS remains unchanged */
 .desktop-view {
     display: block;
 }
@@ -34,6 +190,7 @@
     background: transparent;
     box-shadow: none;
     backdrop-filter: none;
+    display: none;
 }
 
 .dca-card-header {
@@ -127,6 +284,11 @@ input.dca-form-control:focus, select.dca-form-select:focus {
 
 .dca-btn:active {
     transform: translateY(0);
+}
+
+/* Show the first dashboard by default (NEAR to USDT) */
+.dca-card.investment-dashboard:not(:last-child) {
+    display: block;
 }
 
 /* DCA Table Styles */

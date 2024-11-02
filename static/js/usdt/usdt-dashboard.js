@@ -1,25 +1,148 @@
 // usdt-dashboard.js - Handles USDT dashboard UI updates and initialization
 import { getUSDTBalance, formatNearAmount, formatUSDTAmount, formatInterval, formatTimestamp } from './usdt-balance.js';
+import { registerUsdtToNearDCA } from './usdt-to-near-dca.js';
 import { 
-    checkUserRegistration, 
-    startUsdtDCAInvestment, 
-    topUpUsdt, 
-    withdrawUsdtNear, 
-    withdrawUsdtFT, 
-    pauseUsdtDCA, 
-    resumeUsdtDCA, 
-    removeUsdtUser, 
-    changeUsdtSwapInterval,
-    updateDCAButton 
+    topUpUsdt,
+    withdrawUsdtNear,
+    withdrawUsdtFT,
+    pauseUsdtDCA,
+    resumeUsdtDCA,
+    removeUsdtUser
 } from './usdt-dca.js';
 import { getNearWalletBalance, getNearContractBalance } from '../near-wallet.js';
+import { POOL_TYPE, getSelectedPool } from '../pool-toggle.js';
 
 const contractId = "test2.dca-near.testnet";
+
+// Helper function to generate unique nonce
+function generateNonce() {
+    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
 
 function showConnectWalletMessage() {
     const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
     if (dashboardBody) {
         dashboardBody.innerHTML = `<tr><td colspan="5" class="text-center">Please connect your wallet to view DCA investments.</td></tr>`;
+    }
+}
+
+// Check if user needs to register
+export async function checkUserRegistration(accountId) {
+    if (!accountId) return false;
+    
+    try {
+        const encodeResponse = await fetch('/api/base64/encode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user: accountId, reverse: true })
+        });
+        const encodeResult = await encodeResponse.json();
+        if (encodeResult.error) {
+            throw new Error(encodeResult.error);
+        }
+
+        const response = await fetch('https://rpc.testnet.near.org', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: generateNonce(),
+                method: 'query',
+                params: {
+                    request_type: 'call_function',
+                    finality: 'final',
+                    account_id: contractId,
+                    method_name: 'get_user',
+                    args_base64: encodeResult.result
+                }
+            })
+        });
+        
+        const result = await response.json();
+        if (result.error || (result.result && result.result.error)) {
+            window.isUserRegistered = false;
+            return false;
+        }
+        
+        window.isUserRegistered = true;
+        return true;
+    } catch (error) {
+        console.log("Error checking user registration:", error);
+        window.isUserRegistered = false;
+        return false;
+    }
+}
+
+// Handle USDT DCA form submission
+export async function startUsdtDCAInvestment(event) {
+    event.preventDefault();
+    
+    const accountId = window.getNearAccountId();
+    if (!accountId) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+
+    const initialBudget = document.getElementById('initial_budget_usdt').value.trim();
+    const amountPerSwap = document.getElementById('swap_amount_usdt').value.trim();
+    const interval = document.getElementById('interval_usdt').value;
+
+    // Enhanced validation
+    if (!initialBudget || initialBudget === "0") {
+        alert("Please enter a valid initial budget amount.");
+        return;
+    }
+
+    if (!amountPerSwap || amountPerSwap === "0") {
+        alert("Please enter a valid amount per swap.");
+        return;
+    }
+
+    if (!interval || interval === "") {
+        alert("Please select a swap interval.");
+        return;
+    }
+
+    try {
+        const isRegistered = await checkUserRegistration(accountId);
+        
+        if (!isRegistered) {
+            console.log("User not registered, proceeding with registration...");
+            await registerUsdtToNearDCA(amountPerSwap, interval);
+            window.isUserRegistered = true;
+            alert("DCA setup successful!");
+            window.refreshUsdtDashboard();
+            return;
+        }
+
+        const wallet = await window.selector.wallet();
+        await wallet.signAndSendTransaction({
+            receiverId: contractId,
+            actions: [
+                {
+                    type: "FunctionCall",
+                    params: {
+                        methodName: "start_investment",
+                        args: {
+                            amount_per_swap: amountPerSwap,
+                            swap_interval: interval,
+                            reverse: true
+                        },
+                        gas: "300000000000000",
+                        deposit: initialBudget
+                    }
+                }
+            ]
+        });
+        alert("DCA investment started successfully!");
+        window.refreshUsdtDashboard();
+    } catch (error) {
+        console.error("Error setting up DCA:", error);
+        alert("An error occurred while setting up DCA investment: " + error.message);
     }
 }
 
@@ -80,7 +203,7 @@ export async function updateUsdtBalances() {
             },
             body: JSON.stringify({
                 jsonrpc: '2.0',
-                id: Date.now().toString(),
+                id: generateNonce(),
                 method: 'query',
                 params: {
                     request_type: 'call_function',
@@ -131,16 +254,29 @@ async function refreshUsdtDashboard() {
         return;
     }
 
+    const dashboardSection = document.querySelector('.investment-dashboard:last-child');
     const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
     if (!dashboardBody) return;
+
+    // Check if this pool should be visible
+    const selectedPool = getSelectedPool();
+    if (selectedPool !== POOL_TYPE.USDT_TO_NEAR) {
+        if (dashboardSection) dashboardSection.style.display = 'none';
+        return;
+    }
 
     try {
         // First check if user is registered
         const isRegistered = await checkUserRegistration(accountId);
         if (!isRegistered) {
+            // Hide dashboard if no active pool
+            if (dashboardSection) dashboardSection.style.display = 'none';
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
+
+        // Show dashboard since there's an active pool
+        if (dashboardSection) dashboardSection.style.display = 'block';
 
         console.log("Fetching user data for:", accountId);
 
@@ -165,7 +301,7 @@ async function refreshUsdtDashboard() {
             },
             body: JSON.stringify({
                 jsonrpc: '2.0',
-                id: Date.now().toString(),
+                id: generateNonce(),
                 method: 'query',
                 params: {
                     request_type: 'call_function',
@@ -184,7 +320,6 @@ async function refreshUsdtDashboard() {
         if (result.result && result.result.error && result.result.error.includes("panicked")) {
             console.log("User not registered");
             window.isUserRegistered = false;  // Update registration state
-            updateDCAButton();  // Update button text
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
@@ -211,7 +346,6 @@ async function refreshUsdtDashboard() {
 
             // Update registration state based on user data
             window.isUserRegistered = true;
-            updateDCAButton();
 
             // Update desktop view
             dashboardBody.innerHTML = `
@@ -304,14 +438,12 @@ async function refreshUsdtDashboard() {
         } catch (error) {
             console.error('Error parsing user data:', error);
             window.isUserRegistered = false;  // Update registration state on error
-            updateDCAButton();  // Update button text
             throw new Error('Failed to parse user data');
         }
     } catch (error) {
         console.error("Error refreshing dashboard:", error);
         // Update registration state on error
         window.isUserRegistered = false;
-        updateDCAButton();
         
         // Check if error is from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
@@ -367,3 +499,4 @@ window.pauseUsdtDCA = pauseUsdtDCA;
 window.resumeUsdtDCA = resumeUsdtDCA;
 window.removeUsdtUser = removeUsdtUser;
 window.changeUsdtSwapInterval = changeUsdtSwapInterval;
+window.checkUsdtUserRegistration = checkUserRegistration;
