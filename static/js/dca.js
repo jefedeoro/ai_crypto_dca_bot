@@ -43,26 +43,10 @@ window.startDCAInvestment = async function(event) {
             refreshDashboard();
             return;
         }
+        else{
+            alert("you aready have a DCA investment ongoing. Aborting...");
+        }
 
-        const wallet = await window.selector.wallet();
-        await wallet.signAndSendTransaction({
-            receiverId: contractId,
-            actions: [
-                {
-                    type: "FunctionCall",
-                    params: {
-                        methodName: "start_investment",
-                        args: {
-                            amount_per_swap: amountPerSwap,
-                            swap_interval: interval
-                        },
-                        gas: "300000000000000",
-                        deposit: initialBudget
-                    }
-                }
-            ]
-        });
-        alert("DCA investment started successfully!");
         refreshDashboard();
     } catch (error) {
         console.error("Error setting up DCA:", error);
