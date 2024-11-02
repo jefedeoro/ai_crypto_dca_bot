@@ -198,8 +198,8 @@ export async function updateUsdtBalances() {
             })
         });
 
-        console.log("userResult: ", userResult);
-        console.log("userResult json: ", await userResult.json());
+        console.log("userResult: ", userResponse);
+        console.log("userResult json: ", await userResponse.json());
 
         const userResult = await userResponse.json();
         if (userResult.result && userResult.result.result) {
