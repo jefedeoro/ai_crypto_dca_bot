@@ -44,6 +44,7 @@ export async function checkUSDTStorage(accountId) {
         });
         
         const result = await response.json();
+
         if (result.error) {
             console.error("RPC error:", result.error);
             return false;
@@ -80,6 +81,23 @@ export async function checkUSDTStorage(accountId) {
 
         // If balance is null, the account has no storage paid
         return decodeResult.result !== null;
+
+    } catch (error) {
+        console.error("Error checking USDT storage:", error);
+        return false;
+    }
+}
+
+export async function checkUSDTStorageOnchain(accountId) {
+    try{
+        const wallet = await window.selector.wallet();
+        if (!wallet) throw new Error("Wallet not connected");
+
+        console.log("Checking USDT storage for:", accountId);
+        // Call the USDT contract
+        const storage = await wallet.viewMethod({ contractId: USDT_CONTRACT, method: 'storage_balance_of', args: { account_id: accountId } });
+        console.log("USDT storage:", storage);
+        return storage !== null && storage !== "0";
     } catch (error) {
         console.error("Error checking USDT storage:", error);
         return false;
@@ -189,6 +207,7 @@ selector.on("signedIn", async ({ accounts }) => {
         }
         // Check USDT storage status
         const hasStorage = await checkUSDTStorage(accounts[0].accountId);
+        console.log("USDT storage status on signin:", hasStorage);
         const storageStatus = document.getElementById('usdt-storage-status');
         if (storageStatus) {
             if (hasStorage) {
