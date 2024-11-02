@@ -1,5 +1,6 @@
 // static/js/dca.js
 import { getNearWalletBalance, getNearContractBalance, registerUserWithContract } from './near-wallet.js';
+import { POOL_TYPE, getSelectedPool, updatePoolVisibility } from './pool-toggle.js';
 
 const contractId = "test2.dca-near.testnet";
 let isUserRegistered = false;
@@ -184,7 +185,7 @@ async function checkUserRegistration(accountId) {
             },
             body: JSON.stringify({
                 jsonrpc: '2.0',
-                id: 'dontcare',
+                id: generateNonce(),
                 method: 'query',
                 params: {
                     request_type: 'call_function',
@@ -223,13 +224,15 @@ async function refreshDashboard() {
         return;
     }
 
+    // Define the dashboard section
+    const dashboardSection = document.querySelector('.investment-dashboard');
+
     // Check if USDT pool is active first
     const usdtRegistered = await window.checkUsdtUserRegistration?.(accountId);
     if (usdtRegistered) {
         // Hide NEAR-USDT UI if USDT pool is active
-        const nearToUsdtDashboard = document.querySelector('.investment-dashboard:not(:last-child)');
+        if (dashboardSection) dashboardSection.style.display = 'none';
         const nearToUsdtManagement = document.querySelector('.dca-card:last-child');
-        if (nearToUsdtDashboard) nearToUsdtDashboard.style.display = 'none';
         if (nearToUsdtManagement) nearToUsdtManagement.style.display = 'none';
         return;
     }
@@ -237,14 +240,29 @@ async function refreshDashboard() {
     const dashboardBody = document.querySelector("#investment-dashboard tbody");
     if (!dashboardBody) return;
 
+    // Check if this pool should be visible
+    const selectedPool = getSelectedPool();
+    if (selectedPool !== POOL_TYPE.NEAR_TO_USDT) {
+        if (dashboardSection) dashboardSection.style.display = 'none';
+        return;
+    } else {
+        if (dashboardSection) dashboardSection.style.display = '';
+    }
+
     try {
         // First check if user is registered
         const isRegistered = await checkUserRegistration(accountId);
         if (!isRegistered) {
+            // Hide dashboard if user is not registered
+            if (dashboardSection) dashboardSection.style.display = 'none';
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
 
+        // If user is registered, ensure the dashboard is visible
+        if (dashboardSection) dashboardSection.style.display = '';
+
+        // Fetch and display user data as before
         console.log("Fetching user data for:", accountId);
 
         // First encode the args using our base64 converter
@@ -315,92 +333,92 @@ async function refreshDashboard() {
                 ? Math.floor((Date.now() * 1_000_000 - userData.last_swap_timestamp) / userData.swap_interval) + 1 
                 : 0;
 
-    // Update desktop view
-    dashboardBody.innerHTML = `
-        <tr>
-            <td>${formatNearAmount(userData.amount)}</td>
-            <td>${formatInterval(BigInt(userData.swap_interval))}</td>
-            <td>${formatNearAmount(userData.amount_per_swap)}</td>
-            <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
-            <td>${formatUSDTAmount(userData.total_swapped)}</td>
-            <td>
-                <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
-                    ${userData.pause ? 'Paused' : 'Active'}
-                </div>
-            </td>
-            <td>
-                <div class="action-buttons">
-                    ${userData.pause ? 
-                        `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
-                            <i class="fas fa-play-circle"></i> Resume
-                        </button>` :
-                        `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
-                            <i class="fas fa-pause-circle"></i> Pause
-                        </button>`
-                    }
-                    <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
-    `;
+        // Update desktop view
+        dashboardBody.innerHTML = `
+            <tr>
+                <td>${formatNearAmount(userData.amount)}</td>
+                <td>${formatInterval(BigInt(userData.swap_interval))}</td>
+                <td>${formatNearAmount(userData.amount_per_swap)}</td>
+                <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
+                <td>${formatUSDTAmount(userData.total_swapped)}</td>
+                <td>
+                    <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
+                        ${userData.pause ? 'Paused' : 'Active'}
+                    </div>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        ${userData.pause ? 
+                            `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
+                                <i class="fas fa-play-circle"></i> Resume
+                            </button>` :
+                            `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                <i class="fas fa-pause-circle"></i> Pause
+                            </button>`
+                        }
+                        <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
 
-    // Update mobile view
-    const mobileView = document.querySelector('.mobile-view');
-    if (mobileView) {
-        mobileView.innerHTML = `
-            <div class="pool-card">
-                <div class="pool-header">NEAR to USDT Pool</div>
-                <div class="dashboard-grid">
-                    <div class="dashboard-item">
-                        <p class="item-label">NEAR Balance</p>
-                        <div class="item-value">${formatNearAmount(userData.amount)}</div>
-                    </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">Interval</p>
-                        <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
-                    </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">Amount per Swap</p>
-                        <div class="item-value">${formatNearAmount(userData.amount_per_swap)}</div>
-                    </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">Next Swap</p>
-                        <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
-                    </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">USDT Swapped</p>
-                        <div class="item-value">${formatUSDTAmount(userData.total_swapped)}</div>
-                    </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">Status</p>
-                        <div class="item-value">
-                            <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
-                                ${userData.pause ? 'Paused' : 'Active'}
+        // Update mobile view
+        const mobileView = document.querySelector('.mobile-view');
+        if (mobileView) {
+            mobileView.innerHTML = `
+                <div class="pool-card">
+                    <div class="pool-header">NEAR to USDT Pool</div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <p class="item-label">NEAR Balance</p>
+                            <div class="item-value">${formatNearAmount(userData.amount)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Interval</p>
+                            <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Amount per Swap</p>
+                            <div class="item-value">${formatNearAmount(userData.amount_per_swap)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Next Swap</p>
+                            <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">USDT Swapped</p>
+                            <div class="item-value">${formatUSDTAmount(userData.total_swapped)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Status</p>
+                            <div class="item-value">
+                                <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
+                                    ${userData.pause ? 'Paused' : 'Active'}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Actions</p>
+                            <div class="item-value">
+                                ${userData.pause ? 
+                                    `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
+                                        <i class="fas fa-play-circle"></i> Resume
+                                    </button>` :
+                                    `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                        <i class="fas fa-pause-circle"></i> Pause
+                                    </button>`
+                                }
+                                <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="dashboard-item">
-                        <p class="item-label">Actions</p>
-                        <div class="item-value">
-                            ${userData.pause ? 
-                                `<button onclick="resumeDCA()" class="dca-btn dca-btn-info btn-sm">
-                                    <i class="fas fa-play-circle"></i> Resume
-                                </button>` :
-                                `<button onclick="pauseDCA()" class="dca-btn dca-btn-warning btn-sm">
-                                    <i class="fas fa-pause-circle"></i> Pause
-                                </button>`
-                            }
-                            <button onclick="removeUser()" class="dca-btn dca-btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        `;
-    }
+            `;
+        }
 
             await updateNearBalances();
         } catch (error) {

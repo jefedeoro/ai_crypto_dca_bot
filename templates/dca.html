@@ -35,18 +35,19 @@
         </div>
     </div>
 
-    <!-- Pool Balances -->
-    <div class="row">
-        <div class="col-md-6">
-            <p class="text-muted mb-4">NEAR to USDT Pool Balance: <span id="contract-balance">Loading...</span> NEAR</p>
+    <!-- Pool Selection Toggle -->
+    <div class="pool-toggle">
+        <div class="pool-toggle-container">
+            <span class="pool-toggle-text-left active">NEAR → USDT</span>
+            <label class="pool-toggle-switch">
+                <input type="checkbox" id="poolToggle">
+                <span class="pool-toggle-slider"></span>
+            </label>
+            <span class="pool-toggle-text-right">USDT → NEAR</span>
         </div>
-        <!-- <div class="col-md-6">
-            <p class="text-muted mb-4">USDT to NEAR Pool Balance: <span id="contract-balance-usdt">Loading...</span> USDT</p>
-        </div> -->
     </div>
 
-    <!-- NEAR to USDT Investment Dashboard Section -->
-    <div class="dca-card investment-dashboard mb-4">
+    <!-- Rest of the HTML remains unchanged -->
         <div class="dca-card-header d-flex justify-content-between align-items-center">
             <h2>NEAR to USDT Investment</h2>
             <button class="dca-btn dca-btn-success" id="refresh-dashboard-btn">
@@ -339,6 +340,7 @@
 
 <!-- Application Scripts -->
 <script src="{{ url_for('static', filename='js/near-wallet.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/pool-toggle.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/dca-registration.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/interval-options.js') }}" type="module"></script>

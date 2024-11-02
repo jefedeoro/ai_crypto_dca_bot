@@ -10,19 +10,20 @@ import {
     removeUsdtUser
 } from './usdt-dca.js';
 import { getNearWalletBalance, getNearContractBalance } from '../near-wallet.js';
+import { POOL_TYPE, getSelectedPool } from '../pool-toggle.js';
 
 const contractId = "test2.dca-near.testnet";
+
+// Helper function to generate unique nonce
+function generateNonce() {
+    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
 
 function showConnectWalletMessage() {
     const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
     if (dashboardBody) {
         dashboardBody.innerHTML = `<tr><td colspan="5" class="text-center">Please connect your wallet to view DCA investments.</td></tr>`;
     }
-}
-
-// Helper function to generate unique nonce
-function generateNonce() {
-    return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
 }
 
 // Check if user needs to register
@@ -253,22 +254,29 @@ async function refreshUsdtDashboard() {
         return;
     }
 
+    const dashboardSection = document.querySelector('.investment-dashboard:last-child');
     const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
     if (!dashboardBody) return;
+
+    // Check if this pool should be visible
+    const selectedPool = getSelectedPool();
+    if (selectedPool !== POOL_TYPE.USDT_TO_NEAR) {
+        if (dashboardSection) dashboardSection.style.display = 'none';
+        return;
+    }
 
     try {
         // First check if user is registered
         const isRegistered = await checkUserRegistration(accountId);
         if (!isRegistered) {
+            // Hide dashboard if no active pool
+            if (dashboardSection) dashboardSection.style.display = 'none';
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
 
-        // Show USDT-NEAR UI and hide NEAR-USDT UI
-        const nearToUsdtDashboard = document.querySelector('.investment-dashboard:not(:last-child)');
-        const nearToUsdtManagement = document.querySelector('.dca-card:last-child');
-        if (nearToUsdtDashboard) nearToUsdtDashboard.style.display = 'none';
-        if (nearToUsdtManagement) nearToUsdtManagement.style.display = 'none';
+        // Show dashboard since there's an active pool
+        if (dashboardSection) dashboardSection.style.display = 'block';
 
         console.log("Fetching user data for:", accountId);
 
