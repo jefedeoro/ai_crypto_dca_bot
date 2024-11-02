@@ -213,9 +213,11 @@ selector.on("signedIn", async ({ accounts }) => {
             if (hasStorage) {
                 storageStatus.innerHTML = '<span class="text-success">✓ USDT Storage Registered</span>';
                 document.getElementById('register-usdt-btn')?.classList.add('d-none');
+                document.getElementById('register-usdt-btn').display = none;
             } else {
                 storageStatus.innerHTML = '<span class="text-warning">⚠ USDT Storage Not Registered</span>';
                 document.getElementById('register-usdt-btn')?.classList.remove('d-none');
+                document.getElementById('register-usdt-btn').display = block;
             }
         }
     }
