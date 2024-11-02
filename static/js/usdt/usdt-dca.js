@@ -15,7 +15,7 @@ function toYoctoNearString(amount) {
     if (amount.includes('.')) {
         // Handle decimal input
         const [integerPart = "0", decimalPart = ""] = amount.split(".");
-        const paddedDecimal = (decimalPart + "0".repeat(24)).slice(0, 24);
+        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 24);
         return integerPart + paddedDecimal;
     } else {
         // Handle whole number input
