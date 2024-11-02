@@ -215,6 +215,9 @@ export async function updateUsdtBalances() {
             })
         });
 
+        console.log("userResult: ", userResult);
+        console.log("userResult json: ", await userResult.json());
+
         const userResult = await userResponse.json();
         if (userResult.result && userResult.result.result) {
             const userDataString = String.fromCharCode.apply(null, userResult.result.result);
