@@ -7,7 +7,8 @@ import {
     withdrawUsdtFT,
     pauseUsdtDCA,
     resumeUsdtDCA,
-    removeUsdtUser
+    removeUsdtUser,
+    changeUsdtSwapInterval
 } from './usdt-dca.js';
 import { getNearWalletBalance, getNearContractBalance } from '../near-wallet.js';
 import { POOL_TYPE, getSelectedPool } from '../pool-toggle.js';
@@ -65,14 +66,17 @@ export async function checkUserRegistration(accountId) {
         const result = await response.json();
         if (result.error || (result.result && result.result.error)) {
             window.isUserRegistered = false;
+            document.body.setAttribute('data-register', 'false'); // Update data-register attribute
             return false;
         }
         
         window.isUserRegistered = true;
+        document.body.setAttribute('data-register', 'true'); // Update data-register attribute
         return true;
     } catch (error) {
         console.log("Error checking user registration:", error);
         window.isUserRegistered = false;
+        document.body.setAttribute('data-register', 'false'); // Update data-register attribute
         return false;
     }
 }
@@ -114,6 +118,7 @@ export async function startUsdtDCAInvestment(event) {
             console.log("User not registered, proceeding with registration...");
             await registerUsdtToNearDCA(amountPerSwap, interval);
             window.isUserRegistered = true;
+            document.body.setAttribute('data-register', 'true'); // Update data-register attribute
             alert("DCA setup successful!");
             window.refreshUsdtDashboard();
             return;
@@ -320,6 +325,7 @@ async function refreshUsdtDashboard() {
         if (result.result && result.result.error && result.result.error.includes("panicked")) {
             console.log("User not registered");
             window.isUserRegistered = false;  // Update registration state
+            document.body.setAttribute('data-register', 'false'); // Update data-register attribute
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
@@ -346,6 +352,7 @@ async function refreshUsdtDashboard() {
 
             // Update registration state based on user data
             window.isUserRegistered = true;
+            document.body.setAttribute('data-register', 'true'); // Update data-register attribute
 
             // Update desktop view
             dashboardBody.innerHTML = `
@@ -438,12 +445,14 @@ async function refreshUsdtDashboard() {
         } catch (error) {
             console.error('Error parsing user data:', error);
             window.isUserRegistered = false;  // Update registration state on error
+            document.body.setAttribute('data-register', 'false'); // Update data-register attribute
             throw new Error('Failed to parse user data');
         }
     } catch (error) {
         console.error("Error refreshing dashboard:", error);
         // Update registration state on error
         window.isUserRegistered = false;
+        document.body.setAttribute('data-register', 'false'); // Update data-register attribute
         
         // Check if error is from URL parameters
         const urlParams = new URLSearchParams(window.location.search);

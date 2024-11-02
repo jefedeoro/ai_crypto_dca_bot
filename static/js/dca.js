@@ -12,6 +12,14 @@ function updateDCAButton() {
     }
 }
 
+// Helper function to safely update element text content
+const safeSetTextContent = (elementId, value) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = value;
+    }
+};
+
 // Handle DCA setup form submission
 window.startDCAInvestment = async function(event) {
     event.preventDefault();
@@ -711,9 +719,9 @@ async function updateNearBalances() {
         document.querySelectorAll('.wallet-balance').forEach(el => {
             el.textContent = 'Not connected';
         });
-        document.getElementById('contract-balance').textContent = 'Not connected';
-        document.getElementById('near-contract-balance').textContent = 'Not connected';
-        document.getElementById('usdt-contract-balance').textContent = 'Not connected';
+        safeSetTextContent('contract-balance', 'Not connected');
+        safeSetTextContent('near-contract-balance', 'Not connected');
+        safeSetTextContent('usdt-contract-balance', 'Not connected');
         return;
     }
 
@@ -727,13 +735,13 @@ async function updateNearBalances() {
 
         // Fetch and display contract pool balance
         const contractBalance = await getNearContractBalance(contractId);
-        document.getElementById('contract-balance').textContent = formatNearAmount(contractBalance);
+        safeSetTextContent('contract-balance', formatNearAmount(contractBalance));
         
         // Get user's NEAR balance from contract and USDT balance
         const userData = await getUserData();
         if (userData) {
-            document.getElementById('near-contract-balance').textContent = formatNearAmount(userData.amount);
-            document.getElementById('usdt-contract-balance').textContent = formatUSDTAmount(userData.total_swapped);
+            safeSetTextContent('near-contract-balance', formatNearAmount(userData.amount));
+            safeSetTextContent('usdt-contract-balance', formatUSDTAmount(userData.total_swapped));
         }
     } catch (error) {
         console.error('Error fetching balances:', error);
