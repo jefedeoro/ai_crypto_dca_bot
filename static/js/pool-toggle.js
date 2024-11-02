@@ -36,17 +36,13 @@ export function updatePoolVisibility(poolType = getSelectedPool()) {
 
     // Update visibility
     nearToUsdtElements.forEach(el => {
-        if (el) {
             el.style.display = poolType === POOL_TYPE.NEAR_TO_USDT ? 'block' : 'none';
             console.log(`NEAR to USDT element visibility: ${el.style.display}`); // Debugging output
-        }
     });
 
     usdtToNearElements.forEach(el => {
-        if (el) {
             el.style.display = poolType === POOL_TYPE.USDT_TO_NEAR ? 'block' : 'none';
             console.log(`USDT to NEAR element visibility: ${el.style.display}`); // Debugging output
-        }
     });
 
     // Trigger dashboard refreshes
