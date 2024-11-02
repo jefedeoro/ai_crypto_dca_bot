@@ -217,9 +217,20 @@ async function checkUserRegistration(accountId) {
 // Refresh dashboard and display the current investment status
 async function refreshDashboard() {
     console.log("Refreshing dashboard...");
-    const accountId = window.getNearAccountId(); // Use the stored account ID
+    const accountId = window.getNearAccountId();
     if (!accountId) {
         showConnectWalletMessage();
+        return;
+    }
+
+    // Check if USDT pool is active first
+    const usdtRegistered = await window.checkUsdtUserRegistration?.(accountId);
+    if (usdtRegistered) {
+        // Hide NEAR-USDT UI if USDT pool is active
+        const nearToUsdtDashboard = document.querySelector('.investment-dashboard:not(:last-child)');
+        const nearToUsdtManagement = document.querySelector('.dca-card:last-child');
+        if (nearToUsdtDashboard) nearToUsdtDashboard.style.display = 'none';
+        if (nearToUsdtManagement) nearToUsdtManagement.style.display = 'none';
         return;
     }
 
