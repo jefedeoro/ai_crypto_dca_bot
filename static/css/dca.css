@@ -1,4 +1,9 @@
 /* Add to existing dca.css */
+
+.d-none {
+    display: none;
+}
+
 .pool-toggle {
     display: flex;
     justify-content: center;
