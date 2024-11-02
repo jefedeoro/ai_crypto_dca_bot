@@ -16,12 +16,12 @@ export function updatePoolVisibility(poolType = getSelectedPool()) {
     console.log(`Updating pool visibility for: ${poolType}`); // Debugging output
     const nearToUsdtElements = [
         document.querySelector('.investment-dashboard:not(:last-child)'),
-        document.querySelector('.dca-card:last-child') // NEAR to USDT Management
+        document.getElementById('near-to-usdt-card')
     ];
 
     const usdtToNearElements = [
         document.querySelector('.investment-dashboard:last-child'),
-        document.querySelector('.dca-card:nth-last-child(2)') // USDT to NEAR Management
+        document.getElementById('usdt-to-near-card')
     ];
 
     // Update toggle state
@@ -41,10 +41,6 @@ export function updatePoolVisibility(poolType = getSelectedPool()) {
         if (el) {
             el.style.display = poolType === POOL_TYPE.NEAR_TO_USDT ? 'block' : 'none';
             console.log(`NEAR to USDT element visibility: ${el.style.display}`); // Debugging output
-            var link = document.getElementById('usdt-to-near-card');
-            link.style.display = 'none'; 
-            var link = document.getElementById('near-to-usdt-card');
-            link.style.display = 'block'; 
         }
     });
 
@@ -52,10 +48,6 @@ export function updatePoolVisibility(poolType = getSelectedPool()) {
         if (el) {
             el.style.display = poolType === POOL_TYPE.USDT_TO_NEAR ? 'block' : 'none';
             console.log(`USDT to NEAR element visibility: ${el.style.display}`); // Debugging output
-            var link = document.getElementById('usdt-to-near-card');
-            link.style.display = 'block'; 
-            var link = document.getElementById('near-to-usdt-card');
-            link.style.display = 'none'; 
         }
     });
 
