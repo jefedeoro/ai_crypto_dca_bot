@@ -19,10 +19,11 @@ export async function checkUSDTStorage(accountId) {
         });
         const encodeResult = await encodeResponse.json();
         if (encodeResult.error) {
-            throw new Error(encodeResult.error);
+            console.error("Encode error:", encodeResult.error);
+            return false;
         }
 
-        // Call the USDT contract
+        // Call the USDT contract directly
         const response = await fetch('https://rpc.testnet.near.org', {
             method: 'POST',
             headers: {
@@ -44,8 +45,16 @@ export async function checkUSDTStorage(accountId) {
         
         const result = await response.json();
 
-        console.log("USDT storage result:", result);
-        if (result.error) return false;
+        if (result.error) {
+            console.error("RPC error:", result.error);
+            return false;
+        }
+
+        // Check if we have a valid result
+        if (!result.result || !result.result.result) {
+            console.error("Invalid RPC response format:", result);
+            return false;
+        }
 
         // Decode the result using our base64 converter
         const decodeResponse = await fetch('/api/base64/decode', {
@@ -53,14 +62,26 @@ export async function checkUSDTStorage(accountId) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ base64: result.result.result })
+            body: JSON.stringify({ 
+                base64: result.result.result,
+                method: 'storage_balance_of'
+            })
         });
-        const decodeResult = await decodeResponse.json();
-        if (decodeResult.error) return false;
 
-        const storage = decodeResult.result;
-        console.log("USDT storage:", storage);
-        return storage !== null && storage.total !== "0";
+        if (!decodeResponse.ok) {
+            console.error("Decode response error:", decodeResponse.status);
+            return false;
+        }
+
+        const decodeResult = await decodeResponse.json();
+        if (decodeResult.error) {
+            console.error("Decode error:", decodeResult.error);
+            return false;
+        }
+
+        // If balance is null, the account has no storage paid
+        return decodeResult.result !== null;
+
     } catch (error) {
         console.error("Error checking USDT storage:", error);
         return false;

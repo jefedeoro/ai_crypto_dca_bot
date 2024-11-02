@@ -5,10 +5,57 @@ from flask import Blueprint, render_template, request, jsonify
 import json
 import os
 from config import CONTRACT_ID
+from .borsh_schema import deserialize_user, deserialize_balance
+from .utils import generate_nonce
 
 # Blueprint named 'dca' for cleaner endpoint naming
 dca_bp = Blueprint('dca', __name__)
 NEAR_NETWORK = os.getenv('NEAR_NETWORK', 'testnet') 
+NEAR_RPC_ENDPOINT = f"https://rpc.{NEAR_NETWORK}.near.org"
+
+@dca_bp.route('/api/usdt/pool-balance')
+def get_usdt_pool_balance():
+    """Get USDT balance of the pool"""
+    try:
+        # Encode args for ft_balance_of call
+        args = {"account_id": CONTRACT_ID}
+        args_base64 = base64.b64encode(json.dumps(args).encode()).decode()
+
+        # Call the USDT contract
+        response = requests.post(
+            NEAR_RPC_ENDPOINT,
+            json={
+                "jsonrpc": "2.0",
+                "id": generate_nonce(),
+                "method": "query",
+                "params": {
+                    "request_type": "call_function",
+                    "finality": "final",
+                    "account_id": "usdt.fakes.testnet",
+                    "method_name": "ft_balance_of",
+                    "args_base64": args_base64
+                }
+            }
+        )
+        
+        result = response.json()
+        if 'error' in result:
+            print(f"RPC error: {result['error']}")
+            return jsonify({'success': False, 'error': 'Failed to fetch balance'}), 500
+
+        # Decode and deserialize the balance
+        try:
+            balance_bytes = base64.b64decode(result['result']['result'])
+            balance = deserialize_balance(balance_bytes)
+            return jsonify({'success': True, 'balance': str(balance)})
+        except Exception as e:
+            print(f"Deserialization error: {e}")
+            return jsonify({'success': False, 'error': 'Failed to decode balance'}), 500
+
+    except Exception as e:
+        print(f"Pool balance error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @dca_bp.route('/dca')
 def dca():
     return render_template('dca.html')
@@ -140,25 +187,11 @@ def get_status():
 def get_investments(account_id):
     """
     Fetch investment data for a given account_id from the smart contract.
-    Simulating fetching data from the NEAR contract.
     """
     try:
-        # Example of fetching investment data (replace with actual NEAR contract query)
-        # This function should interact with the contract to fetch real data
         response = fetch_contract_data(CONTRACT_ID, account_id)
         if response:
-            # Parse response into expected format (adjust according to actual data structure)
-            investment_data = []
-            for investment in response:
-                # Adding 'amount' to each investment entry
-                investment_data.append({
-                    "amount_per_swap": investment.get("amount_per_swap"),
-                    "swap_interval": investment.get("swap_interval"),
-                    "last_swap_timestamp": investment.get("last_swap_timestamp"),
-                    "pause": investment.get("pause"),
-                    "amount": investment.get("amount")  # Include the amount from the smart contract
-                })
-            return investment_data
+            return response
         else:
             return None
     except Exception as e:
@@ -187,12 +220,13 @@ def change_interval():
 def fetch_contract_data(contract_id, account_id):
     """
     Function to fetch actual data from the NEAR contract using NEAR RPC API.
+    Now uses borsh deserialization for the response.
     """
     try:
         # Define the request payload for the RPC view call
         payload = {
             "jsonrpc": "2.0",
-            "id": "dontcare",
+            "id": generate_nonce(),
             "method": "query",
             "params": {
                 "request_type": "call_function",
@@ -212,22 +246,16 @@ def fetch_contract_data(contract_id, account_id):
         if 'error' in result:
             raise Exception(result['error']['message'])
 
-        # Decode the result
+        # Decode and deserialize the result using borsh
         if 'result' in result and 'result' in result['result']:
             encoded_result = result['result']['result']
-            decoded_data = base64.b64decode(encoded_result).decode('utf-8')
-            user_data = json.loads(decoded_data)
+            decoded_bytes = base64.b64decode(encoded_result)
+            
+            # Use borsh to deserialize the bytes into a User struct
+            user_data = deserialize_user(decoded_bytes)
 
-            # Return user investment data in expected format
-            return [
-                {
-                    "amount_per_swap": user_data.get("amount_per_swap"),
-                    "swap_interval": user_data.get("swap_interval"),
-                    "last_swap_timestamp": user_data.get("last_swap_timestamp"),
-                    "pause": user_data.get("pause"),
-                    "amount": user_data.get("amount")
-                }
-            ]
+            # Return as a list to maintain compatibility with existing code
+            return [user_data]
         else:
             return None
     except Exception as e:

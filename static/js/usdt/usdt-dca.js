@@ -1,11 +1,26 @@
 // usdt-dca.js - Handles USDT DCA functionality
 import { registerUserWithContract } from '../near-wallet.js';
+import { getUSDTBalance, formatUSDTAmount } from './usdt-balance.js';
 
 const contractId = "test2.dca-near.testnet";
+const USDT_CONTRACT = "usdt.fakes.testnet";
 let isUserRegistered = false;
 
 function generateNonce() {
     return `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
+// Helper function to convert NEAR amount to yoctoNEAR string
+function toYoctoNearString(amount) {
+    if (amount.includes('.')) {
+        // Handle decimal input
+        const [integerPart = "0", decimalPart = ""] = amount.split(".");
+        const paddedDecimal = (decimalPart + "0".repeat(24)).slice(0, 24);
+        return integerPart + paddedDecimal;
+    } else {
+        // Handle whole number input
+        return amount + "0".repeat(24);
+    }
 }
 
 export function updateDCAButton() {
@@ -14,6 +29,17 @@ export function updateDCAButton() {
         submitButton.textContent = isUserRegistered ? 'Start USDT to NEAR DCA' : 'Register USDT to NEAR DCA';
     }
 }
+
+// Listen for user data updates from dashboard
+window.addEventListener('usdtUserDataUpdated', (event) => {
+    const { amount, totalSwapped } = event.detail;
+    
+    // Update USDT balance in management section
+    const balanceElement = document.getElementById('usdt-contract-balance-usdt');
+    if (balanceElement) {
+        balanceElement.textContent = formatUSDTAmount(amount);
+    }
+});
 
 // Check if user needs to register
 export async function checkUserRegistration(accountId) {
@@ -144,20 +170,29 @@ export async function topUpUsdt() {
         return;
     }
 
-    const depositAmountYocto = BigInt(Math.round(parseFloat(depositAmount) * 1e24));
+    // Convert to USDT amount (6 decimals)
+    const [integerPart = "0", decimalPart = ""] = depositAmount.split(".");
+    const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
+    const depositAmountUSDT = integerPart + paddedDecimal;
+
     const wallet = await window.selector.wallet();
 
     try {
+        // Call ft_transfer_call on USDT contract
         await wallet.signAndSendTransaction({
-            receiverId: contractId,
+            receiverId: USDT_CONTRACT,
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "topup",
-                        args: { reverse: true },
+                        methodName: "ft_transfer_call",
+                        args: {
+                            receiver_id: contractId,
+                            amount: depositAmountUSDT,
+                            msg: ""
+                        },
                         gas: "100000000000000",
-                        deposit: depositAmountYocto.toString()
+                        deposit: "1"  // 1 yoctoNEAR required for ft_transfer_call
                     }
                 }
             ]
@@ -183,10 +218,10 @@ export async function withdrawUsdtNear() {
         return;
     }
 
-    const withdrawAmountYocto = BigInt(Math.round(parseFloat(withdrawAmount) * 1e24));
-    const wallet = await window.selector.wallet();
-
     try {
+        const withdrawAmountYocto = toYoctoNearString(withdrawAmount);
+
+        const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
@@ -195,7 +230,7 @@ export async function withdrawUsdtNear() {
                     params: {
                         methodName: "withdraw_near",
                         args: { 
-                            amount: withdrawAmountYocto.toString(),
+                            amount: withdrawAmountYocto,
                             reverse: true
                         },
                         gas: "100000000000000",
@@ -225,10 +260,13 @@ export async function withdrawUsdtFT() {
         return;
     }
 
-    const withdrawAmountUSDT = BigInt(Math.round(parseFloat(withdrawAmount) * 1e6));
-    const wallet = await window.selector.wallet();
-
     try {
+        // Convert to USDT amount (6 decimals)
+        const [integerPart = "0", decimalPart = ""] = withdrawAmount.split(".");
+        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
+        const withdrawAmountUSDT = integerPart + paddedDecimal;
+
+        const wallet = await window.selector.wallet();
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
@@ -236,8 +274,8 @@ export async function withdrawUsdtFT() {
                     type: "FunctionCall",
                     params: {
                         methodName: "withdraw_ft",
-                        args: { 
-                            amount: withdrawAmountUSDT.toString(),
+                        args: {
+                            amount: withdrawAmountUSDT,
                             reverse: true
                         },
                         gas: "100000000000000",
@@ -250,7 +288,7 @@ export async function withdrawUsdtFT() {
         window.refreshUsdtDashboard();
     } catch (error) {
         console.error("Error during token withdrawal:", error);
-        alert("An error occurred during token withdrawal.");
+        alert("An error occurred during token withdrawal: " + error.message);
     }
 }
 

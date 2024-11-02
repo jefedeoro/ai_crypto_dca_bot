@@ -18,3 +18,4 @@ ed25519
 httpx
 py-near-primitives
 pydantic
+borsh-construct
