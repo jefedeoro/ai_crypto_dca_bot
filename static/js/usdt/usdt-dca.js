@@ -8,10 +8,11 @@ export async function topUpUsdt(amount) {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
 
-        // Convert to USDT amount (6 decimals)
-        const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
-        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
-        const depositAmountUSDT = integerPart + paddedDecimal;
+        // Convert to USDT amount (multiply by 10 power 6)
+        const depositAmountUSDT = BigInt(Math.round(parseFloat(amount) * 1e6)).toString();
+
+
+
 
         await wallet.signAndSendTransaction({
             receiverId: contractId,
