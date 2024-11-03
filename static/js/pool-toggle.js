@@ -15,11 +15,13 @@ export function getSelectedPool() {
 export function updatePoolVisibility(poolType = getSelectedPool()) {
     console.log(`Updating pool visibility for: ${poolType}`); // Debugging output
     const nearToUsdtElements = [
-        document.querySelector('.near-to-usdt-card')
+        document.querySelector('.near-to-usdt-card'),
+        document.querySelector('.near-to-usdt-card-2')
     ];
 
     const usdtToNearElements = [
-        document.querySelector('.usdt-to-near-card')
+        document.querySelector('.usdt-to-near-card'),
+        document.querySelector('.usdt-to-near-card-2')
     ];
 
     // Update toggle state
