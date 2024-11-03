@@ -256,13 +256,13 @@ async function refreshUsdtDashboard() {
         const isRegistered = await checkUserRegistration(accountId);
         if (!isRegistered) {
             // Hide dashboard if no active pool
-            if (dashboardSection) dashboardSection.style.display = 'none';
+            // if (dashboardSection) dashboardSection.style.display = 'none';
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
 
         // Show dashboard since there's an active pool
-        if (dashboardSection) dashboardSection.style.display = 'block';
+        // if (dashboardSection) dashboardSection.style.display = 'block';
 
         console.log("Fetching user data for:", accountId);
 

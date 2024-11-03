@@ -255,13 +255,13 @@ async function refreshDashboard() {
         const isRegistered = await checkUserRegistration(accountId);
         if (!isRegistered) {
             // Hide dashboard if user is not registered
-            if (dashboardSection) dashboardSection.style.display = 'none';
+            //if (dashboardSection) dashboardSection.style.display = 'none';
             dashboardBody.innerHTML = `<tr><td colspan="6" class="text-center">Please register first to start using DCA.</td></tr>`;
             return;
         }
 
         // If user is registered, ensure the dashboard is visible
-        if (dashboardSection) dashboardSection.style.display = '';
+        //if (dashboardSection) dashboardSection.style.display = '';
 
         // Fetch and display user data as before
         console.log("Fetching user data for:", accountId);
