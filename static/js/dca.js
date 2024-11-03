@@ -72,7 +72,7 @@ window.startDCAInvestment = async function(event) {
 }
 
 // Change swap interval
-window.changeSwapInterval = async function() {
+window.changeSwapInterval = async function(reverse=false) {
     try {
         // Get wallet
         const wallet = await window.selector.wallet();
@@ -81,7 +81,17 @@ window.changeSwapInterval = async function() {
             return;
         }
 
-        const newInterval = document.getElementById('new_interval').value;
+        let newInterval;
+
+        if (reverse) {
+            newInterval = document.getElementById('new_interval_usdt').value;
+        }
+        else{
+            newInterval = document.getElementById('new_interval').value;
+        }
+        
+
+
         if (!newInterval) {
             alert("Please select a new interval");
             return;
