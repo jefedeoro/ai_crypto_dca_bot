@@ -3,10 +3,13 @@ const contractId = "test2.dca-near.testnet";
 const USDT_CONTRACT = "usdt.fakes.testnet";
 
 // Top up USDT
-export async function topUpUsdt(amount) {
+export async function topUpUsdt() {
     try {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
+
+        // get amount from usdt_amount_topup
+        const amount = document.getElementById("usdt_amount_topup").value;
 
         // Convert to USDT amount (multiply by 10 power 6)
         const depositAmountUSDT = BigInt(Math.round(parseFloat(amount) * 1e6)).toString();
