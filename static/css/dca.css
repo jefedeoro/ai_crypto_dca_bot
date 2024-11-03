@@ -1,7 +1,7 @@
 /* Add to existing dca.css */
 
 .d-none {
-    display: none;
+    display: none !important;
 }
 
 .pool-toggle {
