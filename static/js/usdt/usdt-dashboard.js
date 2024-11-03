@@ -7,7 +7,8 @@ import {
     withdrawUsdtFT,
     pauseUsdtDCA,
     resumeUsdtDCA,
-    removeUsdtUser
+    removeUsdtUser,
+    changeusdtSwapInterval
 } from './usdt-dca.js';
 import { getNearWalletBalance, getNearContractBalance } from '../near-wallet.js';
 import { POOL_TYPE, getSelectedPool } from '../pool-toggle.js';
