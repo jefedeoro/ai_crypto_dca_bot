@@ -240,8 +240,8 @@ async function refreshUsdtDashboard() {
         return;
     }
 
-    // const dashboardSection = document.querySelector('.investment-dashboard:last-child');
-    // const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
+    const dashboardSection = document.querySelector('.investment-dashboard:last-child');
+    const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
     // if (!dashboardBody) return;
 
     // // Check if this pool should be visible

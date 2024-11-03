@@ -226,7 +226,7 @@ async function refreshDashboard() {
     }
 
     // // Define the dashboard section
-    // const dashboardSection = document.querySelector('.investment-dashboard');
+    const dashboardSection = document.querySelector('.investment-dashboard');
 
     // // Check if USDT pool is active first
     // const usdtRegistered = await window.checkUsdtUserRegistration?.(accountId);
@@ -238,7 +238,7 @@ async function refreshDashboard() {
     //     return;
     // }
 
-    // const dashboardBody = document.querySelector("#investment-dashboard tbody");
+    const dashboardBody = document.querySelector("#investment-dashboard tbody");
     // if (!dashboardBody) return;
 
     // // Check if this pool should be visible
