@@ -327,98 +327,102 @@ async function refreshUsdtDashboard() {
 
         // Parse the JSON string
         try {
+            
             const userData = JSON.parse(jsonString);
             console.log('Parsed user data:', userData);
 
             // Update registration state based on user data
             window.isUserRegistered = true;
 
-            // Update desktop view
+            if (userData.reverse){
+                // Update desktop view
             dashboardBody.innerHTML = `
-                <tr>
-                    <td>${formatUSDTAmount(userData.amount)}</td>
-                    <td>${formatInterval(BigInt(userData.swap_interval))}</td>
-                    <td>${formatUSDTAmount(userData.amount_per_swap)}</td>
-                    <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
-                    <td>${formatNearAmount(userData.total_swapped)}</td>
-                    <td>
-                        <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
-                            ${userData.pause ? 'Paused' : 'Active'}
-                        </div>
-                    </td>
-                    <td data-label="Actions">
-                        <div class="action-buttons">
-                            ${userData.pause ? 
-                                `<button onclick="resumeUsdtDCA()" class="dca-btn dca-btn-info btn-sm">
-                                    <i class="fas fa-play-circle"></i> Resume
-                                </button>` :
-                                `<button onclick="pauseUsdtDCA()" class="dca-btn dca-btn-warning btn-sm">
-                                    <i class="fas fa-pause-circle"></i> Pause
-                                </button>`
-                            }
-                            <button onclick="removeUsdtUser()" class="dca-btn dca-btn-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${formatUSDTAmount(userData.amount)}</td>
+                <td>${formatInterval(BigInt(userData.swap_interval))}</td>
+                <td>${formatUSDTAmount(userData.amount_per_swap)}</td>
+                <td>${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</td>
+                <td>${formatNearAmount(userData.total_swapped)}</td>
+                <td>
+                    <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
+                        ${userData.pause ? 'Paused' : 'Active'}
+                    </div>
+                </td>
+                <td data-label="Actions">
+                    <div class="action-buttons">
+                        ${userData.pause ? 
+                            `<button onclick="resumeUsdtDCA()" class="dca-btn dca-btn-info btn-sm">
+                                <i class="fas fa-play-circle"></i> Resume
+                            </button>` :
+                            `<button onclick="pauseUsdtDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                <i class="fas fa-pause-circle"></i> Pause
+                            </button>`
+                        }
+                        <button onclick="removeUsdtUser()" class="dca-btn dca-btn-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
 
-            // Update mobile view
-            const mobileView = document.querySelector('#usdt-mobile-view');
-            if (mobileView) {
-                mobileView.innerHTML = `
-                    <div class="pool-card">
-                        <div class="pool-header">USDT to NEAR Pool</div>
-                        <div class="dashboard-grid">
-                            <div class="dashboard-item">
-                                <p class="item-label">USDT Balance</p>
-                                <div class="item-value">${formatUSDTAmount(userData.amount)}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">Interval</p>
-                                <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">Amount per Swap</p>
-                                <div class="item-value">${formatUSDTAmount(userData.amount_per_swap)}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">Next Swap</p>
-                                <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">NEAR Swapped</p>
-                                <div class="item-value">${formatNearAmount(userData.total_swapped)}</div>
-                            </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">Status</p>
-                                <div class="item-value">
-                                    <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
-                                        ${userData.pause ? 'Paused' : 'Active'}
-                                    </div>
+        // Update mobile view
+        const mobileView = document.querySelector('#usdt-mobile-view');
+        if (mobileView) {
+            mobileView.innerHTML = `
+                <div class="pool-card">
+                    <div class="pool-header">USDT to NEAR Pool</div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-item">
+                            <p class="item-label">USDT Balance</p>
+                            <div class="item-value">${formatUSDTAmount(userData.amount)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Interval</p>
+                            <div class="item-value">${formatInterval(BigInt(userData.swap_interval))}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Amount per Swap</p>
+                            <div class="item-value">${formatUSDTAmount(userData.amount_per_swap)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Next Swap</p>
+                            <div class="item-value">${userData.last_swap_timestamp ? formatTimestamp(userData.last_swap_timestamp) : 'Not executed yet'}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">NEAR Swapped</p>
+                            <div class="item-value">${formatNearAmount(userData.total_swapped)}</div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Status</p>
+                            <div class="item-value">
+                                <div class="status-badge ${userData.pause ? 'paused' : 'active'}">
+                                    ${userData.pause ? 'Paused' : 'Active'}
                                 </div>
                             </div>
-                            <div class="dashboard-item">
-                                <p class="item-label">Actions</p>
-                                <div class="item-value">
-                                    ${userData.pause ? 
-                                        `<button onclick="resumeUsdtDCA()" class="dca-btn dca-btn-info btn-sm">
-                                            <i class="fas fa-play-circle"></i> Resume
-                                        </button>` :
-                                        `<button onclick="pauseUsdtDCA()" class="dca-btn dca-btn-warning btn-sm">
-                                            <i class="fas fa-pause-circle"></i> Pause
-                                        </button>`
-                                    }
-                                    <button onclick="removeUsdtUser()" class="dca-btn dca-btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
+                        </div>
+                        <div class="dashboard-item">
+                            <p class="item-label">Actions</p>
+                            <div class="item-value">
+                                ${userData.pause ? 
+                                    `<button onclick="resumeUsdtDCA()" class="dca-btn dca-btn-info btn-sm">
+                                        <i class="fas fa-play-circle"></i> Resume
+                                    </button>` :
+                                    `<button onclick="pauseUsdtDCA()" class="dca-btn dca-btn-warning btn-sm">
+                                        <i class="fas fa-pause-circle"></i> Pause
+                                    </button>`
+                                }
+                                <button onclick="removeUsdtUser()" class="dca-btn dca-btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                `;
-            }
+                </div>
+            `;
+        }
+        }
+            
 
             await updateUsdtBalances();
         } catch (error) {
