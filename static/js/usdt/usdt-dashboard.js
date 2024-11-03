@@ -240,16 +240,16 @@ async function refreshUsdtDashboard() {
         return;
     }
 
-    const dashboardSection = document.querySelector('.investment-dashboard:last-child');
-    const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
-    if (!dashboardBody) return;
+    // const dashboardSection = document.querySelector('.investment-dashboard:last-child');
+    // const dashboardBody = document.querySelector("#usdt-investment-dashboard tbody");
+    // if (!dashboardBody) return;
 
-    // Check if this pool should be visible
-    const selectedPool = getSelectedPool();
-    if (selectedPool !== POOL_TYPE.USDT_TO_NEAR) {
-        if (dashboardSection) dashboardSection.style.display = 'none';
-        return;
-    }
+    // // Check if this pool should be visible
+    // const selectedPool = getSelectedPool();
+    // if (selectedPool !== POOL_TYPE.USDT_TO_NEAR) {
+    //     if (dashboardSection) dashboardSection.style.display = 'none';
+    //     return;
+    // }
 
     try {
         // First check if user is registered

@@ -225,30 +225,30 @@ async function refreshDashboard() {
         return;
     }
 
-    // Define the dashboard section
-    const dashboardSection = document.querySelector('.investment-dashboard');
+    // // Define the dashboard section
+    // const dashboardSection = document.querySelector('.investment-dashboard');
 
-    // Check if USDT pool is active first
-    const usdtRegistered = await window.checkUsdtUserRegistration?.(accountId);
-    if (usdtRegistered) {
-        // Hide NEAR-USDT UI if USDT pool is active
-        if (dashboardSection) dashboardSection.style.display = 'none';
-        const nearToUsdtManagement = document.querySelector('.dca-card:last-child');
-        if (nearToUsdtManagement) nearToUsdtManagement.style.display = 'none';
-        return;
-    }
+    // // Check if USDT pool is active first
+    // const usdtRegistered = await window.checkUsdtUserRegistration?.(accountId);
+    // if (usdtRegistered) {
+    //     // Hide NEAR-USDT UI if USDT pool is active
+    //     if (dashboardSection) dashboardSection.style.display = 'none';
+    //     const nearToUsdtManagement = document.querySelector('.dca-card:last-child');
+    //     if (nearToUsdtManagement) nearToUsdtManagement.style.display = 'none';
+    //     return;
+    // }
 
-    const dashboardBody = document.querySelector("#investment-dashboard tbody");
-    if (!dashboardBody) return;
+    // const dashboardBody = document.querySelector("#investment-dashboard tbody");
+    // if (!dashboardBody) return;
 
-    // Check if this pool should be visible
-    const selectedPool = getSelectedPool();
-    if (selectedPool !== POOL_TYPE.NEAR_TO_USDT) {
-        if (dashboardSection) dashboardSection.style.display = 'none';
-        return;
-    } else {
-        if (dashboardSection) dashboardSection.style.display = '';
-    }
+    // // Check if this pool should be visible
+    // const selectedPool = getSelectedPool();
+    // if (selectedPool !== POOL_TYPE.NEAR_TO_USDT) {
+    //     if (dashboardSection) dashboardSection.style.display = 'none';
+    //     return;
+    // } else {
+    //     if (dashboardSection) dashboardSection.style.display = '';
+    // }
 
     try {
         // First check if user is registered
