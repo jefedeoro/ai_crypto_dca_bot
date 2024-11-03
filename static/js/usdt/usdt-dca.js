@@ -12,21 +12,24 @@ export async function topUpUsdt() {
         const amount = document.getElementById("usdt_amount_topup").value;
 
         // Convert to USDT amount (multiply by 10 power 6)
-        const depositAmountUSDT = BigInt(Math.round(parseFloat(amount) * 1e6)).toString();
-
-
-
+        const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
+        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
+        const depositAmountUSDT = integerPart + paddedDecimal;
 
         await wallet.signAndSendTransaction({
-            receiverId: contractId,
+            receiverId: USDT_CONTRACT,
             actions: [
                 {
                     type: "FunctionCall",
                     params: {
-                        methodName: "topup",
-                        args: {},
+                        methodName: "ft_transfer_call",
+                        args: {
+                            receiver_id: contractId,
+                            amount: depositAmountUSDT.toString(),
+                            msg: ""
+                        },
                         gas: "100000000000000",
-                        deposit: depositAmountUSDT
+                        deposit: "1"  // 1 yoctoNEAR required for ft_transfer_call
                     }
                 }
             ]
