@@ -74,16 +74,21 @@ export async function withdrawUsdtNear(amount) {
 }
 
 // Withdraw USDT
-export async function withdrawUsdtFT(amount) {
+export async function withdrawUsdtFT() {
     try {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
 
-        // Convert to USDT amount (6 decimals)
-        const [integerPart = "0", decimalPart = ""] = amount.toString().split(".");
-        const paddedDecimal = (decimalPart + "0".repeat(6)).slice(0, 6);
-        const withdrawAmountUSDT = integerPart + paddedDecimal;
+        const withdrawAmount = document.getElementById('usdt_amount_withdraw').value;
+    
+        if (!withdrawAmount) {
+            alert("Please enter an amount to withdraw.");
+            return;
+        }
 
+        // Convert withdrawAmount to USDT decimal format (6 decimals)
+        const withdrawAmountUSDT = BigInt(Math.round(parseFloat(withdrawAmount) * 1e6));
+        
         await wallet.signAndSendTransaction({
             receiverId: contractId,
             actions: [
