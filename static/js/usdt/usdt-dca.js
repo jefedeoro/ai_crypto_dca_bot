@@ -42,12 +42,20 @@ export async function topUpUsdt() {
 }
 
 // Withdraw NEAR
-export async function withdrawUsdtNear(amount) {
+export async function withdrawUsdtNear() {
     try {
         const wallet = await window.selector.wallet();
         if (!wallet) throw new Error("Wallet not connected");
+        
+        const withdrawAmount = document.getElementById('near_amount_withdraw').value;
 
-        const withdrawAmountYocto = BigInt(Math.round(parseFloat(amount) * 1e24)).toString();
+        if (!withdrawAmount) {
+            alert("Please enter an amount to withdraw.");
+            return;
+        }
+
+        // Convert withdrawAmount to yoctoNEAR using BigInt
+        const withdrawAmountYocto = BigInt(Math.round(parseFloat(withdrawAmount) * 1e24));
 
         await wallet.signAndSendTransaction({
             receiverId: contractId,
