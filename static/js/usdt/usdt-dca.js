@@ -65,7 +65,7 @@ export async function withdrawUsdtNear() {
                     params: {
                         methodName: "withdraw_near",
                         args: { 
-                            amount: withdrawAmountYocto,
+                            amount: withdrawAmountYocto.toString(),
                             reverse: true
                         },
                         gas: "100000000000000",
@@ -105,7 +105,7 @@ export async function withdrawUsdtFT() {
                     params: {
                         methodName: "withdraw_ft",
                         args: {
-                            amount: withdrawAmountUSDT,
+                            amount: withdrawAmountUSDT.toString(),
                             reverse: true
                         },
                         gas: "100000000000000",
